@@ -176,19 +176,12 @@ module.exports = function(grunt) {
       },
       osx: {
         command: process.platform === 'darwin' ? [
-          'npm install appdmg',
+          'sudo npm install appdmg',
           'appdmg ./res/dmg/dmg_config.json ./build/packages/ripple-client.dmg'
         ].join('&&') : 'echo Skipping DMG build, only supported on OSX'
       }
     },
     recess: {
-      web: {
-        src: ['src/less/ripple/web.less'],
-        dest: 'build/dist/ripple.css',
-        options: {
-          compile: true
-        }
-      },
       desktop: {
         src: ['src/less/ripple/desktop.less'],
         dest: 'build/dist/ripple-desktop.css',
@@ -253,30 +246,6 @@ module.exports = function(grunt) {
       }
     },
     preprocess: {
-      web: {
-        src: 'src/index.html',
-        dest: 'build/dist/web/index.html',
-        options: {
-          context: {
-            MODE: "release",
-            TARGET: "web",
-            VERSION: "<%= meta.version %>",
-            LANGUAGES: languageCodes
-          }
-        }
-      },
-      web_debug: {
-        src: 'src/index.html',
-        dest: 'build/dist/web/index_debug.html',
-        options: {
-          context: {
-            MODE: "debug",
-            TARGET: "web",
-            VERSION: "<%= meta.version %>",
-            LANGUAGES: languageCodes
-          }
-        }
-      },
       desktop: {
         src: 'src/index.html',
         dest: 'build/dist/desktop/index.html',
@@ -318,31 +287,6 @@ module.exports = function(grunt) {
       }
     },
     copy: {
-      // TODO clear destination folders before copying
-      web: {
-        files: [
-          {expand: true, src: ['build/dist/*.js'],
-            dest: 'build/bundle/web/js', flatten: true},
-          {expand: true, src: ['build/dist/web/*.js'],
-            dest: 'build/bundle/web/js', flatten: true},
-          {expand: true, src: ['build/dist/*.css'],
-            dest: 'build/bundle/web/css', flatten: true},
-          {expand: true, src: ['res/fonts/*'], dest: 'build/bundle/web/fonts', flatten: true},
-          {expand: true, src: ['res/icons/font/*'], dest: 'build/bundle/web'},
-          {expand: true, src: ['img/**'], dest: 'build/bundle/web'},
-          {expand: true, src: ['deps/js/modernizr*.js'],
-            dest: 'build/bundle/web/js/deps', flatten: true},
-          {expand: true, src: ['deps/js/mixpanel.min.js'],
-            dest: 'build/bundle/web/js/deps', flatten: true},
-          {src: 'build/dist/web/index.html', dest: 'build/bundle/web/index.html'},
-          {src: 'build/dist/web/index_debug.html', dest: 'build/bundle/web/index_debug.html'},
-          {src: 'src/js/config.js', dest: 'build/bundle/web/config.js'},
-          {src: 'scripts/livereload.js', dest: 'build/bundle/web/livereload.js'},
-          {src: 'deps/downloadify.swf', dest: 'build/bundle/web/swf/downloadify.swf' },
-          {src: 'ripple.txt', dest: 'build/bundle/web/ripple.txt' },
-          {src: 'src/callback.html', dest: 'build/bundle/web/callback.html'}
-        ]
-      },
       nw_desktop: {
         files: [
           {expand: true, src: ['build/dist*//*.js'],
@@ -532,23 +476,6 @@ module.exports = function(grunt) {
         new BannerPlugin("Ripple Client v<%= meta.version %>\nCopyright (c) <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>\nLicensed under the <%= pkg.license %> license.")
       ]
     },
-    web_debug: {
-      entry: {
-        web: "./src/js/entry/web.js"
-      },
-      module: {
-        loaders: [
-          { test: /\.jade$/, loader: "jade-l10n-loader" },
-          { test: /\.json$/, loader: "json-loader" }
-        ]
-      },
-      output: {
-        filename: "web/<%= pkg.name %>-debug.js"
-      },
-      debug: true,
-      devtool: 'eval',
-      cache: false
-    },
     desktop_debug: {
       entry: {
         desktop: "./src/js/entry/desktop.js"
@@ -569,24 +496,6 @@ module.exports = function(grunt) {
   };
 
   languages.forEach(function(language){
-    webpack['web_l10n_' + language.name] = {
-      entry: {
-        web: "./src/js/entry/web.js"
-      },
-      module: {
-        loaders: [
-          { test: /\.jade$/, loader: "jade-l10n-loader?languageFile=./l10n/" + language.code + "/messages.po" },
-          { test: /\.json$/, loader: "json-loader" }
-        ]
-      },
-      output: {
-        filename: "web/<%= pkg.name %>-" + language.code + ".js"
-      },
-      optimize: {
-        // TODO Minimization breaks our l10n mechanisms
-//        minimize: true
-      }
-    };
     webpack['desktop_l10n_' + language.name] = {
       entry: {
         desktop: "./src/js/entry/desktop.js"
