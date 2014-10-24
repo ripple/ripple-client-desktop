@@ -182,6 +182,13 @@ module.exports = function(grunt) {
       }
     },
     recess: {
+      web: {
+        src: ['src/less/ripple/web.less'],
+        dest: 'build/dist/ripple.css',
+        options: {
+          compile: true
+        }
+      },
       desktop: {
         src: ['src/less/ripple/desktop.less'],
         dest: 'build/dist/ripple-desktop.css',
@@ -305,7 +312,7 @@ module.exports = function(grunt) {
           {src: 'build/dist/desktop/index.html', dest: 'build/bundle/nw-desktop/index.html'},
           {src: 'res/nw/package_desktop.json', dest: 'build/bundle/nw-desktop/package.json'},
           {src: 'src/js/config.js', dest: 'build/bundle/nw-desktop/config.js'},
-          {src: 'scripts/livereload.js', dest: 'build/bundle/web/livereload.js'}
+          {src: 'scripts/livereload.js', dest: 'build/bundle/nw-desktop/livereload.js'}
         ]
       },
       nw_desktop_debug: {
@@ -326,7 +333,7 @@ module.exports = function(grunt) {
           {src: 'build/dist/desktop/index_debug.html', dest: 'build/bundle/nw-desktop-debug/index.html'},
           {src: 'res/nw/package_desktop_debug.json', dest: 'build/bundle/nw-desktop-debug/package.json'},
           {src: 'src/js/config.js', dest: 'build/bundle/nw-desktop-debug/config.js'},
-          {src: 'scripts/livereload.js', dest: 'build/bundle/web/livereload.js'}
+          {src: 'scripts/livereload.js', dest: 'build/bundle/nw-desktop-debug/livereload.js'}
         ]
       }
     },
@@ -347,7 +354,7 @@ module.exports = function(grunt) {
       },
       scripts_debug: {
         files: ['src/js/**/*.js', 'src/jade/**/*.jade'],
-        tasks: ['webpack:web_debug', 'webpack:desktop_debug', 'copy'],
+        tasks: ['webpack:desktop_debug', 'copy'],
         options: { nospawn: true, livereload: true }
       },
       deps: {
@@ -362,7 +369,7 @@ module.exports = function(grunt) {
       },
       index: {
         files: ['src/index.html'],
-        tasks: ['preprocess:web_debug','preprocess:desktop_debug','copy'],
+        tasks: ['preprocess:desktop_debug','copy'],
         options: { livereload: true }
       },
       callback: {
@@ -495,7 +502,7 @@ module.exports = function(grunt) {
     }
   };
 
-  languages.forEach(function(language){
+  /*languages.forEach(function(language){
     webpack['desktop_l10n_' + language.name] = {
       entry: {
         desktop: "./src/js/entry/desktop.js"
@@ -515,7 +522,7 @@ module.exports = function(grunt) {
       },
       target: 'node-webkit'
     }
-  });
+  });*/
 
   grunt.config.set('webpack',webpack);
 
