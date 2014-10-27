@@ -20,19 +20,22 @@ LoginTab.prototype.generateHtml = function ()
 LoginTab.prototype.angular = function (module) {
   module.controller('LoginCtrl', ['$scope', '$element', '$routeParams',
                                   '$location', 'rpId', '$rootScope',
-                                  'rpPopup', '$timeout', 'rpTracker',
+                                  'rpPopup', '$timeout', 'rpTracker', 'rpFileDialog',
                                   function ($scope, $element, $routeParams,
                                             $location, $id, $rootScope,
-                                            popup, $timeout, $rpTracker)
+                                            popup, $timeout, $rpTracker, filedialog)
   {
     if ($id.loginStatus) {
       $location.path('/balance');
       return;
     }
 
-    $scope.simulateFileInputClick = function(element){
-      var fileInput = angular.element(element);
-      fileInput.trigger('click');
+    $scope.fileInputClick = function(element){
+      filedialog.openFile(function(evt) {
+        $scope.$apply(function() {
+          $scope.walletfile = evt;
+        });
+      }, false);
     }
 
     $scope.error = '';
