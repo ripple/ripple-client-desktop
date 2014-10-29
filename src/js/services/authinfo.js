@@ -15,8 +15,8 @@ var webutil = require("../util/web"),
 
 var module = angular.module('authinfo', []);
 
-module.factory('rpAuthInfo', ['$rootScope', 'rpRippleTxt', '$http',
-  function ($scope, $txt, $http)
+module.factory('rpAuthInfo', ['$rootScope', 'rpRippleTxt',
+  function ($scope, $txt)
 {
   var AuthInfo = {};
 
@@ -61,19 +61,6 @@ module.factory('rpAuthInfo', ['$rootScope', 'rpRippleTxt', '$http',
         callback(new Error("Authentication is not supported on "+domain));
       }
     }
-  };
-
-  AuthInfo.getByRippleAddress = function (domain, rippleAddress, callback) {
-    $http({
-      method: 'GET',
-      url: 'http://' + domain + ':8081/v1/user/' + rippleAddress
-    })
-    .success(function(data, status, headers, config) {
-      callback(null, data);
-    })
-    .error(function(data, status, headers, config) {
-      callback(new Error("Failed to get the account - XHR error"));
-    });
   };
 
   return AuthInfo;
