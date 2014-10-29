@@ -30,8 +30,6 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
           //-     li.balance(ng-repeat="balance in balances")
           //-       span.balance {{balance.total | rpamount:{rel_precision: 2} }}&nbsp;
           //-       span.balance(rp-currency="balance.total", rp-currency-short)
-          li(ng-hide="'desktop' === client")
-            a(href="#/account/public") ~{{userCredentials.username}}
           li.dropdown.notifications-dropdown
             a.dropdown-toggle.fa.fa-bell(ng-click="read()")
               .number(ng-show="unseenNotifications.count") {{unseenNotifications.count}}
@@ -99,9 +97,6 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
           li.settings
             a.dropdown-toggle.fa.fa-cog
             ul.dropdown-menu
-              li: a(href="#/account/public", l10n)
-                i.icon-profile
-                |  Account
               li.divider
               li: a(href="#/security", l10n)
                 i.icon-settings

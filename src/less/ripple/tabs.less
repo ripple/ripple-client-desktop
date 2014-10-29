@@ -31,62 +31,6 @@
   }
 }
 
-#t-kyc {
-  .twoFAInfo{
-    .icon-wrapper {
-      display: inline-block;
-      float: left;
-    }
-  }
-  .form-group {
-    &.authy-control {
-      .phone-number-wrapper {
-        padding-top: 15px;
-        .btn-link {
-          display: inline-block;
-        }
-      }
-    }
-  }
-  
-
-  .kyc-error {
-    color: @midred;
-  }
-
-  .question {
-    margin: 25px 0;
-  }
-
-  .answer {
-    margin: 0 10px
-  }
-
-  .lock {
-    margin-left: 50px;
-  }
-
-  .ssn-hidden {
-    font-size: 25px;
-  }
-
-  .kyc-align {
-    // margin: 15px 0 15px 1px;
-    margin-top: 15px;
-    margin-bottom: 15px;
-  }
-
-  #resend-code-btn {
-    margin-top: 25px;
-  }
-}
-
-#t-twofa {
-  .kyc-align {
-    margin: 15px 0 15px 1px;
-  }
-}
-
 #t-register, #t-login, #t-recover, #t-account, #t-migrate {
 
   .rippleName {
@@ -1749,34 +1693,6 @@
     margin: 20px 0 0 40px;
   }
 
-  .twoFactorSettings {
-    margin-top:40px;
-
-    .enabled2FA {
-      margin-right:5px
-    }
-
-    input:disabled {
-      opacity:.5;
-    }
-  }
-
-  .confirm2FA {
-    margin:10px 0;
-  }
-
-  .verify2FA {
-    margin-bottom:10px;
-
-    .status {
-      margin:20px 0;
-    }
-
-     button.spinner {
-      padding-left:0;
-    }
-  }
-
   .sessionUnlock {
     margin-left: 15px;
 
@@ -2488,7 +2404,7 @@ html.t-trade header nav ul > li.active#nav-advanced > a:after {
   }
 }
 
-#t-fund, #t-xrp, #t-btc, #t-usd, #t-gold, #t-trust {
+#t-fund, #t-xrp, #t-trust {
 
   .currencies a {
     display: block;
@@ -2505,7 +2421,7 @@ html.t-trade header nav ul > li.active#nav-advanced > a:after {
   }
 }
 
-#t-fund, #t-xrp, #t-btc, #t-usd, #t-gold {
+#t-fund, #t-xrp {
   .btc-tab-description {
     margin-bottom: 20px;
     h4 {
@@ -2658,7 +2574,7 @@ html.t-trade header nav ul > li.active#nav-advanced > a:after {
   }
 }
 
-#t-account, #t-public, #t-private {
+#t-account, #t-public {
 
   .accountPage a {
     display: block;
@@ -2770,23 +2686,6 @@ html.t-trade header nav ul > li.active#nav-advanced > a:after {
       }
   }
 
-  .confirm2FA {
-    margin-top:20px;
-    margin-bottom:20px;
-  }
-
-  .verify2FA {
-    margin-bottom:10px;
-
-    .status {
-      margin:20px 0;
-    }
-
-     button.spinner {
-      padding-left:0;
-    }   
-  }
-
 }
 
 
@@ -2834,86 +2733,5 @@ html.t-trade header nav ul > li.active#nav-advanced > a:after {
   #knoxFrame {
     height: 600px;
     border: 0;
-  }
-}
-
-#t-gold {
-  .title {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 12px;
-    color: #1e1e1e;
-    font-weight: 600;
-    text-transform: uppercase;
-    padding-bottom: 5px;
-  }
-
-  .description {
-    font-size: 12px;
-    padding-bottom: 5px;
-    //border-right: thin solid @black;
-
-  }
-
-  .descriptor {
-    font-size: 12px;
-  }
-
-  button {
-    text-align: center;
-    border: 1px solid @midblue;
-    font-weight: bold;
-    background: @midblue;
-    color: @white;
-    width: 100%;
-
-    &:hover, &.active {
-      background: darken(@midblue, 15%);
-      border-color: darken(@midblue, 15%);
-    }
-  }
-
-  .connect{
-    margin-top: 12px;
-
-    ::before {
-      padding-right: 5px;
-    }
-  }
-
-  .instructions {
-    display: block;
-    padding: 10px;
-    border-radius: 2px;
-    background: @lightgray;
-    margin-left: 15px;
-    margin-top: 15px;
-    border: 1px solid @midgray;
-  }
-
-  .dismiss {
-    float: right;
-  }
-
-  .gateway {
-    margin-left: -10px;
-    padding-bottom: 20px;
-  }
-
-  .tos {
-    padding-bottom: 20px;
-    padding-left: 5px;
-  }
-}
-
-.modal2FA {
-
-  .email {
-    font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-weight:bold;
-    font-size:1.1em;
-  }
-
-  input {
-    font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
   }
 }

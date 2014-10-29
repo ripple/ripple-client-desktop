@@ -28,8 +28,6 @@ section.col-xs-12.content(ng-controller="SecurityCtrl")
     .col-sm-12.notification-wrapper
       .alert.alert-warning(ng-show="loading", l10n) Changing your Ripple password...
       .alert.alert-success(ng-show="success", l10n) Your Ripple password has been changed successfully.
-      .alert.alert-danger(ng-show="errorLoading2FA", l10n) Unable to load Two-factor authentication settings.
-      .alert.alert-danger(ng-show="error2FA", l10n) Error saving Two-factor authentication settings.
       .alert.alert-danger(ng-show="invalidToken", l10n) The verification code is invalid.
       .alert.alert-success(ng-show="enableSuccess", l10n) Two-factor authentication has been successfully enabled.
       .alert.alert-success(ng-show="disableSuccess", l10n) Two-factor authentication has been successfully disabled.  
@@ -39,71 +37,6 @@ section.col-xs-12.content(ng-controller="SecurityCtrl")
       .showSecurity(ng-show="settingsPage == 'security'")
         div(ng-show="'web' === client")
           h4(l10n) Security settings
-          .section
-            .descriptor Two-factor authentication
-            .row(ng-show="loading2FA")
-              .col-xs-12.col-sm-9
-                div(rp-spinner="4", l10n) Loading Two-factor authentication settings...
-            .row(ng-hide="loading2FA || errorLoading2FA || mode2FA === 'verifyPhone'")
-              .col-xs-9.col-sm-8.col-md-6
-                span(ng-show="enabled2FA", l10n) Enabled
-                span(ng-hide="enabled2FA", l10n) Disabled
-              .col-xs-3.col-sm-4.col-md-6
-                a(href="", ng-show="enabled2FA", ng-click="disable2FA()", l10n) disable
-                rp-popup(onOpen="open2FA")
-                  a(href="", rp-popup-link, ng-hide="enabled2FA", l10n) enable
-                  div.connectModal.modal2FA(rp-popup-content)
-                    .modal-header
-                      .navbar-brand.hidden-sm.modal-logo#logo
-                      .modal-title(l10n) Connect
-                    .modal-body
-                      div.modal-prompt(l10n) Authy is providing two-factor authentication for Ripple Trade. To enable two-factor authentication, you must share some information with Authy.
-                      div.grey-focus
-                        .row.modal-permissions
-                          .col-xs-12.col-sm-4(l10n) - Your email address:
-                          .col-xs-12.col-sm-8.email {{userBlob.data.email}}
-                        .row.modal-permissions
-                          .col-xs-12.col-sm-4(l10n) - Your phone number:
-                          include 2fa/form
-                      div.modal-agreement(l10n) By proceeding, you agree to the Authy
-                        a(href="https://www.authy.com/terms", target="_blank", l10n-inc)  terms of service.
-                      div.modal-buttons
-                        button.modal-btn.btn.btn-default.btn-primary.btn-md(ng-click="savePhone()", ng-disabled="savingPhone")
-                          span(l10n) Share
-                        button.modal-btn.btn.btn-default.btn-md.btn-link.btn-cancel(data-dismiss="modal"
-                        ng-hide="savingPhone", l10n) cancel
-            .row.confirm2FA(ng-hide="!mode2FA || mode2FA === 'verifyPhone'")
-              .col-xs-12.col-sm-9
-                .status
-                  div(rp-spinner="4", ng-show="mode2FA === 'savePhone'", l10n) Saving settings...
-                  div(rp-spinner="4", ng-show="mode2FA === 'disable'", l10n) Disabling Two-factor authentication...
-                  div(rp-spinner="4", ng-show="mode2FA === 'enable'", l10n) Enabling Two-factor authentication...
-            form.verify2FA(ng-show="mode2FA === 'verifyPhone'")
-              .row
-                .col-xs-12
-                  .status
-                    span(ng-hide="via === 'app'", l10n) Please enter the verification code from the SMS message sent to your device: 
-                    span(ng-show="via === 'app'", l10n) Please enter the verification code from the Authy app installed on your device: 
-                    span  +{{currentCountryCode}} {{currentPhone}}
-                    div(l10n-inc) Enter the code below to complete the process.
-              .row
-                .col-xs-12.col-sm-8
-                  label(for="verifyToken", l10n) Verification Code
-              .row
-                .col-xs-9.col-md-5.col-sm-9
-                  input.form-control#verifyToken(name="verifyToken", ng-model="verifyToken")
-                .col-xs-3.col-md-3.col-sm-3
-                  button.btn.btn-block.btn-cancel(type="button", ng-disabled="isRequesting",
-                  rp-spinner="{{isRequesting ? 4 : null}}", ng-click="requestToken()")
-                    span(ng-hide="via === 'app'", l10n) Resend Code
-                    span(ng-show="via === 'app'", l10n) Send Via SMS
-              .row
-                .col-xs-8.col-sm-3
-                  button.btn.btn-primary.btn-block(type="button", ng-disabled="isVerifying", ng-click="enable2FA()",
-                  rp-spinner="{{isVerifying ? 4 : null}}")
-                    span(l10n) Enable
-                .col-xs-4.col-sm-2
-                  a.btn.btn-block.btn-cancel(ng-click="cancel2FA()", l10n) cancel
           .section
             .descriptor(l10n) Ripple password
             .row
