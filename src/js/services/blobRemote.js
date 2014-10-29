@@ -63,7 +63,7 @@ module.factory('rpBlob', ['$rootScope', '$http', function ($scope, $http)
             if (data.result === "success") {
               callback(null, data);
             } else {
-              callback(new Error("Incorrect Ripple name or password."));
+              callback(new Error("Incorrect username or password."));
             }
           });
         });

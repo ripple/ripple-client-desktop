@@ -98,7 +98,7 @@ module.directive('rpPrettyIdentity', ['$timeout', function ($timeout) {
     scope: {
       identity: '=rpPrettyIdentity'
     },
-    template: '{{identity | rpcontactname | rpripplename:{tilde:true} }}',
+    template: '{{identity | rpcontactname }}',
     compile: function (element, attr, linker) {
       if (attr.rpPrettyIdentityFilters) {
         element.text('{{identity | ' + attr.rpPrettyIdentityFilters + ' }}');

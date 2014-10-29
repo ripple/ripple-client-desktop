@@ -106,7 +106,6 @@ module.directive('rpMasterAddressExists', function ($http) {
  * - rp-dest-contact     - If set, allows address book contacts.
  * - rp-dest-bitcoin     - If set, allows Bitcoin addresses as destinations.
  * - rp-dest-email       - If set, allows federation/email addresses.
- * - rp-dest-ripple-name - If set, allows Existing ripple name as destination.
  * - rp-dest-model       - If set, updates the model with the resolved ripple address.
  *
  * If the input can be validly interpreted as one of these types, the validation
@@ -176,38 +175,6 @@ module.directive('rpDest', function ($timeout, $parse) {
           return value;
         }
 
-        if (((attr.rpDestRippleName && webutil.isRippleName(value)) ||
-          (attr.rpDestRippleNameNoTilde && value && value[0] !== '~' && webutil.isRippleName('~'+value)))
-          && 'web' === scope.client) { // TODO Don't do a client check in validators
-          ctrl.rpDestType = "rippleName";
-
-          if (timeoutPromise) $timeout.cancel(timeoutPromise);
-
-          timeoutPromise = $timeout(function(){
-            if (attr.rpDestLoading) {
-              var getterL = $parse(attr.rpDestLoading);
-              getterL.assign(scope,true);
-            }
-
-            ripple.AuthInfo.get(Options.domain, value, function(err, info){
-              scope.$apply(function(){
-                ctrl.$setValidity('rpDest', info.exists);
-
-                if (attr.rpDestModel && info.exists) {
-                  getter = $parse(attr.rpDestModel);
-                  getter.assign(scope,info.address);
-                }
-
-                if (attr.rpDestLoading) {
-                  getterL.assign(scope,false);
-                }
-              });
-            });
-          }, 500);
-
-          return value;
-        }
-
         ctrl.$setValidity('rpDest', false);
         return;
       };
@@ -220,84 +187,6 @@ module.directive('rpDest', function ($timeout, $parse) {
       });
     }
   };
-});
-
-/**
- * Check if the ripple name is valid and is available for use
- */
-module.directive('rpAvailableName', function ($timeout, $parse) {
-  return {
-    restrict: 'A',
-    require: '?ngModel',
-    link: function (scope, elm, attr, ctrl) {
-      if (!ctrl) return;
-
-      var timeoutPromise;
-
-      var validator = function(value) {
-        var getterInvalidReason = $parse(attr.rpAvailableNameInvalidReason);
-        var getterReserved = $parse(attr.rpAvailableNameReservedFor);
-
-        if (timeoutPromise) $timeout.cancel(timeoutPromise);
-
-        if (!value) {
-          // No name entered, show nothing, do nothing
-          getterInvalidReason.assign(scope,false);
-        } else if (value.length < 2) {
-          getterInvalidReason.assign(scope,'tooshort');
-        } else if (value.length > 20) {
-          getterInvalidReason.assign(scope,'toolong');
-        } else if (!/^[a-zA-Z0-9\-]+$/.exec(value)) {
-          getterInvalidReason.assign(scope,'charset');
-        } else if (/^-/.exec(value)) {
-          getterInvalidReason.assign(scope,'starthyphen');
-        } else if (/-$/.exec(value)) {
-          getterInvalidReason.assign(scope,'endhyphen');
-        } else if (/--/.exec(value)) {
-          getterInvalidReason.assign(scope,'multhyphen');
-        } else {
-
-          timeoutPromise = $timeout(function(){
-            if (attr.rpLoading) {
-              var getterL = $parse(attr.rpLoading);
-              getterL.assign(scope,true);
-            }
-
-            ripple.AuthInfo.get(Options.domain, value, function(err, info){
-              scope.$apply(function(){
-                if (info.exists) {
-                  ctrl.$setValidity('rpAvailableName', false);
-                  getterInvalidReason.assign(scope,'exists');
-                } else if (info.reserved) {
-                  ctrl.$setValidity('rpAvailableName', false);
-                  getterInvalidReason.assign(scope,'reserved');
-                  getterReserved.assign(scope,info.reserved);
-                } else {
-                  ctrl.$setValidity('rpAvailableName', true);
-                }
-
-                if (attr.rpLoading) {
-                  getterL.assign(scope,false);
-                }
-              });
-            })
-          }, 500);
-
-          return value;
-        }
-
-        ctrl.$setValidity('rpAvailableName', false);
-        return;
-      };
-
-      ctrl.$formatters.push(validator);
-      ctrl.$parsers.unshift(validator);
-
-      attr.$observe('rpAvailableName', function() {
-        validator(ctrl.$viewValue);
-      });
-    }
-  }
 });
 
 /**

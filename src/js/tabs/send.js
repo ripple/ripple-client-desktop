@@ -155,9 +155,6 @@ SendTab.prototype.angular = function (module)
       // This is used to disable 'Send XRP' button
       send.self = recipient === $scope.address;
 
-      // Trying to send to a Ripple name
-      send.rippleName = webutil.isRippleName(recipient);
-
       // Trying to send to an email/federation address
       send.federation = ("string" === typeof recipient) && ~recipient.indexOf('@');
 
@@ -225,16 +222,6 @@ SendTab.prototype.angular = function (module)
             $scope.sendForm.send_destination.$setValidity("federation", false);
           })
         ;
-      }
-      else if (send.rippleName) {
-        ripple.AuthInfo.get(Options.domain,send.recipient,function(err, response) {
-          $scope.$apply(function(){
-            send.recipient_name = '~' + response.username;
-            send.recipient_address = response.address;
-          });
-
-          $scope.check_destination();
-        })
       }
       else {
         $scope.check_destination();

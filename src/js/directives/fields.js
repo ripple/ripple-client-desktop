@@ -156,18 +156,6 @@ module.directive('rpCombobox', [function () {
           completions.push(valueOption);
         }
 
-        // Value as ripple name
-        if (attrs.rpComboboxValueAsRippleName && match.length
-          && 'web' === scope.client) { // TODO Don't do a client check in validators
-          valueOption = (0 !== match.indexOf('~'))
-            ? '~' + match
-            : match;
-
-          if (webutil.isRippleName(valueOption)) {
-            completions.push(valueOption);
-          }
-        }
-
         // By fading out without updating the completions we get a smoother effect
         if (!completions.length) {
           setVisible(false);
