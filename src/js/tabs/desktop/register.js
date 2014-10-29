@@ -59,7 +59,7 @@ RegisterTab.prototype.angular = function (module) {
 
     $scope.submitSecretKeyForm = function(){
       $scope.masterkey = $scope.secretKey;
-      $scope.createEmptyWallet();
+      $scope.fileInputClick();
     };
 
     $scope.register = function()
