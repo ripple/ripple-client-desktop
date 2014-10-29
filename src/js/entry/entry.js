@@ -1,5 +1,7 @@
 var types = require('../util/types');
 
+// TODO don't use event tracking for desktop version.
+
 // Load app modules
 require('../controllers/app');
 require('../controllers/navbar');
@@ -17,10 +19,10 @@ require('../filters/filters');
 require('../services/globalwrappers');
 require('../services/id');
 require('../services/tracker');
-require('../services/blobRemote');
+require('../services/blobLocal');
 require('../services/oldblob');
 require('../services/txqueue');
-require('../services/authflowRemote');
+require('../services/authflow');
 require('../services/authinfo');
 require('../services/kdf');
 require('../services/keychain');
@@ -52,6 +54,7 @@ var appDependencies = [
   'id',
   'tracker',
   'appManager',
+  'filedialog',
   // Directives
   'charts',
   'effects',
@@ -86,10 +89,9 @@ var tabdefs = [
   require('../tabs/kyc'),
   require('../tabs/tx'),
   require('../tabs/xrp'),
-  require('../tabs/btc'),  
+  require('../tabs/btc'),
   require('../tabs/withdraw'),
   require('../tabs/usd'),
-  require('../tabs/gold'),
   require('../tabs/eula'),
   require('../tabs/twofa'),
 
@@ -121,7 +123,7 @@ rippleclient.types = types;
 // Install basic page template
 angular.element('body').prepend(require('../../jade/client/index.jade')());
 
-app.config(['$routeProvider', '$injector', function ($routeProvider, $injector) {
+app.config(['$routeProvider', function ($routeProvider) {
   // Set up routing for tabs
   _.each(tabs, function (tab) {
     if ("function" === typeof tab.generateHtml) {
@@ -136,17 +138,6 @@ app.config(['$routeProvider', '$injector', function ($routeProvider, $injector) 
       };
 
       $routeProvider.when('/'+tab.tabName, config);
-
-      if (tab.extraRoutes) {
-        _.each(tab.extraRoutes, function(route) {
-          $.extend({}, config, route.config);
-          $routeProvider.when(route.name, config);
-        });
-      }
-
-      _.each(tab.aliases, function (alias) {
-        $routeProvider.when('/'+alias, config);
-      });
     }
   });
 
@@ -171,63 +162,41 @@ app.config(['$routeProvider', '$injector', function ($routeProvider, $injector) 
   $routeProvider.otherwise({redirectTo: '/balance'});
 }]);
 
-app.run(['$rootScope', '$injector', '$compile', '$route', '$routeParams', '$location',
-         function ($rootScope, $injector, $compile, $route, $routeParams, $location)
-{
-  // This is the web client
-  $rootScope.client = 'web';
-  $rootScope.productName = 'Ripple Trade';
+app.run(['$rootScope', '$route', '$routeParams',
+  function ($rootScope, $route, $routeParams)
+  {
+    // This is the desktop client
+    $rootScope.client = 'desktop';
+    $rootScope.productName = 'Ripple';
 
-  // Global reference for debugging only (!)
-  if ("object" === typeof rippleclient) {
-    rippleclient.$scope = $rootScope;
-    rippleclient.version = $rootScope.version =
-      angular.element('#version').text();
-  }
+    // Global reference for debugging only (!)
+    if ("object" === typeof rippleclient) {
+      rippleclient.$scope = $rootScope;
+      rippleclient.version = $rootScope.version =
+        angular.element('#version').text();
+    }
 
-  // Helper for detecting empty object enumerations
-  $rootScope.isEmpty = function (obj) {
-    return angular.equals({},obj);
-  };
+    // Helper for detecting empty object enumerations
+    $rootScope.isEmpty = function (obj) {
+      return angular.equals({},obj);
+    };
 
-  // if url has a + or %2b then replace with %20 and redirect
-  if (_.isArray($location.$$absUrl.match(/%2B|\+/gi)))
-    window.location = $location.$$absUrl.replace(/%2B|\+/gi, '%20');
+    var scope = $rootScope;
+    $rootScope.$route = $route;
+    $rootScope.$routeParams = $routeParams;
+    $('#main').data('$scope', scope);
 
-  var scope = $rootScope;
-  $rootScope.$route = $route;
-  $rootScope.$routeParams = $routeParams;
-  $('#main').data('$scope', scope);
-
-  // If using the old "amnt" parameter rename it "amount"
-  var amnt = $location.search().amnt;
-  if (amnt) {
-    $location.search("amnt", null);
-    $location.search("amount", amnt);
-  }
-
-  // Once the app controller has been instantiated
-  // XXX ST: I think this should be an event instead of a watch
-  scope.$watch("app_loaded", function on_app_loaded(oldval, newval) {
-    $('nav a').click(function() {
-      if (location.hash == this.hash) {
-        scope.$apply(function () {
-          $route.reload();
-        });
-      }
+    // Once the app controller has been instantiated
+    // XXX ST: I think this should be an event instead of a watch
+    scope.$watch("app_loaded", function on_app_loaded(oldval, newval) {
+      $('nav a').click(function() {
+        if (location.hash == this.hash) {
+          scope.$apply(function () {
+            $route.reload();
+          });
+        }
+      });
     });
-  });
-}]);
+  }]);
 
-// Some backwards compatibility
-if (!Options.blobvault) {
-  Options.blobvault = Options.BLOBVAULT_SERVER;
-}
-
-if ("function" === typeof angular.resumeBootstrap) {
-  angular.resumeBootstrap();
-
-  angular.resumeBootstrap = function() {
-    return false;
-  };
-}
+if ("function" === typeof angular.resumeBootstrap) angular.resumeBootstrap();

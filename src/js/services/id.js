@@ -311,6 +311,7 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
     });
   };
 
+  // TODO remove migration
   Id.prototype.oldLogin = function (opts, callback) {
     var self = this;
 
@@ -368,25 +369,11 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
     $authflow.login({
       'username': Id.normalizeUsernameForInternals(username),
       'password': password,
-      'walletfile': opts.walletfile,
-      'device_id' : deviceID
-    }, function (err, blob, keys, actualUsername, emailVerified) {
-      
-      //handle 2FA
-      if (err && err.twofactor) {
- 
-        //request verification token. If they are using the
-        //app, the request will be ignored.
-        $authflow.requestToken(err.twofactor.blob_url, err.twofactor.blob_id, false, function(tokenError, tokenResp) {
-          
-          //keep this for reporting
-          err.twofactor.tokenError    = tokenError; 
-          err.twofactor.tokenResponse = tokenResp;
-          return callback(err);
-        });
-        
-      } else if (err) {
-        // New login protocol failed and no fallback configured
+      'walletfile': opts.walletfile
+    }, function (err, blob, keys, actualUsername) {
+
+      if (err) {
+        // login failed and no fallback configured
         callback(err);
       } else {
         // Ensure certain properties exist
@@ -407,13 +394,6 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
         $scope.userBlob = blob;
         self.setUsername(actualUsername);
 
-        if (!emailVerified) {
-          $scope.unverified = true;
-          $location.path('/register');
-
-          callback(new Error("Email has not been verified!"));
-          return;
-        }
 
         self.setAccount(blob.data.account_id);
         self.setLoginKeys(keys);

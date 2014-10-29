@@ -485,7 +485,7 @@ module.exports = function(grunt) {
     },
     desktop_debug: {
       entry: {
-        desktop: "./src/js/entry/desktop.js"
+        desktop: "./src/js/entry/entry.js"
       },
       module: {
         loaders: [
@@ -505,7 +505,7 @@ module.exports = function(grunt) {
   /*languages.forEach(function(language){
     webpack['desktop_l10n_' + language.name] = {
       entry: {
-        desktop: "./src/js/entry/desktop.js"
+        desktop: "./src/js/entry.js"
       },
       module: {
         loaders: [
