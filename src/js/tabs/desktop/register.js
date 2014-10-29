@@ -20,9 +20,9 @@ RegisterTab.prototype.generateHtml = function ()
 RegisterTab.prototype.angular = function (module) {
 
   module.controller('RegisterCtrl', ['$scope', '$location', '$element',
-                                     '$timeout', 'rpId',
+                                     '$timeout', 'rpId', 'rpFileDialog',
                                      function ($scope, $location, $element,
-                                               $timeout, $id)
+                                               $timeout, $id, filedialog)
   {
     if ($id.loginStatus) {
       $location.path('/balance');
@@ -48,16 +48,13 @@ RegisterTab.prototype.angular = function (module) {
       if ($scope.registerForm) $scope.registerForm.$setPristine(true);
     };
 
-    var fileInput = angular.element('input[name=save_wallet]');
-
-    fileInput.bind('change', function(){
-      if(fileInput.val()){
-        $scope.mode = 'register_empty_wallet';
-      }
-    });
-
-    $scope.createEmptyWallet = function(){
-      fileInput.trigger('click');
+    $scope.fileInputClick = function() {
+      filedialog.saveAs(function(filename) {
+        $scope.$apply(function() {
+          $scope.walletfile = filename;
+          $scope.mode = 'register_empty_wallet';
+        });
+      }, 'wallet.txt');
     };
 
     $scope.submitSecretKeyForm = function(){

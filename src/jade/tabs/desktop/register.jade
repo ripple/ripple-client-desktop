@@ -8,7 +8,7 @@ section.col-xs-12.content(ng-controller="RegisterCtrl")
         a.btn.btn-block.btn-link(ng-click='goTo("/login")', l10n) Open existing account
 
       .form-group
-        a.btn.btn-block.btn-default(ng-click='createEmptyWallet()', l10n) Create an empty account
+        a.btn.btn-block.btn-default(ng-click='fileInputClick()', l10n) Create an empty account
 
       .form-group
         a.btn.btn-block.btn-default(ng-click='mode="register_with_secret"', l10n) Create a new account with a secret key
@@ -22,7 +22,6 @@ section.col-xs-12.content(ng-controller="RegisterCtrl")
       form(name='registerForm', ng-submit='submitForm()')
 
         label.hide(for='register_password', l10n) Wallet file
-        input.form-control.hide(type="file", nwsaveas="wallet.txt", ng-model="walletfile", required, name="save_wallet")
 
         .form-group(ng-class="{'field-error': 'weak' === strength}")
           label(for='register_password', l10n) Password
