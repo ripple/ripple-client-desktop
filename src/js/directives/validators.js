@@ -48,8 +48,6 @@ module.directive('rpMasterKey', function () {
  *
  * - rp-dest-address     - If set, allows Ripple addresses as destinations.
  * - rp-dest-contact     - If set, allows address book contacts.
- * - rp-dest-bitcoin     - If set, allows Bitcoin addresses as destinations.
- * - rp-dest-email       - If set, allows federation/email addresses.
  * - rp-dest-model       - If set, updates the model with the resolved ripple address.
  *
  * If the input can be validly interpreted as one of these types, the validation
@@ -90,30 +88,6 @@ module.directive('rpDest', function ($timeout, $parse) {
           if (attr.rpDestModel) {
             getter = $parse(attr.rpDestModel);
             getter.assign(scope,webutil.getContact(scope.userBlob.data.contacts,strippedValue).address);
-          }
-
-          return value;
-        }
-
-        if (attr.rpDestBitcoin && !isNaN(Base.decode_check([0, 5], strippedValue, 'bitcoin'))) {
-          ctrl.rpDestType = "bitcoin";
-          ctrl.$setValidity('rpDest', true);
-
-          if (attr.rpDestModel) {
-            getter = $parse(attr.rpDestModel);
-            getter.assign(scope,value);
-          }
-
-          return value;
-        }
-
-        if (attr.rpDestEmail && emailRegex.test(strippedValue)) {
-          ctrl.rpDestType = "email";
-          ctrl.$setValidity('rpDest', true);
-
-          if (attr.rpDestModel) {
-            getter = $parse(attr.rpDestModel);
-            getter.assign(scope,value);
           }
 
           return value;

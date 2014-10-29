@@ -17,9 +17,9 @@ SecurityTab.prototype.generateHtml = function ()
 };
 
 SecurityTab.prototype.angular = function (module) {
-  module.controller('SecurityCtrl', ['$scope', 'rpId', 'rpOldBlob', 'rpTracker',
+  module.controller('SecurityCtrl', ['$scope', 'rpId',
                                      'rpKeychain', '$timeout', 'rpAuthFlow', 'rpPopup',
-                                     function ($scope, $id, $blob, $rpTracker,
+                                     function ($scope, $id,
                                                keychain, $timeout, authflow, popup)
   {
     if (!$id.loginStatus) return $id.goId();

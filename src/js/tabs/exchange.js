@@ -23,8 +23,8 @@ ExchangeTab.prototype.generateHtml = function ()
 ExchangeTab.prototype.angular = function (module)
 {
   module.controller('ExchangeCtrl', ['$scope', '$timeout', '$routeParams',
-    'rpId', 'rpNetwork', 'rpTracker', 'rpKeychain', '$rootScope',
-    function ($scope, $timeout, $routeParams, $id, $network, $rpTracker, keychain, $rootScope)
+    'rpId', 'rpNetwork', 'rpKeychain', '$rootScope',
+    function ($scope, $timeout, $routeParams, $id, $network, keychain, $rootScope)
     {
       if (!$id.loginStatus) return $id.goId();
 

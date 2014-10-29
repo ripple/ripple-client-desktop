@@ -211,20 +211,6 @@ module.directive('rpPopup', ['rpPopup', '$parse', function(popup, $parse) {
   };
 }]);
 
-// TODO Make it have different styling for different limits
-module.directive('rpInboundBridgeLimit', [function(){
-  return {
-    restrict: 'E',
-    scope: {
-      limit: '='
-    },
-    template: '<span> {{limit}} BTC </span>',
-    compile: function(element, attrs) {
-      element.addClass('test');
-    }
-  };
-}]);
-
 /*
  * Adds download functionality to an element.
  */

@@ -35,30 +35,6 @@ var Options = {
   // Number of transactions each page has in balance tab notifications
   transactions_per_page: 50,
 
-  // Configure bridges
-  bridge: {
-    // Outbound bridges
-    out: {
-      // Bitcoin outbound bridge
-      // bitcoin: 'snapswap.us'
-      'bitcoin': 'btc2ripple.com'
-    }
-  },
-
-  mixpanel: {
-    'token': '',
-    // Don't track events by default
-    'track': false
-  },
-
-  // production
-  // activate_link: 'http://rippletrade.com/#/register/activate',
-  // staging
-  activate_link: 'http://staging.ripple.com/client/#/register/activate',
-
-  b2rAddress: 'rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q',
-  snapswapApi: 'https://snapswap.us/api/v1',
-
   // Number of ledgers ahead of the current ledger index where a tx is valid
   tx_last_ledger: 3,
 
@@ -81,17 +57,9 @@ if (store.enabled) {
     Options.server.servers = settings.server.servers;
   }
 
-  if (settings.bridge) {
-    Options.bridge.out.bitcoin = settings.bridge.out.bitcoin.replace('https://www.bitstamp.net/ripple/bridge/out/bitcoin/', 'snapswap.us');
-  }
-
   if (settings.blobvault) {
     // TODO: test if url defined and valid
     Options.blobvault = settings.blobvault.replace('payward.com', 'ripple.com');
-  }
-
-  if (settings.mixpanel) {
-    Options.mixpanel = settings.mixpanel;
   }
 
   if (settings.advanced_feature_switch) {

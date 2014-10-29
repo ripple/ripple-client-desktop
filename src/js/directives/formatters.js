@@ -10,10 +10,9 @@ var webutil = require('../util/web'),
     Amount = ripple.Amount,
     Currency = ripple.Currency;
 
-var module = angular.module('formatters', ['domainalias']);
+var module = angular.module('formatters', []);
 
-module.directive('rpPrettyIssuer', ['rpDomainAlias',
-                                    function (aliasService) {
+module.directive('rpPrettyIssuer', function () {
   return {
     restrict: 'EA',
     scope: {
@@ -50,7 +49,7 @@ module.directive('rpPrettyIssuer', ['rpDomainAlias',
       };
     }
   };
-}]);
+});
 
 var RP_PRETTY_AMOUNT_DATE = 'rp-pretty-amount-date';
 

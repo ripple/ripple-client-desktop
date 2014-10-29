@@ -21,8 +21,8 @@ ContactsTab.prototype.generateHtml = function ()
 };
 
 ContactsTab.prototype.angular = function (module) {
-  module.controller('ContactsCtrl', ['$scope', 'rpId', 'rpTracker',
-    function ($scope, $id, $rpTracker)
+  module.controller('ContactsCtrl', ['$scope', 'rpId',
+    function ($scope, $id)
   {
     if (!$id.loginStatus) return $id.goId();
 

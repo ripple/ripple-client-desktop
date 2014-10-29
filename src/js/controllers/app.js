@@ -13,11 +13,9 @@ var util = require('util'),
 var module = angular.module('app', []);
 
 module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
-                              'rpKeychain', 'rpTxQueue', 'rpAppManager', 'rpTracker',
-                              '$location', '$timeout',
+                              'rpKeychain', '$location', '$timeout',
                               function ($scope, $compile, $id, $net,
-                                        keychain, txQueue, appManager, rpTracker,
-                                        $location, $timeout)
+                                        keychain, $location, $timeout)
 {
   reset();
 
@@ -43,7 +41,6 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
 
   function reset()
   {
-    $scope.apps = [];
     $scope.account = {};
     $scope.lines = {};
     $scope.offers = {};
@@ -128,8 +125,6 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
     remote.request_account_offers(data.account)
       .on('success', handleOffers)
       .on('error', handleOffersError).request();
-
-    loadB2r();
   }
 
   function handleAccountUnload(e, data)
@@ -228,9 +223,6 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
     $scope.account.max_spend = bal.subtract($scope.account.reserve);
 
     $scope.loadState['account'] = true;
-
-    // Transaction queue
-    txQueue.checkQueue();
   }
 
   function handleAccountTx(data)
@@ -274,10 +266,6 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
 
     if (processedTxn && processedTxn.error) {
       var err = processedTxn.error;
-      rpTracker.trackError('JsonRewriter Error', err, {
-        'Transaction Hash': processedTxn.transaction.hash,
-        'Source': is_historic ? 'app controller historic' : 'app controller event'
-      });
       console.error('Error processing transaction '+processedTxn.transaction.hash+'\n',
                     err && 'object' === typeof err && err.stack ? err.stack : err);
 
@@ -337,23 +325,6 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
             $scope.events.unshift(processedTxn);
         }
       }
-
-      // TODO Switch to txmemo field
-      appManager.getAllApps(function(apps){
-        _.each(apps, function(app){
-          var historyProfile;
-          if (historyProfile = app.findProfile('history')) {
-            historyProfile.getTransactions($scope.address, function(err, history){
-              history.forEach(function(tx){
-                tx.app = app;
-                if (processedTxn.hash === tx.hash) {
-                  processedTxn.details = tx;
-                }
-              });
-            });
-          }
-        });
-      });
 
       // Add to history
       $scope.history.unshift(processedTxn);
@@ -484,123 +455,6 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
       var amount = balance.components[counterparty];
       balance.total = balance.total ? balance.total.add(amount) : amount;
     }
-
-    // Try to identify the gateway behind this balance
-    // TODO be more smart doing requests, one app may have multiple currencies
-    appManager.getApp(new_account, function(err, app){
-      if (err) {
-        console.warn(err);
-        return;
-      }
-
-      var gateway = {
-        app: app,
-        inboundBridge: app.getInboundBridge(currency)
-      };
-
-      balance.components[new_account].gateway = gateway;
-
-      // User's gateway account
-      app.findProfile('account').getUser($scope.address, function(err, user){
-        if (err) {
-          console.warn(err);
-          return;
-        }
-
-        gateway.user = user;
-
-        // Get inbound bridge instructions
-        gateway.inboundBridge.getInstructions($scope.address,function(err, instructions){
-          if (err) {
-            console.warn(err);
-            return;
-          }
-
-          // TODO ...
-          // if (!user.verified && gateway.inboundBridge.currencies[0].limit && balance) {
-          //   gateway.inboundBridge.limit = gateway.inboundBridge.currencies[0].limit - balance.components[new_account].to_human();
-          // }
-
-          gateway.inboundBridge.limit = $scope.B2R.currencies[0].limit;
-
-          gateway.inboundBridge.instructions = instructions;
-        });
-      });
-    });
-  }
-
-  /**
-   * Integrations
-   */
-  function loadB2r() {
-    $scope.loadState.B2RApp = false;
-    $scope.loadState.B2RInstructions = false;
-
-    // B2R
-    if ('web' === $scope.client) {
-      appManager.loadApp(Options.b2rAddress, function(err, app){
-        if (err) {
-          console.warn('Error loading app', err.message);
-          return;
-        }
-
-        $scope.B2RApp = app;
-
-        $scope.B2R = app.getInboundBridge('BTC');
-
-        appManager.save(app);
-
-        app.refresh = function() {
-          app.findProfile('account').getUser($scope.address, function(err, user){
-            $scope.loadState.B2RApp = true;
-
-            if (err) {
-              console.log('Error', err);
-              return;
-            }
-
-            $scope.B2R.active = user;
-
-            // TODO ...
-            // if (!user.verified && $scope.B2R.currencies[0].limit && $scope.balances['BTC']) {
-            //   $scope.B2R.limit = $scope.B2R.currencies[0].limit - $scope.balances['BTC'].components['rhxULAn1xW9T4V2u67FX9pQjSz4Tay2zjZ'].to_human();
-            // } else {
-            $scope.B2R.limit = $scope.B2R.currencies[0].limit;
-            // }
-
-            // Do the necessary trust
-            var trust = _.findWhere($scope.B2R.currencies, {currency: 'BTC'});
-            $scope.B2R.trust(trust.currency,trust.issuer);
-
-            // Get pending transactions
-            $scope.B2R.getPending($scope.address, function(err, pending){
-              // TODO support multiple pending transactions
-              $scope.pending = pending[0];
-            });
-
-            // Get deposit instructions
-            $scope.B2R.getInstructions($scope.address,function(err, instructions){
-              if (err) {
-                return;
-              }
-
-              $scope.B2R.instructions = instructions;
-              $scope.loadState.B2RInstructions = true;
-            });
-          });
-        };
-
-        var watcher = $scope.$watch('address', function(address){
-          if (!address) return;
-
-          app.refresh();
-          watcher();
-        });
-
-        // Required fields
-        $scope.B2RSignupFields = app.findProfile('account').getFields();
-      });
-    }
   }
 
   $scope.currencies_all = require('../data/currencies');
@@ -710,7 +564,6 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
   $net.listenId($id);
   $net.init();
   $id.init();
-  appManager.init();
 
   $scope.logout = function () {
     $id.logout();

@@ -20,10 +20,10 @@ LoginTab.prototype.generateHtml = function ()
 LoginTab.prototype.angular = function (module) {
   module.controller('LoginCtrl', ['$scope', '$element', '$routeParams',
                                   '$location', 'rpId', '$rootScope',
-                                  'rpPopup', '$timeout', 'rpTracker', 'rpFileDialog',
+                                  'rpPopup', '$timeout', 'rpFileDialog',
                                   function ($scope, $element, $routeParams,
                                             $location, $id, $rootScope,
-                                            popup, $timeout, $rpTracker, filedialog)
+                                            popup, $timeout, filedialog)
   {
     if ($id.loginStatus) {
       $location.path('/balance');
@@ -114,17 +114,8 @@ LoginTab.prototype.angular = function (module) {
               $scope.backendMessages.push({'backend': "ID", 'message': err.message});
             }
 
-            $rpTracker.track('Login', {
-              'Status': 'error',
-              'Message': err.message
-            });
-
             return;
-          }
-
-          $rpTracker.track('Login', {
-            'Status': 'success'
-          });
+          };
 
           $scope.status = '';
           if ($routeParams.tab) {

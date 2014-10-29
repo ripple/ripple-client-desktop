@@ -16,7 +16,7 @@ util.inherits(SendTab, Tab);
 SendTab.prototype.tabName = 'send';
 SendTab.prototype.mainMenu = 'send';
 
-SendTab.prototype.angularDeps = Tab.prototype.angularDeps.concat(['federation', 'keychain']);
+SendTab.prototype.angularDeps = Tab.prototype.angularDeps.concat(['keychain']);
 
 SendTab.prototype.generateHtml = function ()
 {
@@ -26,11 +26,9 @@ SendTab.prototype.generateHtml = function ()
 SendTab.prototype.angular = function (module)
 {
   module.controller('SendCtrl', ['$scope', '$timeout', '$routeParams', 'rpId',
-                                 'rpNetwork', 'rpFederation', 'rpTracker',
-                                 'rpKeychain',
+                                 'rpNetwork', 'rpKeychain',
                                  function ($scope, $timeout, $routeParams, $id,
-                                           $network, $federation, $rpTracker,
-                                           keychain)
+                                           $network, keychain)
   {
     if (!$id.loginStatus) return $id.goId();
 
@@ -104,8 +102,6 @@ SendTab.prototype.angular = function (module)
     $scope.reset_destination_deps = function() {
       var send = $scope.send;
       send.self = false;
-      send.quote_url = false;
-      send.federation = false;
       send.fund_status = "none";
       send.extra_fields = [];
 
@@ -129,8 +125,7 @@ SendTab.prototype.angular = function (module)
           || send.dt
           || (send.recipient_info &&
           'object' === typeof send.recipient_info &&
-          send.recipient_info.dest_tag_required))
-          && !send.federation;
+          send.recipient_info.dest_tag_required));
     };
 
     $scope.update_destination = function () {
@@ -139,14 +134,6 @@ SendTab.prototype.angular = function (module)
 
       if (recipient === send.last_recipient) return;
 
-      // Trying to send to a Bitcoin address
-      if (!isNaN(Base.decode_check([0, 5], recipient, 'bitcoin'))) {
-        if (Options.bridge.out.bitcoin) { // And there is a default bridge
-          recipient += '@' + Options.bridge.out.bitcoin
-          send.recipient_address = recipient
-        }
-      }
-
       send.last_recipient = recipient;
 
       $scope.reset_destination_deps();
@@ -154,9 +141,6 @@ SendTab.prototype.angular = function (module)
       // Trying to send XRP to self.
       // This is used to disable 'Send XRP' button
       send.self = recipient === $scope.address;
-
-      // Trying to send to an email/federation address
-      send.federation = ("string" === typeof recipient) && ~recipient.indexOf('@');
 
       // Check destination tag visibility
       $scope.check_dt_visibility();
@@ -173,59 +157,7 @@ SendTab.prototype.angular = function (module)
       if ($scope.sendForm && $scope.sendForm.send_destination)
         $scope.sendForm.send_destination.$setValidity("federation", true);
 
-      // If there was a previous federation request, we need to clean it up here.
-      if (send.federation_record) {
-        send.federation_record = null;
-        send.dt = null;
-      }
-
-      if (send.federation) {
-        send.path_status = "fed-check";
-        $federation.check_email(recipient)
-          .then(function (result) {
-            // Check if this request is still current, exit if not
-            var now_recipient = send.recipient_address;
-            if (recipient !== now_recipient) return;
-
-            send.federation_record = result;
-
-            if (result.extra_fields) {
-              send.extra_fields = result.extra_fields;
-            }
-
-            send.dt = ("number" === typeof result.dt) ? result.dt : undefined;
-
-            if (result.destination_address) {
-              // Federation record specifies destination
-              send.recipient_name = recipient;
-              send.recipient_address = result.destination_address;
-
-              $scope.check_destination();
-            } else if (result.quote_url) {
-              // Federation destination requires us to request a quote
-              send.quote_url = result.quote_url;
-              send.quote_destination = result.destination;
-              send.path_status = "waiting";
-              $scope.update_currency_constraints();
-            } else {
-              // Invalid federation result
-              send.path_status = "waiting";
-              $scope.sendForm.send_destination.$setValidity("federation", false);
-              // XXX Show specific error message
-            }
-          }, function () {
-            // Check if this request is still current, exit if not
-            var now_recipient = send.recipient_actual || send.recipient_address;
-            if (recipient !== now_recipient) return;
-
-            send.path_status = "waiting";
-            $scope.sendForm.send_destination.$setValidity("federation", false);
-          })
-        ;
-      }
-      else {
-        $scope.check_destination();
-      }
+      $scope.check_destination();
     };
 
     // Check destination for XRP sufficiency and flags
@@ -289,7 +221,6 @@ SendTab.prototype.angular = function (module)
      * Update any constraints on what currencies the user can select.
      *
      * In many modes, the user is restricted in terms of what they can send.
-     * For example, when sending to a Bitcoin address, they can only send BTC.
      *
      * This function checks those conditions and updates the UI.
      */
@@ -301,35 +232,6 @@ SendTab.prototype.angular = function (module)
       send.currency_force = false;
 
       send.currency_choices_constraints = {};
-
-      // Federation response can specific a fixed amount
-      if (send.federation_record &&
-          "undefined" !== typeof send.federation_record.amount) {
-        send.force_amount = Amount.from_json(send.federation_record.amount);
-        send.amount = send.force_amount.to_text();
-        send.currency_choices_constraints.federation = [send.force_amount.currency().to_json()];
-
-      // Apply federation currency restrictions
-      } else if (send.federation_record &&
-          $.isArray(send.federation_record.currencies) &&
-          send.federation_record.currencies.length >= 1 &&
-          "object" === typeof send.federation_record.currencies[0] &&
-          "string" === typeof send.federation_record.currencies[0].currency) {
-        // XXX Do some validation on this
-        send.currency_choices_constraints.federation = [];
-        $.each(send.federation_record.currencies, function () {
-          send.currency_choices_constraints.federation.push(this.currency);
-        });
-      }
-
-      // If this a bridge where we need a quote, we need to enter an
-      // amount first, before we can even find out who the recipient is. So
-      // if there is a quote_url, we want to bypass the recipient-based
-      // constraints.
-      if (send.quote_url) {
-        $scope.update_currency_choices();
-        return;
-      }
 
       // If we don't have information about the recipient Ripple account yet,
       // we'll just return. We'll get back here once we have that information.
@@ -426,9 +328,8 @@ SendTab.prototype.angular = function (module)
 
       $scope.reset_currency_deps();
 
-      // We should have a valid recipient unless it's a quoting bridge, in
-      // which case we should continue so we can request a quote.
-      if (!ripple.UInt160.is_valid(recipient) && !send.quote_url) {
+      // We should have a valid recipient
+      if (!ripple.UInt160.is_valid(recipient)) {
         return;
       }
 
@@ -445,7 +346,6 @@ SendTab.prototype.angular = function (module)
     $scope.reset_amount_deps = function () {
       var send = $scope.send;
       send.sender_insufficient_xrp = false;
-      send.quote = false;
 
       $scope.reset_paths();
     };
@@ -494,131 +394,42 @@ SendTab.prototype.angular = function (module)
       // in calculating paths.
       if ($scope.sendForm.$invalid) return;
 
-      if (send.quote_url) {
-        if (!send.amount_feedback.is_valid())
-          return;
-
-        // Dummy issuer
-        send.amount_feedback.set_issuer(1);
-        pathUpdateTimeout = $timeout($scope.update_quote, 500);
-      } else {
-        if (!ripple.UInt160.is_valid(recipient) || !ripple.Amount.is_valid(amount)) {
-          // XXX Error?
-          return;
-        }
-
-        // Create Amount object
-        if (!send.amount_feedback.is_native()) {
-          send.amount_feedback.set_issuer(recipient);
-        }
-
-        // If we don't have recipient info yet, then don't search for paths
-        if (!send.recipient_info) {
-          return;
-        }
-
-        // Cannot make XRP payment if the sender does not have enough XRP
-        send.sender_insufficient_xrp = send.amount_feedback.is_native()
-          && $scope.account.max_spend
-          && $scope.account.max_spend.to_number() > 1
-          && $scope.account.max_spend.compareTo(send.amount_feedback) < 0;
-
-        var total = send.amount_feedback.add(send.recipient_info.Balance);
-        var reserve_base = $scope.account.reserve_base;
-        if (total.compareTo(reserve_base) < 0) {
-          send.fund_status = "insufficient-xrp";
-          send.xrp_deficiency = reserve_base.subtract(send.recipient_info.Balance);
-        }
-
-        // If the destination doesn't exist, then don't search for paths.
-        if (!send.recipient_info.exists) {
-          send.path_status = 'none';
-          return;
-        }
-
-        send.path_status = 'pending';
-        pathUpdateTimeout = $timeout($scope.update_paths, 500);
+      if (!ripple.UInt160.is_valid(recipient) || !ripple.Amount.is_valid(amount)) {
+        // XXX Error?
+        return;
       }
-    };
 
-    /**
-     * Query the bridge for a quote.
-     *
-     * This will set send.amount_actual and send.recipient_actual based on the
-     * quote that the bridge returns.
-     */
-    $scope.update_quote = function () {
-      var send = $scope.send;
-      var recipient = send.recipient_actual || send.recipient_address;
-
-      $scope.reset_paths();
-
-      try {
-        // Get a quote
-        send.path_status = "bridge-quote";
-
-        var data = {
-          type: "quote",
-          amount: send.amount_feedback.to_text()+"/"+send.amount_feedback.currency().to_json(),
-          destination: send.quote_destination,
-          address: $scope.address
-        };
-
-        if ($.isArray(send.extra_fields)) {
-          $.each(send.extra_fields, function () {
-            data[this.name] = this.value;
-          });
-        }
-
-        $.ajax({
-          url: send.quote_url,
-          dataType: 'json',
-          data: data,
-          error: function () {
-            setImmediate(function () {
-              $scope.$apply(function () {
-                $scope.send.path_status = "error-quote";
-              });
-            });
-          },
-          success: function (data) {
-            $scope.$apply(function () {
-              // Check if this request is still current, exit if not
-              var now_recipient = send.recipient_actual || send.recipient_address;
-              if (recipient !== now_recipient) return;
-
-              var now_amount = send.amount_feedback;
-              if (!now_amount.equals(send.amount_feedback)) return;
-
-              if (!data || !data.quote ||
-                  !(data.result === "success" || data.status === "success") ||
-                  !Array.isArray(data.quote.send) ||
-                  !data.quote.send.length || !data.quote.address) {
-                $scope.send.path_status = "error-quote";
-                $scope.send.quote_error = "";
-                if (data && data.result === "error" &&
-                    "string" === typeof data.error_message) {
-                  $scope.send.quote_error = data.error_message;
-                }
-                return;
-              }
-
-              var amount = Amount.from_json(data.quote.send[0]);
-
-              send.quote = data.quote;
-
-              // We have a quote, now calculate a path
-              send.recipient_actual = data.quote.address;
-              send.amount_actual = amount;
-
-              $scope.update_paths();
-            });
-          }
-        });
-      } catch (e) {
-        console.error(e.stack ? e.stack : e);
-        $scope.send.path_status = "error-quote";
+      // Create Amount object
+      if (!send.amount_feedback.is_native()) {
+        send.amount_feedback.set_issuer(recipient);
       }
+
+      // If we don't have recipient info yet, then don't search for paths
+      if (!send.recipient_info) {
+        return;
+      }
+
+      // Cannot make XRP payment if the sender does not have enough XRP
+      send.sender_insufficient_xrp = send.amount_feedback.is_native()
+        && $scope.account.max_spend
+        && $scope.account.max_spend.to_number() > 1
+        && $scope.account.max_spend.compareTo(send.amount_feedback) < 0;
+
+      var total = send.amount_feedback.add(send.recipient_info.Balance);
+      var reserve_base = $scope.account.reserve_base;
+      if (total.compareTo(reserve_base) < 0) {
+        send.fund_status = "insufficient-xrp";
+        send.xrp_deficiency = reserve_base.subtract(send.recipient_info.Balance);
+      }
+
+      // If the destination doesn't exist, then don't search for paths.
+      if (!send.recipient_info.exists) {
+        send.path_status = 'none';
+        return;
+      }
+
+      send.path_status = 'pending';
+      pathUpdateTimeout = $timeout($scope.update_paths, 500);
     };
 
     $scope.reset_paths = function () {
@@ -726,20 +537,6 @@ SendTab.prototype.angular = function (module)
               return true;
             });
           }
-
-          if (!tracked) {
-            $rpTracker.track('Send pathfind', {
-              'Status': 'success',
-              'Currency': $scope.send.currency_code,
-              'Address Type': $scope.send.federation ? 'federation' : 'ripple',
-              'Destination Tag': !!$scope.send.dt,
-              'Paths': upd.alternatives.length,
-              'Time': (+new Date() - +pathFindTime) / 1000,
-              'Address': $scope.userBlob.data.account_id
-            });
-
-            tracked = true;
-          }
         });
       });
 
@@ -749,15 +546,6 @@ SendTab.prototype.angular = function (module)
             send.path_status = "error";
           });
         });
-
-        $rpTracker.track('Send pathfind', {
-          'Status': 'error',
-          'Message': res.engine_result,
-          'Currency': $scope.send.currency_code,
-          'Address Type': $scope.send.federation ? 'federation' : 'ripple',
-          'Destination Tag': !!$scope.send.dt,
-          'Address': $scope.userBlob.data.account_id
-        })
       });
 
       var pathFindTime = new Date();
@@ -849,13 +637,6 @@ SendTab.prototype.angular = function (module)
       if (keychain.isUnlocked($id.account)) {
         $scope.send.secret = keychain.getUnlockedSecret($id.account);
       }
-
-      $rpTracker.track('Send confirmation page', {
-        'Currency': $scope.send.currency_code,
-        'Address Type': $scope.send.federation ? 'federation' : 'ripple',
-        'Destination Tag': !!$scope.send.dt,
-        'Address': $scope.userBlob.data.account_id
-      })
     };
 
     /**
@@ -950,31 +731,17 @@ SendTab.prototype.angular = function (module)
         return;
       }
 
-      if ($scope.send.quote) {
-        if ("number" === typeof $scope.send.quote.destination_tag) {
-          tx.destination_tag($scope.send.quote.destination_tag);
-        }
-
-        if ("string" === typeof $scope.send.quote.invoice_id) {
-          tx.tx_json.InvoiceID = $scope.send.quote.invoice_id.toUpperCase();
-        }
-
-        tx.payment($id.account,
-                   $scope.send.quote.address,
-                   $scope.send.quote.send[0]);
+      // Destination tag
+      var dt;
+      if ($scope.send.dt) {
+        dt = $scope.send.dt;
       } else {
-        // Destination tag
-        var dt;
-        if ($scope.send.dt) {
-          dt = $scope.send.dt;
-        } else {
-          dt = webutil.getDestTagFromAddress($scope.send.recipient);
-        }
-
-        tx.destination_tag(dt ? +dt : undefined); // 'cause +dt is NaN when dt is undefined
-
-        tx.payment($id.account, address, amount.to_json());
+        dt = webutil.getDestTagFromAddress($scope.send.recipient);
       }
+
+      tx.destination_tag(dt ? +dt : undefined); // 'cause +dt is NaN when dt is undefined
+
+      tx.payment($id.account, address, amount.to_json());
 
       if ($scope.send.alt) {
         tx.send_max($scope.send.alt.send_max);
@@ -990,16 +757,6 @@ SendTab.prototype.angular = function (module)
 
       tx.on('success', function (res) {
         $scope.onTransactionSuccess(res, tx);
-
-        $rpTracker.track('Send result', {
-          'Status': 'success',
-          'Currency': $scope.send.currency_code,
-          'Address Type': $scope.send.federation ? 'federation' : 'ripple',
-          'Destination Tag': !!$scope.send.dt,
-          'Time': (+new Date() - +$scope.confirmedTime) / 1000,
-          'Address': $scope.userBlob.data.account_id,
-          'Transaction ID': res.tx_json.hash
-        })
       });
 
       tx.on('proposed', function (res) {
@@ -1008,17 +765,6 @@ SendTab.prototype.angular = function (module)
 
       tx.on('error', function (res) {
         $scope.onTransactionError(res, tx);
-
-        $rpTracker.track('Send result', {
-          'Status': 'error',
-          'Message': res.engine_result,
-          'Currency': $scope.send.currency_code,
-          'Address Type': $scope.send.federation ? 'federation' : 'ripple',
-          'Destination Tag': !!$scope.send.dt,
-          'Time': (+new Date() - +$scope.confirmedTime) / 1000,
-          'Address': $scope.userBlob.account_id,
-          'Transaction ID': res.tx_json.hash
-        });
       });
 
       tx.submit();

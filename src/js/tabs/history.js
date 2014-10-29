@@ -20,8 +20,8 @@ HistoryTab.prototype.generateHtml = function ()
 };
 
 HistoryTab.prototype.angular = function (module) {
-  module.controller('HistoryCtrl', ['$scope', 'rpId', 'rpNetwork', 'rpTracker', 'rpAppManager',
-                                     function ($scope, $id, $network, $rpTracker, appManager)
+  module.controller('HistoryCtrl', ['$scope', 'rpId', 'rpNetwork',
+                                     function ($scope, $id, $network)
   {
     if (!$id.loginStatus) return $id.goId();
 

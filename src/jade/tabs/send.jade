@@ -24,7 +24,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
         rp-combobox="recipient_query"
         l10n-placeholder="Enter a Ripple address or contact"
         ng-model='send.recipient'
-                rp-dest, rp-dest-address, rp-dest-contact, rp-dest-bitcoin
+                rp-dest, rp-dest-address, rp-dest-contact
         rp-dest-email, rp-dest-loading="recipient_loading"
         required
         rp-autofill='$routeParams.to'
@@ -35,9 +35,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
           .error(rp-error-on='required', l10n)
             | Please enter a recipient.
           .error(rp-error-on='rpDest', l10n)
-            | Recipient should be a Ripple address, a contact, or Bitcoin address.
-          .error(rp-error-on='federation', l10n)
-            | This email address is not Ripple-enabled.
+            | Recipient should be a Ripple address, a contact.
     .row.form-group(ng-if="'desktop' === client")
       .col-xs-12.col-sm-6.col-md-5
         label(for='send_destination', l10n) Recipient
@@ -46,7 +44,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
         rp-combobox="recipient_query"
         placeholder='Enter a Ripple address or contact'
         ng-model='send.recipient'
-                rp-dest, rp-dest-address, rp-dest-contact, rp-dest-bitcoin
+                rp-dest, rp-dest-address, rp-dest-contact
         rp-dest-email, rp-dest-loading="recipient_loading"
         required
         rp-autofill='$routeParams.to'
@@ -57,13 +55,11 @@ section.col-xs-12.content(ng-controller='SendCtrl')
           .error(rp-error-on='required', l10n)
             | Please enter a recipient.
           .error(rp-error-on='rpDest', l10n)
-            | Recipient should be a contact or Ripple/Bitcoin address.
-          .error(rp-error-on='federation', l10n)
-            | This email address is not Ripple-enabled.
+            | Recipient should be a contact or Ripple address.
     ul.tagsLinks
       li
         a(href="", ng-click="send.show_dt_field = true"
-        ng-hide="send.show_dt_field || send.bitcoin || send.federation", l10n)
+        ng-hide="send.show_dt_field", l10n)
           | Show destination tag
     .row.form-group(ng-show='send.show_dt_field')
       .col-xs-12.col-sm-8.col-md-6
@@ -175,8 +171,6 @@ section.col-xs-12.content(ng-controller='SendCtrl')
         | Analyzing address
       p.literal(ng-show="send.path_status == 'account-currencies'", rp-spinner="4", l10n)
         | Scanning accepted currencies
-      p.literal(ng-show="send.path_status == 'bridge-quote'", rp-spinner="4", l10n)
-        | Requesting quote
       p.literal(ng-show="send.path_status == 'pending' && send.currency_code != 'XRP'", rp-spinner="4", l10n)
         | Calculating paths
       p.literal(ng-show="send.path_status == 'pending' && send.currency_code == 'XRP'", rp-spinner="4", l10n)
@@ -190,18 +184,15 @@ section.col-xs-12.content(ng-controller='SendCtrl')
         | {{send.recipient}}. Your account has insufficient funds.
       p.literal(ng-show="send.path_status == 'error-no-currency'", l10n)
         | There are no valid currency choices for this destination.
-      p.literal(ng-show="send.path_status == 'error-quote'", l10n)
-        | Error while retrieving quote for outbound payment.
-        span(ng-show="send.quote_error")  The outbound bridge reported: "{{send.quote_error | rpheavynormalize}}"
       p.literal(ng-show="send.path_status == 'error'", l10n) Error while calculating path
 
       //- Alternatives
       .currency_sets(ng-if="send.path_status == 'done'")
         .row.row-padding-small
           .col-xs-12
-            p.literal(ng-show="send.currency_code != 'XRP' || send.bitcoin", l10n)
+            p.literal(ng-show="send.currency_code != 'XRP'", l10n)
               | You can send
-            p.literal(ng-show="send.currency_code == 'XRP' && !send.bitcoin", l10n)
+            p.literal(ng-show="send.currency_code == 'XRP'", l10n)
               | Or you can send
         .row.row-padding-small.alternatives(ng-show="send.alternatives.length")
           .col-xs-12.col-sm-6.col-md-4.col-lg-4(ng-repeat="alt in send.alternatives")
