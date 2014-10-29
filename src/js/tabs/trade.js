@@ -30,10 +30,10 @@ TradeTab.prototype.angular = function(module)
 {
   module.controller('TradeCtrl', ['rpBooks', '$scope', 'rpId', 'rpNetwork',
                                   '$routeParams', '$location', '$filter',
-                                  'rpTracker', 'rpKeychain', '$rootScope',
+                                  'rpKeychain', '$rootScope',
                                   function (books, $scope, id, $network,
                                             $routeParams, $location, $filter,
-                                            $rpTracker, keychain, $rootScope)
+                                            keychain, $rootScope)
   {
     if (!id.loginStatus) return id.goId();
 
@@ -158,12 +158,6 @@ TradeTab.prototype.angular = function(module)
       }
 
       $scope.fatFingerCheck(type);
-
-      // TODO track order type
-      $rpTracker.track('Trade order confirmation page', {
-        'Currency pair': $scope.order.currency_pair,
-        'Address': $scope.userBlob.data.account_id
-      });
     };
 
     /**
@@ -197,10 +191,6 @@ TradeTab.prototype.angular = function(module)
 
       tx.offer_cancel(id.account, seq);
       tx.on('success', function() {
-        $rpTracker.track('Trade order cancellation', {
-          'Status': 'success',
-          'Address': $scope.userBlob.data.account_id
-        });
       });
 
       tx.on('error', function (err) {
@@ -212,12 +202,6 @@ TradeTab.prototype.angular = function(module)
         if (!$scope.$$phase) {
           $scope.$apply();
         }
-
-        $rpTracker.track('Trade order cancellation', {
-          'Status': 'error',
-          'Message': err.engine_result,
-          'Address': $scope.userBlob.data.account_id
-        });
       });
 
       keychain.requestSecret(id.account, id.username, function (err, secret) {
@@ -294,13 +278,6 @@ TradeTab.prototype.angular = function(module)
         if (!$scope.$$phase) {
           $scope.$apply();
         }
-
-        $rpTracker.track('Trade order result', {
-          'Status': 'success',
-          'Currency pair': $scope.order.currency_pair,
-          'Address': $scope.userBlob.data.account_id,
-          'Transaction ID': res.tx_json.hash
-        });
       });
 
       tx.on('error', function (err) {
@@ -310,14 +287,6 @@ TradeTab.prototype.angular = function(module)
         if (!$scope.$$phase) {
           $scope.$apply();
         }
-
-        $rpTracker.track('Trade order result', {
-          'Status': 'error',
-          'Message': err.engine_result,
-          'Currency pair': $scope.order.currency_pair,
-          'Address': $scope.userBlob.data.account_id,
-          'Transaction ID': res.tx_json.hash
-        });
       });
 
       keychain.requestSecret(id.account, id.username, function (err, secret) {

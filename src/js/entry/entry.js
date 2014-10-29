@@ -18,29 +18,15 @@ require('../directives/qr');
 require('../filters/filters');
 require('../services/globalwrappers');
 require('../services/id');
-require('../services/tracker');
-require('../services/blobLocal');
-require('../services/oldblob');
-require('../services/txqueue');
+require('../services/blob');
 require('../services/authflow');
-require('../services/authinfo');
 require('../services/keychain');
 require('../services/network');
 require('../services/books');
 require('../services/transactions');
 require('../services/ledger');
 require('../services/popup');
-require('../services/rippletxt');
-require('../services/federation');
-require('../services/domainalias');
 require('../services/filedialog');
-
-require('../services/integration/appManager');
-require('../services/integration/profileManager');
-require('../services/integration/account');
-require('../services/integration/history');
-require('../services/integration/trust');
-require('../services/integration/inboundBridge');
 
 // Angular module dependencies
 var appDependencies = [
@@ -51,8 +37,6 @@ var appDependencies = [
   'navbar',
   // Services
   'id',
-  'tracker',
-  'appManager',
   'filedialog',
   // Directives
   'charts',
@@ -84,12 +68,7 @@ var tabdefs = [
   require('../tabs/security'),
   require('../tabs/tx'),
   require('../tabs/xrp'),
-  require('../tabs/withdraw'),
-  require('../tabs/eula'),
-
-  // Hidden tabs
-  require('../tabs/apps'),
-  require('../tabs/su')
+  require('../tabs/eula')
 ];
 
 // Prepare tab modules

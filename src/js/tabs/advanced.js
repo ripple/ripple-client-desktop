@@ -27,7 +27,6 @@ AdvancedTab.prototype.angular = function(module)
     $scope.options = Options;
     $scope.optionsBackup = $.extend(true, {}, Options);
     $scope.passwordProtection = !$scope.userBlob.data.persistUnlock;
-    $scope.editBridge = false;
     $scope.editBlob = false;
     $scope.editAcctOptions = false;
 
@@ -40,18 +39,6 @@ AdvancedTab.prototype.angular = function(module)
       }
 
       $scope.editBlob = false;
-
-      // Reload
-      location.reload();
-    };
-
-    $scope.saveBridge = function () {
-      // Save in local storage
-      if (!store.disabled) {
-        store.set('ripple_settings', JSON.stringify($scope.options));
-      }
-
-      $scope.editBridge = false;
 
       // Reload
       location.reload();
@@ -77,22 +64,9 @@ AdvancedTab.prototype.angular = function(module)
       }
     }
 
-    $scope.deleteBridge = function () {
-      $scope.options.bridge.out.bitcoin = "";
-      // Save in local storage
-      if (!store.disabled) {
-        store.set('ripple_settings', JSON.stringify($scope.options));
-      }
-    }
-
     $scope.cancelEditBlob = function () {
       $scope.editBlob = false;
       $scope.options.blobvault = $scope.optionsBackup.blobvault;
-    }
-
-    $scope.cancelEditBridge = function () {
-      $scope.editBridge = false;
-      $scope.options.bridge.out.bitcoin = $scope.optionsBackup.bridge.out.bitcoin;
     }
 
     $scope.cancelEditAcctOptions = function () {

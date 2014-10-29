@@ -8,12 +8,12 @@ var util = require('util'),
     Base58Utils = require('../util/base58'),
     RippleAddress = require('../util/types').RippleAddress;
 
-var module = angular.module('id', ['authflow', 'blob', 'oldblob']);
+var module = angular.module('id', ['authflow', 'blob']);
 
 module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$timeout',
-                        'rpAuthFlow', 'rpBlob', 'rpOldBlob',
+                        'rpAuthFlow', 'rpBlob',
                         function($scope, $location, $route, $routeParams, $timeout,
-                                 $authflow, $blob, $oldblob)
+                                 $authflow, $blob)
 {
   /**
    * Identity manager
@@ -73,26 +73,6 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
 
     // Remove hyphens
     username = username.replace(/-/g, '');
-
-    // All lowercase
-    username = username.toLowerCase();
-
-    return username;
-  };
-
-  /**
-   * Reduce username to the oldBlob standardized form.
-   *
-   * This version is used in the login system and it's the version sent to
-   * servers.
-   */
-  Id.normalizeUsernameForOldBlob = function (username) {
-    // The old blob does not remove hyphens
-
-    username = ""+username;
-
-    // Strips whitespace at beginning and end.
-    username = username.trim();
 
     // All lowercase
     username = username.toLowerCase();
@@ -274,18 +254,6 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
         self.setAccount(blob.data.account_id);
         self.loginStatus = true;
         $scope.$broadcast('$blobUpdate');
-      }
-
-      // Remove old blob
-      if(Options.blobvault) {
-        $oldblob.remove(['vault', 'local'], opts.oldUsername, opts.oldPassword, function (err, data) {
-          if (err) {
-            console.log("Can't delete the old blobvault:", err);
-            return;
-          }
-
-          console.log('Old blob has been removed.');
-        });
       }
 
       store.set('ripple_known', true);
