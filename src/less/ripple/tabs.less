@@ -1,5 +1,5 @@
 // TODO all _ or all -
-.t-register, .t-login, .t-recover, .t-migrate {
+.t-register, .t-login {
   header nav {
     display: none;
   }
@@ -31,17 +31,7 @@
   }
 }
 
-#t-register, #t-login, #t-recover {
-
-  a.recover {
-    text-align: center;
-    display: block;
-    font-size: 12px;
-  }
-
-  a.recover-btn {
-    text-decoration: none;
-  }
+#t-register, #t-login {
 
   .auth-form-container {
     font-family: OpenSansRegular;
@@ -63,10 +53,6 @@
       label {
         font-weight: 400;
         margin-bottom: 3px;
-      }
-      .recover-description {
-        margin-bottom: 15px;
-        font-size: 13px;
       }
       
     }
@@ -201,9 +187,6 @@
     text-align: center;
     font-family: OpenSansRegular;
   }
-  &.recover-form-container {
-    padding-top: 50px;
-  }
 
   .strength {
     margin: 38px 0 0 0;
@@ -243,29 +226,12 @@
     .submit-btn-container {
       width: 70%;
     }
-    .submit-btn-container-recovery {
-      text-align: center;
-      .recover-btn {
-        display: inline-block;
-        width: 70%;
-      }
-      .btn {
-        min-height: 60px;
-      }
-    }
+
     @media (max-width: @screen-xs-max) {
       .submit-btn-container {
         width: 100%;
         button {
           font-size: 14px;
-        }
-      }
-      .submit-btn-container-recovery {
-        text-align: center;
-        .recover-btn {
-          display: inline-block;
-          width: 100%;
-
         }
       }
     }
@@ -283,10 +249,6 @@
     .auth-attention {
       margin-top: 90px;
       text-align: center;
-      
-      .recovery {
-        margin-top: 10px;
-      } 
     }     
   }
   
