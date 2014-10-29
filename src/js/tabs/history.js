@@ -462,12 +462,6 @@ HistoryTab.prototype.angular = function (module) {
       return (caps ? first.toUpperCase() : first.toLowerCase()) + str.slice(1);
     };
 
-    var rippleName = function(address) {
-      var name;
-      if (address !== '') name = webUtil.isContact($scope.userBlob.data.contacts, address);
-      return name ? name : address;
-    };
-
     var issuerToString = function(issuer) {
       var iss = issuer.to_json();
       return typeof iss === 'number' && isNaN(iss) ? '' : iss;
@@ -512,13 +506,13 @@ HistoryTab.prototype.angular = function (module) {
         if (buy !== null && buy instanceof Amount) {
           keyVal['SentAmount'] = formatAmount(buy);
           keyVal['SentCcy'] = buy.currency().get_iso();
-          keyVal['SentIssuer'] = rippleName(issuerToString(buy.issuer()));
+          keyVal['SentIssuer'] = issuerToString(buy.issuer());
         }
 
         if (sell !== null && sell instanceof Amount) {
           keyVal['RecvAmount'] = formatAmount(sell);
           keyVal['RecvCcy'] = sell.currency().get_iso();
-          keyVal['RecvIssuer'] = rippleName(issuerToString(sell.issuer()));
+          keyVal['RecvIssuer'] = issuerToString(sell.issuer());
         }
       }
 
@@ -564,7 +558,7 @@ HistoryTab.prototype.angular = function (module) {
           else continue;  // unrecognised trust type
 
           lineTrust['TransType'] = trust + 'trust line';
-          lineTrust['TrustAddr'] = rippleName(transaction.counterparty);
+          lineTrust['TrustAddr'] = transaction.counterparty;
 
           lineTrust['SentAmount'] = formatAmount(transaction.amount);
           lineTrust['SentCcy'] = transaction.currency; //transaction.amount.currency().get_iso();
@@ -584,25 +578,25 @@ HistoryTab.prototype.angular = function (module) {
 
           if (sent) {
             // If sent, counterparty is Address To
-            linePayment['ToAddr'] = rippleName(transaction.counterparty);
-            linePayment['FromAddr'] = rippleName($id.account);
+            linePayment['ToAddr'] = transaction.counterparty;
+            linePayment['FromAddr'] = $id.account;
           }
           else {
             // If received, counterparty is Address From
-            linePayment['FromAddr'] = rippleName(transaction.counterparty);
-            linePayment['ToAddr'] = rippleName($id.account);
+            linePayment['FromAddr'] = transaction.counterparty;
+            linePayment['ToAddr'] = $id.account;
           }
 
           if (exists(transaction.amountSent)) {
             amtSent = transaction.amountSent;
             linePayment['SentAmount'] = exists(amtSent.value) ? amtSent.value : formatAmount(Amount.from_json(amtSent));
             linePayment['SentCcy'] = exists(amtSent.currency) ? amtSent.currency : 'XRP';
-            if (exists(transaction.sendMax)) linePayment['SentIssuer'] = rippleName(transaction.sendMax.issuer);
+            if (exists(transaction.sendMax)) linePayment['SentIssuer'] = transaction.sendMax.issuer;
           }
 
           linePayment['RecvAmount'] = formatAmount(transaction.amount);
           linePayment['RecvCcy'] = transaction.currency;
-          linePayment['RecvIssuer'] = rippleName(issuerToString(transaction.amount.issuer()));
+          linePayment['RecvIssuer'] = issuerToString(transaction.amount.issuer());
 
           line = $.extend({}, lineTemplate, linePayment);
           addLineToCsv(line);

@@ -61,7 +61,7 @@ section.col-xs-12.content(ng-controller="SecurityCtrl")
                     p(ng-show="strength=='weak'")
                       span(l10n) Your password is weak. It does not contain numbers and symbols or it is too short.
                     p(ng-show="strength=='match'")
-                      span(l10n) Your Ripple name and password cannot match. Please create a new password.
+                      span(l10n) Your Ripple address and password cannot match. Please create a new password.
                   .form-group(ng-class="{'field-error': changeForm.change_password1.$error.rpSameInSet && changeForm.change_password2.$dirty}")
                     label(for='change_password2', l10n) Confirm password
                     input.form-control(
