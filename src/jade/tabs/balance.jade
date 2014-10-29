@@ -12,7 +12,6 @@ section.col-xs-12.content(ng-controller="BalanceCtrl")
     include banner/unfunded
 
   group(ng-show="connected && loadState.account")
-    include banner/announcement
     .row
       .col-xs-12
         .currency-overview(ng-show="account.Balance")

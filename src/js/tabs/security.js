@@ -31,9 +31,6 @@ SecurityTab.prototype.angular = function (module) {
 
     $scope.isUnlocked = true; //hiding the dialog for now
     //$scope.isUnlocked = keychain.isUnlocked($id.account);
-    $scope.loading2FA      = false;
-    $scope.loaded2FA       = false;
-    $scope.errorLoading2FA = false;
     $scope.requirePasswordChanged = false;
    
     $scope.validation_pattern_phone = /^[0-9]*$/;
@@ -51,25 +48,6 @@ SecurityTab.prototype.angular = function (module) {
       
 
       $scope.requirePassword = !$scope.userBlob.data.persistUnlock;
-      
-      if (!$scope.loaded2FA && "function" === typeof $scope.userBlob.get2FA) {
-        $scope.loading2FA      = true;
-        $scope.errorLoading2FA = false;
-        $scope.userBlob.get2FA(function(err, resp) {
-          $scope.$apply(function(){
-            $scope.loading2FA = false;
-            if (err) {
-              $scope.errorLoading2FA = true;
-              return;
-            }
-  
-            $scope.loaded2FA          = true;
-            $scope.enabled2FA         = resp.enabled;
-            $scope.currentPhone       = resp.phone;
-            $scope.currentCountryCode = resp.country_code;
-          });
-        });
-      }   
     }
 
     $scope.restoreSession = function() {
@@ -168,68 +146,10 @@ SecurityTab.prototype.angular = function (module) {
       );
     };
 
-    $scope.open2FA = function() {  
-      $scope.mode2FA        = '';
-      $scope.loading        = false;
-      $scope.error2FA       = false;
-      $scope.disableSuccess = false;
-      $scope.phoneNumber    = $scope.currentPhone;
-      $scope.countryCode    = $scope.currentCountryCode;
-      window.Authy.UI.instance(true, $scope.countryCode); //enables the authy dropdown 
-    };
-
-    $scope.savePhone = function() {
-      $scope.mode2FA     = 'savePhone';
-      $scope.error2FA    = false;
-      $scope.savingPhone = true;
-
-      keychain.requestSecret($id.account, $id.username, function(err, secret) {
-        if (err) {
-          $scope.mode2FA = '';
-          return;
-        }
-        
-        var options = {
-          masterkey    : secret,
-          phone        : $scope.phoneNumber,
-          country_code : $scope.countryCode
-        };
-
-        $scope.userBlob.set2FA(options, function(err, resp) {
-          $scope.$apply(function(){
-            $scope.mode2FA = '';
-            if (err) {
-              console.log(err, resp);
-              $scope.error2FA    = true;
-              $scope.savingPhone = false;
-              popup.close();
-            } else {
-
-              $scope.currentPhone       = options.phone;
-              $scope.currentCountryCode = options.country_code;
-
-              //request verification token
-              requestToken(false, function(err, resp) {
-                //TODO: handle error
-                
-                $scope.savingPhone = false;
-                $scope.mode2FA     = 'verifyPhone';
-                popup.close();
-              });
-            }
-          });
-        });
-      });
-    };
-
     function requestToken (force, callback) {
 
       authflow.requestToken($scope.userBlob.url, $scope.userBlob.id, force, function(tokenError, tokenResp) {
-        if (tokenError) {
-          $scope.error2FA = true;
-        } else {
-          $scope.via = tokenResp.via;
-        }
+        $scope.via = tokenResp.via;
 
         callback(tokenError, tokenResp);
       });
@@ -243,99 +163,7 @@ SecurityTab.prototype.angular = function (module) {
         $scope.isRequesting = false;
         //TODO: present message of resend success or failure
       });
-    }
-
-
-    $scope.enable2FA = function() {
-
-      $scope.isVerifying  = true;
-      $scope.invalidToken = false;
-
-      var options = {
-        url         : $scope.userBlob.url,
-        id          : $scope.userBlob.id,
-        token       : $scope.verifyToken,
-        remember_me : false
-      };
-
-      authflow.verifyToken(options, function(err, resp){
-
-        if (err) {
-          $scope.invalidToken = true;
-          $scope.isVerifying  = false;
-          return;
-        }
-
-        keychain.requestSecret($id.account, $id.username, function(err, secret) {
-
-          if (err) {
-            $scope.mode2FA     = '';
-            $scope.isVerifying = false;
-            return;
-          }
-
-          var options = {
-            masterkey : secret,
-            enabled   : true
-          };
-
-          $scope.userBlob.set2FA(options, function(err, resp) {
-            $scope.$apply(function() {
-              $scope.isVerifying = false;
-              $scope.mode2FA     = '';
-
-              if (err) {
-                $scope.error2FA = true;
-              } else {
-
-                //remove old device ID so that
-                //next login will require 2FA
-                store.remove('device_id');
-                $scope.enabled2FA    = true;
-                $scope.enableSuccess = true;
-              }
-            });
-          });
-        });
-      });
     };
-
-    $scope.disable2FA = function() {
-      $scope.mode2FA       = 'disable';
-      $scope.error2FA      = false;
-      $scope.enableSuccess = false;
-
-      keychain.requestSecret($id.account, $id.username, function(err, secret) {
-        if (err) {
-          $scope.mode2FA = '';
-          return;
-        }
-
-        var options = {
-          masterkey : secret,
-          enabled   : false
-        };
-
-        $scope.userBlob.set2FA(options, function(err, resp) {
-          $scope.$apply(function(){
-            $scope.mode2FA = '';
-            if (err) {
-              $scope.error2FA   = true;
-            } else {
-              $scope.enabled2FA     = false;
-              $scope.disableSuccess = true;
-            }
-          });
-        });
-      });
-    };
-
-    $scope.cancel2FA = function () {
-      $scope.mode2FA = '';
-      $scope.invalidToken = false;
-      $scope.error2FA     = false;
-    };
-
 
     var reset = function() {
 
