@@ -14,42 +14,6 @@ section.col-xs-12.content(ng-controller="BalanceCtrl")
   group(ng-show="connected && loadState.account")
     .row
       .col-xs-12
-        .currency-overview(ng-show="account.Balance")
-          //- .balancebox.col-xs-4
-          .balancebox.col-xs-12.col-sm-8
-            .lbl(l10n) Total Balance
-              .desc(l10n) Estimated from latest trade price
-            .total.amount(ng-show="exchangeRatesNonempty")
-              span.amount {{ aggregateValueDisplayed }}
-              span.amountDecimal {{  aggregateValueDisplayedDecimal }}
-              select.currency(rp-flat-select, ng-model='selectedValueMetric'
-                ng-change='changeMetric(this)'
-                ng-options='metric.code as metric.text for metric in valueMetrics')
-            p.literal(l10n ng-hide="exchangeRatesNonempty") Loading...
-            .lbl(ng-show="hasNegative")
-              .desc(l10n) (excluding negative balances)
-          //- .trendbox.col-xs-4
-          //-   .lbl(l10n) Trend
-          //-     .desc(l10n) Compared to the past estimated total balance
-          //-   .trend
-          //-     span(ng-show="trendValueAsPercentage !== undefined")
-          //-       span.positive(ng-show="trendValueAsPercentage > 0") +
-          //-         span.amount {{ (trendValueAsPercentage * 100).toFixed(2) }}%
-          //-       span.equal(ng-show="trendValueAsPercentage == 0") =
-          //-         span.amount {{ (trendValueAsPercentage * 100).toFixed(2) }}%
-          //-       span.negative(ng-show="trendValueAsPercentage < 0") -
-          //-         span.amount {{ (trendValueAsPercentage * -100).toFixed(2) }}%
-          //-     span.loading(ng-hide="trendValueAsPercentage !== undefined") ...
-          //-     select.trendspan(rp-flat-select,ng-model='selectedTrendSpan'
-          //-       ng-change='changeTrendSpan(this)')
-          //-       option(l10n,value='86400000') in past 24 hours
-          //-       option(l10n,value='604800000') in past 7 days
-          .col-xs-12.col-sm-4(ng-class="{ 'blank' : !exchangeRatesNonempty }")
-            rp-pie-chart(
-              rp-size="120"
-              rp-drops="account.Balance"
-              rp-ious="balances"
-              rp-exchange-rates="exchangeRates")
         .currency-summary
           .balancebox.currency-xrp
             .total.row
