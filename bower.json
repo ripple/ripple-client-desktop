@@ -6,7 +6,6 @@
     "angular-route": "~1.2.23",
     "angular-mocks": "~1.2.23",
     "underscore": "~1.7.0",
-    "moment": "~2.8.2",
     "jquery": "~2.1.1",
     "store.js": "~1.3.16",
     "spin.js": "~2.0.1",

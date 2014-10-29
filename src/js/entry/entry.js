@@ -1,6 +1,7 @@
 var types = require('../util/types');
 
-// TODO don't use event tracking for desktop version.
+// Moment.js
+moment = require('moment');
 
 // Load app modules
 require('../controllers/app');
