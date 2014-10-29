@@ -311,50 +311,6 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
     });
   };
 
-  // TODO remove migration
-  Id.prototype.oldLogin = function (opts, callback) {
-    var self = this;
-
-    // Callback is optional
-    if ("function" !== typeof callback) callback = $.noop;
-
-    var username = Id.normalizeUsernameForDisplay(opts.username);
-    var password = Id.normalizePassword(opts.password);
-    var oldBlobUsername = Id.normalizeUsernameForOldBlob(username);
-
-    $oldblob.get(['vault'], oldBlobUsername, password, function (oerr, data) {
-//      $location.path('/register');
-
-      if (oerr) {
-        // Old blob failed - since this was just the fallback report the
-        // original error
-        console.log("Old backend reported:", oerr);
-        callback(oerr);
-        return;
-      }
-
-      var blob = $oldblob.decrypt(oldBlobUsername, password, data);
-      if (!blob) {
-        // Unable to decrypt blob
-        var msg = 'Unable to decrypt blob (Username / Password is wrong)';
-        callback(new Error(msg));
-      } else if (blob.old && !self.allowOldBlob) {
-        var oldBlobErr = new Error('Old blob format detected');
-        oldBlobErr.name = "OldBlobError";
-        callback(oldBlobErr);
-      } else {
-        // Migration
-
-        $scope.oldUserBlob = blob;
-        $scope.oldUsername = oldBlobUsername;
-        $scope.oldPassword = password;
-        $location.path('/register');
-
-        return;
-      }
-    });
-  };
-
   Id.prototype.login = function (opts, callback)
   {
     var self = this;

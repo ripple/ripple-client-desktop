@@ -110,18 +110,6 @@ LoginTab.prototype.angular = function (module) {
           if (err) {
             $scope.status = 'Login failed:';
 
-            if (err.name === "OldBlobError") {
-              popup.confirm("Wallet Upgrade", "Ripple is upgrading the wallet encryption format. After the upgrade, only Ripple clients 0.2.24 or higher can access your wallet.<br><br>If you use other clients, please make sure they are upgraded to the current version.",
-                            "OK", "migrateConfirm()", null,
-                            "Abort login", null, null,
-                            $scope, {});
-
-              $scope.migrateConfirm = function () {
-                $id.allowOldBlob = true;
-                $scope.submitForm();
-              };
-            }
-
             if (err.name !== "BlobError") {
               $scope.backendMessages.push({'backend': "ID", 'message': err.message});
             }
