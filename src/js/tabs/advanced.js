@@ -56,24 +56,10 @@ AdvancedTab.prototype.angular = function(module)
       location.reload();
     };
 
-    $scope.deleteBlob = function () {
-      $scope.options.blobvault = "";
-      // Save in local storage
-      if (!store.disabled) {
-        store.set('ripple_settings', JSON.stringify($scope.options));
-      }
-    }
-
-    $scope.cancelEditBlob = function () {
-      $scope.editBlob = false;
-      $scope.options.blobvault = $scope.optionsBackup.blobvault;
-    }
-
     $scope.cancelEditAcctOptions = function () {
       $scope.editAcctOptions = false;
       
-    }
-
+    };
 
     $scope.$on('$blobUpdate', function(){
       $scope.passwordProtection = !$scope.userBlob.data.persistUnlock;

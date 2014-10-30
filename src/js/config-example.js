@@ -22,12 +22,6 @@ var Options = {
 
   },
 
-  // DEPRECATED: Blobvault server (old blob protocol)
-  //
-  // The blobvault URL for the new login protocol is set via authinfo. You can
-  // still use this setting for the fallback feature.
-  blobvault: 'https://blobvault.ripple.com',
-
   // If set, login will persist across sessions (page reload). This is mostly
   // intended for developers, be careful about using this in a real setting.
   persistent_auth: false,
@@ -55,11 +49,6 @@ if (store.enabled) {
 
   if (settings.server && settings.server.servers) {
     Options.server.servers = settings.server.servers;
-  }
-
-  if (settings.blobvault) {
-    // TODO: test if url defined and valid
-    Options.blobvault = settings.blobvault.replace('payward.com', 'ripple.com');
   }
 
   if (settings.advanced_feature_switch) {
