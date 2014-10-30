@@ -27,11 +27,6 @@ module.directive('rpPrettyIssuer', function () {
             scope.alias = attr.rpPrettyIssuerDefault ? attr.rpPrettyIssuerDefault : '???';
             return;
           }
-          var aliasPromise = aliasService.getAliasForAddress(scope.issuer);
-          scope.alias = null;
-          aliasPromise.then(function (result) {
-            scope.alias = result;
-          });
 
           scope.name = null;
           if (scope.contacts) {
