@@ -92,6 +92,12 @@ LoginTab.prototype.angular = function (module) {
     {
       if ($scope.ajax_loading) return;
 
+      if (!$scope.walletfile) {
+        $scope.ajax_loading = false;
+        $scope.error = 'Please select a wallet file.';
+        return;
+      }
+
       $scope.backendMessages = [];
 
       // Issue #36: Password managers may change the form values without
@@ -105,24 +111,18 @@ LoginTab.prototype.angular = function (module) {
           password: $scope.password,
           walletfile: $scope.walletfile
         }, function (err, blob) {
-          $scope.ajax_loading = false;
+          $scope.$apply(function(){
+            $scope.ajax_loading = false;
+            $scope.status = '';
 
-          if (err) {
-            $scope.status = 'Login failed:';
+            if (err) {
+              $scope.error = 'Login failed: Wallet file or password is wrong.';
 
-            if (err.name !== "BlobError") {
-              $scope.backendMessages.push({'backend': "ID", 'message': err.message});
-            }
+              return;
+            };
 
-            return;
-          };
-
-          $scope.status = '';
-          if ($routeParams.tab) {
-            $location.path('/'+$routeParams.tab);
-          } else {
             $location.path('/balance');
-          }
+          });
         });
       });
 
