@@ -66,26 +66,6 @@ module.exports = function(grunt) {
   };
 
   /**
-   * Where there are many files that compile to one, this returns true
-   * if any of the input files are newer than the output.
-   */
-  var manyToOne = function (dest, src) {
-    var compile = true;
-    if (fs.existsSync(dest)) {
-      var from = grunt.file.expand(src);
-      var tostat = fs.statSync(dest);
-      compile = false;
-      for (var i = from.length - 1; i >= 0; i--) {
-        if (fs.statSync(from[i]).mtime > tostat.mtime) {
-          compile = true;
-          break;
-        }
-      }
-    }
-    return [{dest:dest, src:compile?src:[]}];
-  };
-
-  /**
    * Add a prefix to a filename or array of filenames.
    */
   var prefix = function (pre, f) {
@@ -169,28 +149,22 @@ module.exports = function(grunt) {
       },
       linux: {
         command: (process.platform === 'linux' || process.platform === 'darwin') ? [
-          'tar -cvf ./build/packages/ripple-client32.tar ./build/pkg/nw/releases/RippleClient/linux32/',
+          'tar -cvf ./build/packages/ripple-cliegruntnt32.tar ./build/pkg/nw/releases/RippleClient/linux32/',
           'tar -cvf ./build/packages/ripple-client64.tar ./build/pkg/nw/releases/RippleClient/linux64/'
         ].join('&') : 'echo Skipping tar compression, only supported on linux and OSX'
       },
       osx: {
         command: process.platform === 'darwin' ? [
           'sudo npm install appdmg',
+          // TODO has hard time creating the packages folder
           'appdmg ./res/dmg/dmg_config.json ./build/packages/ripple-client.dmg'
         ].join('&&') : 'echo Skipping DMG build, only supported on OSX'
       }
     },
     recess: {
-      web: {
-        src: ['src/less/ripple/web.less'],
+      main: {
+        src: ['src/less/ripple/main.less'],
         dest: 'build/dist/ripple.css',
-        options: {
-          compile: true
-        }
-      },
-      desktop: {
-        src: ['src/less/ripple/desktop.less'],
-        dest: 'build/dist/ripple-desktop.css',
         options: {
           compile: true
         }
@@ -306,8 +280,6 @@ module.exports = function(grunt) {
           {expand: true, src: ['img*//**'], dest: 'build/bundle/nw-desktop'},
           {expand: true, src: ['deps/js/modernizr*.js'],
             dest: 'build/bundle/nw-desktop/js/deps', flatten: true},
-          {expand: true, src: ['deps/js/mixpanel.min.js'],
-            dest: 'build/bundle/nw-desktop/js/deps', flatten: true},
           {src: 'build/dist/desktop/index.html', dest: 'build/bundle/nw-desktop/index.html'},
           {src: 'res/nw/package_desktop.json', dest: 'build/bundle/nw-desktop/package.json'},
           {src: 'src/js/config.js', dest: 'build/bundle/nw-desktop/config.js'},
@@ -326,8 +298,6 @@ module.exports = function(grunt) {
           {expand: true, src: ['res/icons/font*//*'], dest: 'build/bundle/nw-desktop-debug'},
           {expand: true, src: ['img*//**'], dest: 'build/bundle/nw-desktop-debug'},
           {expand: true, src: ['deps/js/modernizr*.js'],
-            dest: 'build/bundle/nw-desktop-debug/js/deps', flatten: true},
-          {expand: true, src: ['deps/js/mixpanel.min.js'],
             dest: 'build/bundle/nw-desktop-debug/js/deps', flatten: true},
           {src: 'build/dist/desktop/index_debug.html', dest: 'build/bundle/nw-desktop-debug/index.html'},
           {src: 'res/nw/package_desktop_debug.json', dest: 'build/bundle/nw-desktop-debug/package.json'},
@@ -368,7 +338,7 @@ module.exports = function(grunt) {
       },
       index: {
         files: ['src/index.html'],
-        tasks: ['preprocess:desktop_debug','copy'],
+        tasks: ['preprocess:desktop','preprocess:desktop_debug','copy'],
         options: { livereload: true }
       },
       callback: {
@@ -501,10 +471,10 @@ module.exports = function(grunt) {
     }
   };
 
-  /*languages.forEach(function(language){
+  languages.forEach(function(language){
     webpack['desktop_l10n_' + language.name] = {
       entry: {
-        desktop: "./src/js/entry.js"
+        desktop: "./src/js/entry/entry.js"
       },
       module: {
         loaders: [
@@ -521,7 +491,7 @@ module.exports = function(grunt) {
       },
       target: 'node-webkit'
     }
-  });*/
+  });
 
   grunt.config.set('webpack',webpack);
 
