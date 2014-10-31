@@ -8,7 +8,7 @@ section.col-xs-12.content(ng-controller="LoginCtrl")
 
   .row.auth-form-container.col-sm-offset-2.col-sm-8.col-md-offset-3.col-md-6
     .auth-form-wrapper
-      form(name='loginForm', ng-submit='submitForm()')
+      form(name='loginForm', ng-disabled="loginForm.$invalid || ajax_loading", , ng-submit='submitForm()')
         h2(l10n) Open account
 
         .form-group
@@ -25,9 +25,12 @@ section.col-xs-12.content(ng-controller="LoginCtrl")
           label(for='login_password', l10n) Account password
           input.form-control#login_password(name='login_password', type='password'
             ng-model='password', required)
+        .text-error(ng-show='error')
+          br
+          span {{error}}
         .text-status(ng-show='status')
           span {{status}}
-          br
+
           .backend(ng-repeat="message in backendMessages")
             b {{message.backend}} &#32;
             span {{message.message}}
