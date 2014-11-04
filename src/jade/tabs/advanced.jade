@@ -11,7 +11,7 @@ section.col-xs-12.content(ng-controller="AdvancedCtrl")
           .descriptor(ng-show="'web' === client", l10n) Trust line
           .row.advanced-form-row(ng-hide="editAcctOptions")
             .col-xs-6.col-sm-5.col-md-3
-              .description Advanced settings
+              .description Advanced Trustline settings
             .col-xs-3.col-sm-4.col-md-4
               .description(ng-show="advanced_feature_switch", l10n) Show
               .description(ng-hide="advanced_feature_switch", l10n) Hide
@@ -19,7 +19,7 @@ section.col-xs-12.content(ng-controller="AdvancedCtrl")
               a(href="", ng-click="editAcctOptions = true", class="btn btn-block btn-cancel",l10n) edit
           .row.row-padding-small.edit-trust-line(ng-show="editAcctOptions")
             .col-xs-6.col-sm-5.col-md-3
-              .description Advanced settings
+              .description Advanced Trustline settings
             .col-xs-4.col-sm-4.col-md-3
               div.helperInput
                 label
