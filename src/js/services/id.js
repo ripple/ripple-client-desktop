@@ -250,11 +250,9 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
 //      self.loginStatus = true;
 //      $scope.$broadcast('$blobUpdate');
 
-      if ('desktop' === $scope.client) {
-        self.setAccount(blob.data.account_id);
-        self.loginStatus = true;
-        $scope.$broadcast('$blobUpdate');
-      }
+      self.setAccount(blob.data.account_id);
+      self.loginStatus = true;
+      $scope.$broadcast('$blobUpdate');
 
       store.set('ripple_known', true);
       callback(null, masterkey);
