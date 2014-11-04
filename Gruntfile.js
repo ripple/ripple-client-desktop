@@ -516,13 +516,8 @@ module.exports = function(grunt) {
                               'uglify:compat_nw',
                               'concat:compat_nw', 'concat:compat_nw_debug']);
 
-  // Distribution build - builds absolutely everything
-  grunt.registerTask('dist', ['default',
-                              'copy:nw_desktop', 'copy:nw_desktop_debug',
-                              'nodewebkit']);
-
   // Desktop apps packaging
-  grunt.registerTask('desktop', ['dist',
+  grunt.registerTask('desktop', ['nodewebkit',
                                  'shell:removeFiles',
                                  'shell:linux',
                                  'shell:osx',
