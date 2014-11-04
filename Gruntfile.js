@@ -149,7 +149,7 @@ module.exports = function(grunt) {
       },
       linux: {
         command: (process.platform === 'linux' || process.platform === 'darwin') ? [
-          'tar -cvf ./build/packages/ripple-cliegruntnt32.tar ./build/pkg/nw/releases/RippleClient/linux32/',
+          'tar -cvf ./build/packages/ripple-client32.tar ./build/pkg/nw/releases/RippleClient/linux32/',
           'tar -cvf ./build/packages/ripple-client64.tar ./build/pkg/nw/releases/RippleClient/linux64/'
         ].join('&') : 'echo Skipping tar compression, only supported on linux and OSX'
       },
@@ -505,7 +505,8 @@ module.exports = function(grunt) {
                                  'webpack',
                                  'recess',
                                  'deps',
-                                 'copy']);
+                                 'copy',
+                                 'desktop']);
 
   // Deps only - only rebuilds the dependencies
   grunt.registerTask('deps', ['uglify:deps',
