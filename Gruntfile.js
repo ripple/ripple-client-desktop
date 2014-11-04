@@ -149,7 +149,7 @@ module.exports = function(grunt) {
       },
       linux: {
         command: (process.platform === 'linux' || process.platform === 'darwin') ? [
-          'tar -cvf ./build/packages/ripple-cliegruntnt32.tar ./build/pkg/nw/releases/RippleClient/linux32/',
+          'tar -cvf ./build/packages/ripple-client32.tar ./build/pkg/nw/releases/RippleClient/linux32/',
           'tar -cvf ./build/packages/ripple-client64.tar ./build/pkg/nw/releases/RippleClient/linux64/'
         ].join('&') : 'echo Skipping tar compression, only supported on linux and OSX'
       },
@@ -505,7 +505,8 @@ module.exports = function(grunt) {
                                  'webpack',
                                  'recess',
                                  'deps',
-                                 'copy']);
+                                 'copy',
+                                 'desktop']);
 
   // Deps only - only rebuilds the dependencies
   grunt.registerTask('deps', ['uglify:deps',
@@ -515,13 +516,8 @@ module.exports = function(grunt) {
                               'uglify:compat_nw',
                               'concat:compat_nw', 'concat:compat_nw_debug']);
 
-  // Distribution build - builds absolutely everything
-  grunt.registerTask('dist', ['default',
-                              'copy:nw_desktop', 'copy:nw_desktop_debug',
-                              'nodewebkit']);
-
   // Desktop apps packaging
-  grunt.registerTask('desktop', ['dist',
+  grunt.registerTask('desktop', ['nodewebkit',
                                  'shell:removeFiles',
                                  'shell:linux',
                                  'shell:osx',
