@@ -8,11 +8,6 @@ section.col-xs-12.content(ng-controller="HistoryCtrl")
   group.disconnected(ng-hide="!connected || loadState.transactions")
     p.literal(l10n) Loading history...
 
-  //- Account is unfunded
-  div(ng-show="'web' === client && !loadingAccount && !account.Balance && loadState.account && connected")
-    include banner/unfunded
-    p.literal(l10n) Your account history is empty
-
   //- Connected
 
   group.row(ng-show="connected && loadState.transactions && account.Balance")

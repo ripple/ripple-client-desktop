@@ -138,7 +138,6 @@ app.run(['$rootScope', '$route', '$routeParams',
   function ($rootScope, $route, $routeParams)
   {
     // This is the desktop client
-    $rootScope.client = 'desktop';
     $rootScope.productName = 'Ripple';
 
     // Global reference for debugging only (!)
