@@ -4,14 +4,9 @@
  * Copy this file to config.js and edit to suit your preferences.
  */
 var Options = {
-  // Local domain
-  //
-  // Which domain should ripple-client consider native?
-  domain: 'local.ripple.com',
-
   // Rippled to connect
   server: {
-    trace: true,
+    trace: false,
     trusted: true,
     local_signing: true,
 
@@ -19,12 +14,7 @@ var Options = {
       { host: 's-west.ripple.com', port: 443, secure: true },
       { host: 's-east.ripple.com', port: 443, secure: true }
     ]
-
   },
-
-  // If set, login will persist across sessions (page reload). This is mostly
-  // intended for developers, be careful about using this in a real setting.
-  persistent_auth: false,
 
   // Number of transactions each page has in balance tab notifications
   transactions_per_page: 50,
