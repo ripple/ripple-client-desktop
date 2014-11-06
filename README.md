@@ -3,4 +3,6 @@
 ## Build
 
 `$ mkdir build/packages`
-`$ grunt desktop`
+`$ cp config-example.json config.json`
+`$ cp src/js/config-example.js src/js/config.js`
+`$ grunt`
