@@ -1,6 +1,7 @@
-var util = require('util');
-var webutil = require('../util/web');
-var Tab = require('../client/tab').Tab;
+var util = require('util'),
+    webutil = require('../util/web'),
+    Tab = require('../client/tab').Tab,
+    Currency = ripple.Currency;
 
 var AdvancedTab = function ()
 {
@@ -23,16 +24,27 @@ AdvancedTab.prototype.angular = function(module)
                                     function ($scope, $rootScope, $id, $keychain)
   {
     if (!$id.loginStatus) return $id.goId();
-    
+
+    // XRP currency object.
+    // {name: "XRP - Ripples", order: 146, value: "XRP"}
+    var xrpCurrency = Currency.from_json("XRP");
+
+    $scope.xrp = {
+      name: xrpCurrency.to_human({full_name:$scope.currencies_all_keyed.XRP.name}),
+      code: xrpCurrency.get_iso(),
+      currency: xrpCurrency
+    };
+
     $scope.options = Options;
     $scope.optionsBackup = $.extend(true, {}, Options);
     $scope.passwordProtection = !$scope.userBlob.data.persistUnlock;
     $scope.editBlob = false;
     $scope.editMaxNetworkFee = false;
     $scope.editAcctOptions = false;
+    $scope.max_tx_network_fee_human = ripple.Amount.from_json($scope.options.max_tx_network_fee).to_human();
 
     $scope.advanced_feature_switch = Options.advanced_feature_switch;
-    
+
     $scope.saveBlob = function () {
       // Save in local storage
       if (!store.disabled) {
@@ -48,6 +60,7 @@ AdvancedTab.prototype.angular = function(module)
     $scope.saveMaxNetworkFee = function () {
       // Save in local storage
       if (!store.disabled) {
++        $scope.options.max_tx_network_fee = ripple.Amount.from_human($scope.max_tx_network_fee_human).to_json();
         store.set('ripple_settings', JSON.stringify($scope.options));
       }
 
