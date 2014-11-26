@@ -44,4 +44,8 @@ if (store.enabled) {
   if (settings.advanced_feature_switch) {
     Options.advanced_feature_switch = settings.advanced_feature_switch;
   }
+
+  if (settings.max_tx_network_fee) {
+    Options.max_tx_network_fee = settings.max_tx_network_fee;
+  }
 }
