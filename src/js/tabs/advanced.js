@@ -60,7 +60,7 @@ AdvancedTab.prototype.angular = function(module)
     $scope.saveMaxNetworkFee = function () {
       // Save in local storage
       if (!store.disabled) {
-+        $scope.options.max_tx_network_fee = ripple.Amount.from_human($scope.max_tx_network_fee_human).to_json();
+        $scope.options.max_tx_network_fee = ripple.Amount.from_human($scope.max_tx_network_fee_human).to_json();
         store.set('ripple_settings', JSON.stringify($scope.options));
       }
 
