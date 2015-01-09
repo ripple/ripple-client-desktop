@@ -107,22 +107,22 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
     });
 
     // Ripple credit lines
-    remote.request_account_lines(data.account)
+    remote.requestAccountLines({account: data.account})
       .on('success', handleRippleLines)
       .on('error', handleRippleLinesError).request();
 
     // Transactions
-    remote.request_account_tx({
-      'account': data.account,
-      'ledger_index_min': -1,
-      'descending': true,
-      'limit': Options.transactions_per_page
+    remote.requestAccountTransactions({
+      account: data.account,
+      ledger_index_min: -1,
+      descending: true,
+      limit: Options.transactions_per_page
     })
       .on('success', handleAccountTx)
       .on('error', handleAccountTxError).request();
 
     // Outstanding offers
-    remote.request_account_offers(data.account)
+    remote.requestAccountOffers({ account: data.account})
       .on('success', handleOffers)
       .on('error', handleOffersError).request();
   }

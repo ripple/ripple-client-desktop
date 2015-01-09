@@ -101,13 +101,13 @@ HistoryTab.prototype.angular = function (module) {
       var history = [];
 
       var params = {
-        'account': $id.account,
-        'ledger_index_min': -1,
-        'limit': 200
+        account: $id.account,
+        ledger_index_min: -1,
+        limit: 200
       };
 
       var getTx = function(){
-        $network.remote.request_account_tx(params)
+        $network.remote.requestAccountTransactions(params)
         .on('success', function(data) {
           if (data.transactions.length) {
             for(var i=0;i<data.transactions.length;i++) {
@@ -413,7 +413,7 @@ HistoryTab.prototype.angular = function (module) {
         marker: $scope.tx_marker
       };
 
-      $network.remote.request_account_tx(params)
+      $network.remote.requestAccountTransactions(params)
       .on('success', function(data) {
         $scope.$apply(function () {
           if (data.transactions.length < limit) {

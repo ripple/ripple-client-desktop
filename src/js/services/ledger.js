@@ -123,7 +123,7 @@ module.factory('rpLedger', ['$q', '$rootScope', 'rpNetwork', 'rpTransactions',
   {
     if (requested) return;
 
-    net.remote.request_ledger("ledger_closed", "full")
+    net.remote.requestLedger("ledger_closed", "full")
         .on('success', handleLedger)
         .request();
 
