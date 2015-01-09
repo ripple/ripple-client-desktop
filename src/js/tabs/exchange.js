@@ -124,7 +124,7 @@ ExchangeTab.prototype.angular = function (module)
           if (amount.is_zero()) return;
 
           // Start path find
-          pf = $network.remote.path_find($id.account,
+          pf = $network.remote.pathFind($id.account,
               $id.account,
               amount);
               // $scope.generate_src_currencies());

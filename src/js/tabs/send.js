@@ -457,7 +457,7 @@ SendTab.prototype.angular = function (module)
         return;
 
       // Start path find
-      var pf = $network.remote.path_find($id.account,
+      var pf = $network.remote.pathFind($id.account,
                                          recipient,
                                          amount);
                                          //$scope.generate_src_currencies());
