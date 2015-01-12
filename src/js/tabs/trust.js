@@ -120,7 +120,7 @@ TrustTab.prototype.angular = function (module)
               return;
             }
 
-            if ($scope.advanced_feature_switch === false || $scope.amount === "") {
+            if ($scope.advanced_feature_switch === false || $scope.amount === '') {
               // $scope.amount = Number(ripple.Amount.consts.max_value);
               $scope.amount = Options.gateway_max_limit;
             }
@@ -222,21 +222,24 @@ TrustTab.prototype.angular = function (module)
             // }
           });
         })
-        .on('success', function(res){
-          $scope.$apply(function () {
+        .on('success', function(res) {
+          $scope.$apply(function() {
             setEngineStatus(res, true);
           });
         })
-        .on('error', function(res){
+        .on('error', function(res) {
           setImmediate(function () {
-            $scope.$apply(function () {
+            $scope.$apply(function() {
               $scope.mode = 'error';
+              $scope.trust.loading = false;
+              var notification = res.result === 'tejMaxFeeExceeded' ? 'max_fee' : 'error';
+              $scope.load_notification(notification);
             });
           });
         })
       ;
 
-      keychain.requestSecret(id.account, id.username, function (err, secret) {
+      keychain.requestSecret(id.account, id.username, function(err, secret) {
         // XXX Error handling
         if (err) return;
 
@@ -244,7 +247,7 @@ TrustTab.prototype.angular = function (module)
 
         tx.secret(secret);
         tx.submit();
-        if(tx.tx_json.LimitAmount.issuer == "rrh7rf1gV2pXAoqA8oYbpHd8TKv5ZQeo67") {
+        if(tx.tx_json.LimitAmount.issuer == 'rrh7rf1gV2pXAoqA8oYbpHd8TKv5ZQeo67') {
           store.set('gbi_connected', true);
         }
       });
@@ -291,7 +294,7 @@ TrustTab.prototype.angular = function (module)
           $scope.tx_result = 'failed';
           break;
         case 'tel':
-          $scope.tx_result = "local";
+          $scope.tx_result = 'local';
           break;
         case 'tep':
           console.warn('Unhandled engine status encountered!');
@@ -351,7 +354,7 @@ TrustTab.prototype.angular = function (module)
         }
 
         obj[line.currency].components.push(line);
-        if(line.account == "rrh7rf1gV2pXAoqA8oYbpHd8TKv5ZQeo67"){
+        if(line.account == 'rrh7rf1gV2pXAoqA8oYbpHd8TKv5ZQeo67'){
           store.set('gbi_connected', true);
         }
       })
@@ -402,7 +405,7 @@ TrustTab.prototype.angular = function (module)
       $scope.delete_account = function()
       {
         $scope.trust.loading = true;
-        $scope.load_notification("remove_gateway");
+        $scope.load_notification('remove_gateway');
 
         var setSecretAndSubmit = function(tx) {
           keychain.requestSecret(id.account, id.username, function (err, secret) {
@@ -410,7 +413,7 @@ TrustTab.prototype.angular = function (module)
               $scope.mode = 'error';
               console.log('Error on requestSecret: ', err);
               $scope.trust.loading = false;
-              $scope.load_notification("error");
+              $scope.load_notification('error');
               return;
             }
 
@@ -419,15 +422,16 @@ TrustTab.prototype.angular = function (module)
             tx.submit(function(err, res) {
               if (err) {
                 $scope.mode = 'error';
-                console.log('Error on tx submit: ', err);
                 $scope.trust.loading = false;
-                $scope.load_notification("error");
+                var notification = err.result === 'tejMaxFeeExceeded' ? 'max_fee' : 'error';
+                $scope.load_notification(notification);
+
                 return;
               }
 
               console.log('Transaction has been submitted with response:', res);
               $scope.trust.loading = false;
-              $scope.load_notification("gateway_removed");
+              $scope.load_notification('gateway_removed');
             });
 
           });
@@ -493,14 +497,14 @@ TrustTab.prototype.angular = function (module)
               nullifyTrustLine(id.account, $scope.trust.currency, counterparty);
             });
           })($scope.trust.counterparty);
-          if($scope.trust.counterparty == "rrh7rf1gV2pXAoqA8oYbpHd8TKv5ZQeo67") {
+          if($scope.trust.counterparty == 'rrh7rf1gV2pXAoqA8oYbpHd8TKv5ZQeo67') {
             store.set('gbi_connected', false);
           }
         }
 
         else {
           nullifyTrustLine(id.account, $scope.trust.currency, $scope.trust.counterparty);
-          if($scope.trust.counterparty == "rrh7rf1gV2pXAoqA8oYbpHd8TKv5ZQeo67") {
+          if($scope.trust.counterparty == 'rrh7rf1gV2pXAoqA8oYbpHd8TKv5ZQeo67') {
             store.set('gbi_connected', false);
           }
         }
@@ -563,7 +567,7 @@ TrustTab.prototype.angular = function (module)
         tx
           .rippleLineSet(id.account, amount)
           .setFlags($scope.trust.rippling ? 'ClearNoRipple' : 'NoRipple')
-          .on('success', function(res){
+          .on('success', function(res) {
             $scope.$apply(function () {
               setEngineStatus(res, true);
 
@@ -572,14 +576,15 @@ TrustTab.prototype.angular = function (module)
               $scope.editing = false;
             });
           })
-          .on('error', function(res){
-            console.log('error', res);
-            setImmediate(function () {
-              $scope.$apply(function () {
+          .on('error', function(res) {
+            setImmediate(function() {
+              $scope.$apply(function() {
                 $scope.mode = 'error';
 
+                var notification = res.result === 'tejMaxFeeExceeded' ? 'max_fee' : 'error';
+                $scope.load_notification(notification);
+
                 $scope.trust.loading = false;
-                $scope.load_notification("error");
                 $scope.editing = false;
               });
             });
@@ -603,7 +608,7 @@ TrustTab.prototype.angular = function (module)
               $scope.tx_result = 'failed';
               break;
             case 'tel':
-              $scope.tx_result = "local";
+              $scope.tx_result = 'local';
               break;
             case 'tep':
               console.warn('Unhandled engine status encountered!');
