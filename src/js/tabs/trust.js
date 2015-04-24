@@ -29,6 +29,8 @@ TrustTab.prototype.angular = function (module)
   {
     if (!id.loginStatus) return id.goId();
 
+    var RemoteFalagDefaultRipple = 0x00800000;
+
     $scope.advanced_feature_switch = Options.advanced_feature_switch;
     $scope.trust = {};
 
@@ -70,6 +72,8 @@ TrustTab.prototype.angular = function (module)
 
     // User should not even be able to try granting a trust if the reserve is insufficient
     $scope.$watch('account', function() {
+      $scope.acctDefaultRippleFlag = ($scope.account.Flags & RemoteFalagDefaultRipple);
+
       $scope.can_add_trust = false;
       if ($scope.account.Balance && $scope.account.reserve_to_add_trust) {
         if (!$scope.account.reserve_to_add_trust.subtract($scope.account.Balance).is_positive()
@@ -444,7 +448,7 @@ TrustTab.prototype.angular = function (module)
           tx.addMemo('client', 'rt' + $scope.version);
 
           tx.trustSet(idAccount, '0' + '/' + lineCurrency + '/' + lineAccount);
-          tx.setFlags('ClearNoRipple');
+          $scope.acctDefaultRippleFlag ? tx.setFlags('ClearNoRipple') : tx.setFlags('NoRipple');
 
           setSecretAndSubmit(tx);
         }
