@@ -43,8 +43,6 @@ AdvancedTab.prototype.angular = function(module)
     $scope.editAcctOptions = false;
     $scope.max_tx_network_fee_human = ripple.Amount.from_json($scope.options.max_tx_network_fee).to_human();
 
-    $scope.advanced_feature_switch = Options.advanced_feature_switch;
-
     $scope.saveBlob = function () {
       // Save in local storage
       if (!store.disabled) {
