@@ -69,7 +69,8 @@ var tabdefs = [
   require('../tabs/security'),
   require('../tabs/tx'),
   require('../tabs/xrp'),
-  require('../tabs/eula')
+  require('../tabs/eula'),
+  require('../tabs/settingsgateway')
 ];
 
 // Prepare tab modules
