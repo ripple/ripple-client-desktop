@@ -28,6 +28,7 @@ module.directive('rpPrettyIssuer', function () {
             return;
           }
 
+          scope.alias = null;
           scope.name = null;
           if (scope.contacts) {
             scope.name = webutil.isContact(scope.contacts, scope.issuer);
