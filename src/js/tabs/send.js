@@ -809,7 +809,7 @@ SendTab.prototype.angular = function (module)
       }
     };
 
-    $scope.saveAddress = function () {
+    $scope.saveAddress = function() {
       $scope.addressSaving = true;
 
       var contact = {
@@ -818,7 +818,8 @@ SendTab.prototype.angular = function (module)
         address: $scope.send.recipient_address
       };
 
-      $scope.userBlob.unshift('/contacts', contact, function(err, data){
+      $scope.userBlob.unshift('/contacts', contact, function(err, data) {
+        $scope.addressSaving = false;
         if (err) {
           console.log("Can't save the contact. ", err);
           return;
@@ -829,7 +830,7 @@ SendTab.prototype.angular = function (module)
       });
     };
 
-    $scope.$on("$destroy", function () {
+    $scope.$on("$destroy", function() {
       // Stop pathfinding if the user leaves the tab
       if ($scope.send.pathfind) {
         $scope.send.pathfind.close();
