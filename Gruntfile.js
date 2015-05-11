@@ -385,16 +385,13 @@ module.exports = function(grunt) {
     nodewebkit: {
       desktop: {
         options: {
-          build_dir: 'build/pkg/nw/',
-          win: true,
-          mac: true,
-          linux32: true,
-          linux64: true,
-          mac_icns: 'res/dmg/xrp_ripple_logo.icns'
+          version: '0.12.1',
+          buildDir: 'build/pkg/nw/releases',
+          cacheDir: 'build/pkg/nw/cache',
+          platforms: ['osx32', 'win32', 'linux'],
+          macIcns: 'res/dmg/xrp_ripple_logo.icns'
         },
-        files: {
-          src: 'build/bundle/nw-desktop/**/*'
-        }
+        src: ['build/bundle/nw-desktop/**/*']
       }
     },
     bower: {
