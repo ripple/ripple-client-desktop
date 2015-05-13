@@ -33,12 +33,16 @@ var Options = {
   gateway_max_limit: 1000000000
 };
 
+Options.defaultServers = Options.server.servers;
+
 // Load client-side overrides
 if (store.enabled) {
   var settings = JSON.parse(store.get('ripple_settings') || '{}');
 
   if (settings.server && settings.server.servers) {
-    Options.server.servers = settings.server.servers;
+    Options.server.servers = _.filter(settings.server.servers, function(s) {
+      return !s.isEmptyServer && _.isNumber(s.port) && !_.isNaN(s.port);
+    });
   }
 
   if (settings.advanced_feature_switch) {
