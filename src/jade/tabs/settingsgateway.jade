@@ -12,7 +12,14 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
       include settings/navbar
     group.disconnected(ng-hide="connected")
       p.literal(l10n) You have to be online to see this screen
-    .col-sm-9.list(ng-show='connected')
+
+    .col-sm-9.list(ng-hide='account.Balance')
+      .unfunded.literal(l10n)
+        | Your account has to be&#32;
+        a(href="https://ripple.com/knowledge_center/activating-your-wallet/", target="_blank", l10n-inc) activated
+        | &#32;before you can see this page.
+
+    .col-sm-9.list(ng-show='connected && account.Balance')
       section.content#gateways
         h4(l10n) Settings
         form.trust-line-form(name="accountsAdvForm", ng-submit='save("advanced_feature_switch")')
