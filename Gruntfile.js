@@ -409,7 +409,7 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: './build/pkg/nw/releases/RippleClient/win',
+            cwd: './build/pkg/nw/releases/RippleClient/win32',
             src: ['**']
           }
         ]
