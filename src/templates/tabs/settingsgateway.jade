@@ -1,5 +1,5 @@
 section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
-  .row(ng-show='connected')
+  .row
     .col-sm-12.notification-wrapper
       .alert.alert-success(ng-show="success.bridge", l10n) Your bitcoin bridge has been changed successfully.
       .alert.alert-success(ng-show="success.advanced_feature_switch", l10n) Trustline advanced settings have been changed successfully.
@@ -7,7 +7,9 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
       .alert.alert-success(ng-show="notif == 'defaultRippleUpdated'", l10n) DefaultRipple flag updated
     .col-sm-3
       include settings/navbar
-    .col-sm-9.list
+    group.disconnected(ng-hide="connected")
+      p.literal(l10n) You have to be online to see this screen
+    .col-sm-9.list(ng-show='connected')
       section.content#gateways
         h4(l10n) Settings
         form.trust-line-form(name="accountsAdvForm", ng-submit='save("advanced_feature_switch")')

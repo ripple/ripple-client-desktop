@@ -20,8 +20,7 @@ module.factory('rpNetwork', ['$rootScope', function($scope)
    * library directly. This is not to be intended to be an abstraction
    * layer on top of an abstraction layer.
    */
-  var Network = function ()
-  {
+  var Network = function() {
     this.remote = new ripple.Remote(Options.server, true);
     this.remote.on('connected', this.handleConnect.bind(this));
     this.remote.on('disconnected', this.handleDisconnect.bind(this));
@@ -32,9 +31,18 @@ module.factory('rpNetwork', ['$rootScope', function($scope)
     this.connected = false;
   };
 
-  Network.prototype.init = function ()
-  {
-    this.remote.connect();
+  Network.prototype.init = function() {
+    try {
+      this.remote.connect();
+    } catch (e) {
+      console.warn(e);
+      // fallback to default servers
+      Options.server.servers = Options.defaultServers;
+      this.remote = new ripple.Remote(Options.server, true);
+      this.remote.on('connected', this.handleConnect.bind(this));
+      this.remote.on('disconnected', this.handleDisconnect.bind(this));
+      this.remote.connect();
+    }
   };
 
   /**
