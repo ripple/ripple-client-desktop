@@ -77,18 +77,6 @@ AdvancedTab.prototype.angular = function(module)
       location.reload();
     };
 
-    $scope.saveAcctOptions = function () {
-      if (!store.disabled) {
-        // Save in local storage
-        store.set('ripple_settings', angular.toJson($scope.options));
-      }
-
-      $scope.editAcctOptions = false;
-
-      // Reload
-      location.reload();
-    };
-
     $scope.cancelEditMaxNetworkFee = function () {
       $scope.editMaxNetworkFee = false;
       $scope.options.max_tx_network_fee = $scope.optionsBackup.max_tx_network_fee;
