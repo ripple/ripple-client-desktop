@@ -6,7 +6,13 @@ section.col-xs-12.content(ng-controller="ExchangeCtrl")
     p.literal(l10n) You have to be online to see this screen
 
   group.disconnected(ng-hide="!connected || loadState.account")
-    p.literal(l10n) Loading...
+    div(id="section_loader")
+      img(src="img/sections.png", class="loader")
+      div(class="loading_sections", l10n) Loading... 
+
+  div(ng-show="!loadingAccount && !account.Balance && loadState.account && connected")
+    include ../tabs/banner/unfunded
+    p.literal(l10n="err-you-must-be-funded-before-you-can-exchange-money") You have to be funded before you can submit an order.
 
   //- Connected
 
