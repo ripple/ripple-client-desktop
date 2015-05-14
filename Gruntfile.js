@@ -155,7 +155,7 @@ module.exports = function(grunt) {
       },
       osx: {
         command: process.platform === 'darwin' ? [
-          'sudo npm install appdmg',
+          'sudo npm install -g appdmg',
           // TODO has hard time creating the packages folder
           'appdmg ./res/dmg/dmg_config.json ./build/packages/ripple-client.dmg'
         ].join('&&') : 'echo Skipping DMG build, only supported on OSX'
