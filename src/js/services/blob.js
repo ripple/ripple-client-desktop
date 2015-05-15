@@ -178,7 +178,7 @@ module.factory('rpBlob', ['$rootScope', function ($scope)
     });
   };
 
-  BlobObj.prototype.applyUpdate = function (op, path, params) {
+  BlobObj.prototype.applyUpdate = function(op, path, params, callback) {
     // Exchange from numeric op code to string
     if ("number" === typeof op) {
       op = BlobObj.opsReverseMap[op];
@@ -197,8 +197,11 @@ module.factory('rpBlob', ['$rootScope', function ($scope)
 
     this._traverse(this.data, pointer, path, op, params);
 
-    this.persist(function(){
+    this.persist(function(err, data) {
       console.log('Blob saved');
+      if (typeof callback === 'function') {
+        callback(err, data);
+      }
     });
   };
 
@@ -298,7 +301,7 @@ module.factory('rpBlob', ['$rootScope', function ($scope)
    * This method adds an entry to the beginning of an array.
    */
   BlobObj.prototype.unshift = function (pointer, value, callback) {
-    this.applyUpdate('unshift', pointer, [value]);
+    this.applyUpdate('unshift', pointer, [value], callback);
   };
 
   function normalizeSubcommands(subcommands, compress) {

@@ -155,7 +155,7 @@ module.exports = function(grunt) {
       },
       osx: {
         command: process.platform === 'darwin' ? [
-          'sudo npm install appdmg',
+          'sudo npm install -g appdmg',
           // TODO has hard time creating the packages folder
           'appdmg ./res/dmg/dmg_config.json ./build/packages/ripple-client.dmg'
         ].join('&&') : 'echo Skipping DMG build, only supported on OSX'
@@ -385,16 +385,13 @@ module.exports = function(grunt) {
     nodewebkit: {
       desktop: {
         options: {
-          build_dir: 'build/pkg/nw/',
-          win: true,
-          mac: true,
-          linux32: true,
-          linux64: true,
-          mac_icns: 'res/dmg/xrp_ripple_logo.icns'
+          version: '0.12.1',
+          buildDir: 'build/pkg/nw/releases',
+          cacheDir: 'build/pkg/nw/cache',
+          platforms: ['osx32', 'win32', 'linux'],
+          macIcns: 'res/dmg/xrp_ripple_logo.icns'
         },
-        files: {
-          src: 'build/bundle/nw-desktop/**/*'
-        }
+        src: ['build/bundle/nw-desktop/**/*']
       }
     },
     bower: {
@@ -412,7 +409,7 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: './build/pkg/nw/releases/RippleClient/win',
+            cwd: './build/pkg/nw/releases/RippleClient/win32',
             src: ['**']
           }
         ]
