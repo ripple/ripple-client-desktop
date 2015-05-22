@@ -1,5 +1,16 @@
 var types = require('../util/types');
 
+// Enable Copy-Paste on MacOs
+var gui = require('nw.gui');
+if (process.platform === "darwin") {
+  var mb = new gui.Menu({type: 'menubar'});
+  mb.createMacBuiltin('RippleClient', {
+    hideEdit: false,
+  });
+  gui.Window.get().menu = mb;
+}
+
+
 // Moment.js
 moment = require('moment');
 
