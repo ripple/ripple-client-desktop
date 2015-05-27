@@ -178,7 +178,7 @@ module.factory('rpBlob', ['$rootScope', function ($scope)
     });
   };
 
-  BlobObj.prototype.applyUpdate = function (op, path, params) {
+  BlobObj.prototype.applyUpdate = function(op, path, params, callback) {
     // Exchange from numeric op code to string
     if ("number" === typeof op) {
       op = BlobObj.opsReverseMap[op];
@@ -197,8 +197,11 @@ module.factory('rpBlob', ['$rootScope', function ($scope)
 
     this._traverse(this.data, pointer, path, op, params);
 
-    this.persist(function(){
+    this.persist(function(err, data) {
       console.log('Blob saved');
+      if (typeof callback === 'function') {
+        callback(err, data);
+      }
     });
   };
 
@@ -210,7 +213,7 @@ module.factory('rpBlob', ['$rootScope', function ($scope)
     if (Array.isArray(context)) {
       if (part === '-') {
         part = context.length;
-      } else if (part % 1 !== 0 && part >= 0) {
+      } else if (part % 1 !== 0 || part < 0) {
         throw new Error("Invalid pointer, array element segments must be " +
                         "a positive integer, zero or '-'");
       }
@@ -221,7 +224,14 @@ module.factory('rpBlob', ['$rootScope', function ($scope)
       if (op === "set") {
         context[part] = {};
       } else if (op === "unshift") {
-        context[part] = [];
+        // this is not last element in path, and next is not array pointer
+        // so create object, not array
+        if (pointer.length !== 0 && pointer[0] !== '-' &&
+            (pointer[0] % 1 !== 0 || pointer[0] < 0)) {
+          context[part] = {};
+        } else {
+          context[part] = [];
+        }
       } else {
         return null;
       }
@@ -298,7 +308,7 @@ module.factory('rpBlob', ['$rootScope', function ($scope)
    * This method adds an entry to the beginning of an array.
    */
   BlobObj.prototype.unshift = function (pointer, value, callback) {
-    this.applyUpdate('unshift', pointer, [value]);
+    this.applyUpdate('unshift', pointer, [value], callback);
   };
 
   function normalizeSubcommands(subcommands, compress) {

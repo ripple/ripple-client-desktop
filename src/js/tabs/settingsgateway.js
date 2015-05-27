@@ -86,9 +86,6 @@ SettingsGatewayTab.prototype.angular = function(module)
       }
 
       $scope.editBlob = false;
-
-      // Reload
-      location.reload();
     };
 
     $scope.save = function(type) {
