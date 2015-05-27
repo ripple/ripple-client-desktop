@@ -62,7 +62,8 @@ var appDependencies = [
   'errors',
   // Filters
   'filters',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'ui.sortable'
 ];
 
 // Load tabs
@@ -81,7 +82,8 @@ var tabdefs = [
   require('../tabs/tx'),
   require('../tabs/xrp'),
   require('../tabs/eula'),
-  require('../tabs/settingsgateway')
+  require('../tabs/settingsgateway'),
+  require('../tabs/settingstrade')
 ];
 
 // Prepare tab modules
