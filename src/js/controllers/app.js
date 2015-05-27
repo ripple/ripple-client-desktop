@@ -118,7 +118,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
       descending: true,
       limit: Options.transactions_per_page
     })
-      .on('success', handleAccountTx)
+      .on('transactions', handleAccountTx)
       .on('error', handleAccountTxError).request();
 
     // Outstanding offers
@@ -537,6 +537,11 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
   // });
 
   $scope.$on('$idAccountLoad', function (e, data) {
+    // fix blob if wrong
+    if (_.isArray($scope.userBlob.data.clients)) {
+      $scope.userBlob.unset('/clients');
+    }
+
     // Server is connected
     if ($scope.connected) {
       handleAccountLoad(e, data);

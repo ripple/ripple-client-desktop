@@ -213,7 +213,7 @@ module.factory('rpBlob', ['$rootScope', function ($scope)
     if (Array.isArray(context)) {
       if (part === '-') {
         part = context.length;
-      } else if (part % 1 !== 0 && part >= 0) {
+      } else if (part % 1 !== 0 || part < 0) {
         throw new Error("Invalid pointer, array element segments must be " +
                         "a positive integer, zero or '-'");
       }
@@ -224,7 +224,14 @@ module.factory('rpBlob', ['$rootScope', function ($scope)
       if (op === "set") {
         context[part] = {};
       } else if (op === "unshift") {
-        context[part] = [];
+        // this is not last element in path, and next is not array pointer
+        // so create object, not array
+        if (pointer.length !== 0 && pointer[0] !== '-' &&
+            (pointer[0] % 1 !== 0 || pointer[0] < 0)) {
+          context[part] = {};
+        } else {
+          context[part] = [];
+        }
       } else {
         return null;
       }
