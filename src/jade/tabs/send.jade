@@ -24,7 +24,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
         rp-combobox="recipient_query"
         placeholder='Enter a Ripple address or contact'
         ng-model='send.recipient'
-                rp-dest, rp-dest-address, rp-dest-contact
+        rp-dest, rp-dest-address, rp-dest-contact, rp-dest-ripple-name
         rp-dest-email, rp-dest-loading="recipient_loading"
         required
         rp-autofill='$routeParams.to'
@@ -35,7 +35,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
           .error(rp-error-on='required', l10n)
             | Please enter a recipient.
           .error(rp-error-on='rpDest', l10n)
-            | Recipient should be a contact or Ripple address.
+            | Recipient should be a Ripple name, a contact, or Ripple address.
     ul.tagsLinks
       li
         a(href="", ng-click="send.show_dt_field = true"

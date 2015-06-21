@@ -34,7 +34,8 @@ section.col-xs-12.content(ng-controller="ContactsCtrl")
               input.form-control.input-lg.address#address_desktop(
                 name='address_desktop', type='text', step='any'
                 ng-model='contact.view'
-                rp-dest, rp-dest-address
+                rp-dest, rp-dest-address, rp-dest-ripple-name
+                rp-dest-email, rp-dest-check-federation, rp-dest-federation-model="contact.federation"
                 rp-dest-model="contact.address", rp-dest-loading="address_loading"
                 rp-unique='userBlob.data.contacts'
                 rp-unique-field='address'
@@ -43,11 +44,11 @@ section.col-xs-12.content(ng-controller="ContactsCtrl")
                 rp-autofill='$routeParams.to', rp-autofill-on='addform_visible = true'
                 required)
             .errorGroup(rp-errors='address_desktop')
-              .error(rp-error-on='required', l10n) Please enter a Ripple address.
+              .error(rp-error-on='required', l10n) Please enter a Ripple name or address.
               .error(rp-error-on='rpUnique', l10n) You already have a contact with the same Ripple address and/or the same Destination tag.
-              .error(rp-error-on='rpDest', l10n) Not a valid Ripple address.
+              .error(rp-error-on='rpDest', l10n) Not a valid Ripple name or address.
         .form-group
-          div
+          div(ng-hide='contact.federation')
             label(for='dt_desktop', l10n) Destination tag
             input.form-control.input-lg.dt#dt_desktop(
               name='dt_desktop', type='text', step='any'
@@ -72,8 +73,9 @@ section.col-xs-12.content(ng-controller="ContactsCtrl")
     .col-xs-3.col-md-3.col-sm-3(ng-hide='editing')
       span.name(ng-hide='editing') {{entry.name}}
     .col-xs-12.col-sm-6.col-md-6(ng-hide='editing')
-      div
-        b.hidden-xs {{entry.address | rpaddressorigin}}: {{entry.address}}
+      div.hidden-xs
+        b {{entry.address | rpaddressorigin}}: 
+        b(rp-ripple-name="entry.address") ???
     .col-xs-6.col-sm-3.col-md-3.text-right.pull-right(ng-hide='editing')
       .row
         .col-xs-4.col-md-4.col-sm-4(ng-hide='editing')

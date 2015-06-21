@@ -45,7 +45,7 @@ section.col-xs-12.content(ng-controller="TradeCtrl")
           input.form-control(
             name="first_iss", type="text", ng-disabled="disable_first_issuer"
             rp-combobox="first_iss", rp-combobox-select
-            rp-dest, rp-dest-address, rp-dest-contact
+            rp-dest, rp-dest-address, rp-dest-contact, rp-dest-ripple-name, rp-dest-ripple-name-no-tilde
             ng-model="first_issuer_selected")
         .col-xs-1
           .description.slash /
@@ -60,7 +60,7 @@ section.col-xs-12.content(ng-controller="TradeCtrl")
           input.form-control(
             name="second_iss", type="text", ng-disabled="disable_second_issuer"
             rp-combobox="second_iss", rp-combobox-select
-            rp-dest, rp-dest-address, rp-dest-contact
+            rp-dest, rp-dest-address, rp-dest-contact, rp-dest-ripple-name, rp-dest-ripple-name-no-tilde
             ng-model="second_issuer_selected")
         .col-sm-4.col-lg-2.col-xs-6#cancel_button
           button.btn.btn-cancel.btn-block(type="button", ng-click="adding_pair = false", l10n) cancel

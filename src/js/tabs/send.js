@@ -16,23 +16,23 @@ util.inherits(SendTab, Tab);
 SendTab.prototype.tabName = 'send';
 SendTab.prototype.mainMenu = 'send';
 
-SendTab.prototype.angularDeps = Tab.prototype.angularDeps.concat(['keychain']);
+SendTab.prototype.angularDeps = Tab.prototype.angularDeps.concat(['federation', 'keychain']);
 
 SendTab.prototype.generateHtml = function ()
 {
   return require('../../jade/tabs/send.jade')();
 };
 
-SendTab.prototype.angular = function (module)
+SendTab.prototype.angular = function(module)
 {
   module.controller('SendCtrl', ['$scope', '$timeout', '$routeParams', 'rpId',
-                                 'rpNetwork', 'rpKeychain',
+                                 'rpNetwork', 'rpKeychain', 'rpFederation',
                                  function ($scope, $timeout, $routeParams, $id,
-                                           $network, keychain)
+                                           $network, keychain, federation)
   {
     if (!$id.loginStatus) return $id.goId();
 
-    var timer;
+    var timer, destUpdateTimeout;
 
     // XRP currency object.
     // {name: "XRP - Ripples", order: 146, value: "XRP"}
@@ -44,7 +44,7 @@ SendTab.prototype.angular = function (module)
       currency: xrpCurrency
     };
 
-    $scope.$watch('send.recipient', function(){
+    $scope.$watch('send.recipient', function() {
       // raw address without any parameters
       var address = webutil.stripRippleAddress($scope.send.recipient);
 
@@ -92,11 +92,27 @@ SendTab.prototype.angular = function (module)
     // When the send form is invalid, path finding won't trigger. So if the form
     // is changed by one of the update_* handlers and becomes valid during the
     // next digest, we need to manually trigger another update_amount.
-    $scope.$watch('sendForm.$valid', function () {
-      $scope.update_amount();
+    $scope.$watch('sendForm.$valid', function(v) {
+      if (v) {
+        $scope.update_amount();
+      } else {
+        clearInterval(timer);
+        $scope.send.last_recipient = null;
+        $scope.send.path_status = 'waiting';
+        $scope.send.fund_status = 'none';
+
+        if ($scope.send.pathfind) {
+          $scope.send.pathfind.close();
+          delete $scope.send.pathfind;
+        }
+        if (pathUpdateTimeout) {
+          $timeout.cancel(pathUpdateTimeout);
+          pathUpdateTimeout = null;
+        }
+        $scope.reset_paths();
+      }
     });
 
-    var destUpdateTimeout;
 
     // Reset everything that depends on the destination
     $scope.reset_destination_deps = function() {
@@ -117,7 +133,7 @@ SendTab.prototype.angular = function (module)
       $scope.reset_currency_deps();
     };
 
-    $scope.check_dt_visibility = function () {
+    $scope.check_dt_visibility = function() {
       var send = $scope.send;
 
       send.show_dt_field =
@@ -128,7 +144,7 @@ SendTab.prototype.angular = function (module)
           send.recipient_info.dest_tag_required));
     };
 
-    $scope.update_destination = function () {
+    $scope.update_destination = function() {
       var send = $scope.send;
       var recipient = send.recipient_address;
 
@@ -142,6 +158,13 @@ SendTab.prototype.angular = function (module)
       // This is used to disable 'Send XRP' button
       send.self = recipient === $scope.address;
 
+
+      // Trying to send to a Ripple name
+      send.rippleName = webutil.isRippleName(recipient);
+
+      // Trying to send to an email/federation address
+      send.federation = ('string' === typeof recipient) && ~recipient.indexOf('@');
+
       // Check destination tag visibility
       $scope.check_dt_visibility();
 
@@ -149,15 +172,51 @@ SendTab.prototype.angular = function (module)
       destUpdateTimeout = $timeout($scope.update_destination_remote, 500);
     };
 
-    $scope.update_destination_remote = function () {
+    $scope.update_destination_remote = function() {
       var send = $scope.send;
       var recipient = send.recipient_address;
+      var strippedRecipient = webutil.stripRippleAddress(send.recipient);
+      var isRecipientValidAddress = ripple.UInt160.is_valid(strippedRecipient);
 
       // Reset federation address validity status
-      if ($scope.sendForm && $scope.sendForm.send_destination)
+      if ($scope.sendForm && $scope.sendForm.send_destination) {
         $scope.sendForm.send_destination.$setValidity("federation", true);
+        $scope.sendForm.send_destination.$setValidity('federationDown', true);
+        $scope.sendForm.send_destination.$setValidity('btcBridgeWrong', true);
+      }
 
-      $scope.check_destination();
+      // If there was a previous federation request, we need to clean it up here.
+      if (send.federation_record) {
+        send.federation_record = null;
+        send.dt = null;
+      }
+
+     if (send.rippleName) {
+        ripple.AuthInfo.get(Options.domain, send.recipient, function(err, response) {
+          $scope.$apply(function() {
+            send.recipient_name = '~' + response.username;
+            send.recipient_address = response.address;
+          });
+
+          $scope.check_destination();
+        });
+      } else if (isRecipientValidAddress && send.recipient_address == strippedRecipient) {
+        $id.resolveName(strippedRecipient, { tilde: true }).then(function(name) {
+          send.recipient_name = name;
+          if (send.recipient == name) {
+            // there is no name for this address
+            $scope.check_destination();
+          } else {
+            // this will trigger update
+            send.last_recipient = null;
+            send.recipient = name;
+          }
+        }, function(err) {
+          $scope.check_destination();
+        });
+      } else {
+        $scope.check_destination();
+      }
     };
 
     // Check destination for XRP sufficiency and flags
@@ -166,6 +225,8 @@ SendTab.prototype.angular = function (module)
       var recipient = send.recipient_actual || send.recipient_address;
 
       if (!ripple.UInt160.is_valid(recipient)) return;
+
+      if (!$scope.account || !$scope.account.reserve_base) return;
 
       var account = $network.remote.account(recipient);
 
@@ -183,9 +244,9 @@ SendTab.prototype.angular = function (module)
           if (e) {
             if (e.remote.error === "actNotFound") {
               send.recipient_info = {
-                'loaded': true,
-                'exists': false,
-                'Balance': "0"
+                loaded: true,
+                exists: false,
+                Balance: "0"
               };
               $scope.update_currency_constraints();
             } else {
@@ -193,13 +254,13 @@ SendTab.prototype.angular = function (module)
             }
           } else {
             send.recipient_info = {
-              'loaded': true,
-              'exists': true,
-              'Balance': data.account_data.Balance,
+              loaded: true,
+              exists: true,
+              Balance: data.account_data.Balance,
 
               // Flags
-              'disallow_xrp': data.account_data.Flags & ripple.Remote.flags.account_root.DisallowXRP,
-              'dest_tag_required': data.account_data.Flags & ripple.Remote.flags.account_root.RequireDestTag
+              disallow_xrp: data.account_data.Flags & ripple.Remote.flags.account_root.DisallowXRP,
+              dest_tag_required: data.account_data.Flags & ripple.Remote.flags.account_root.RequireDestTag
             };
 
             // Check destination tag visibility
@@ -836,6 +897,7 @@ SendTab.prototype.angular = function (module)
         $scope.send.pathfind.close();
         delete $scope.send.pathfind;
       }
+      clearInterval(timer);
     });
 
     $scope.reset();

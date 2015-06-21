@@ -205,10 +205,10 @@ TradeTab.prototype.angular = function(module)
     $scope.fill_widget = function (type, order, sum) {
       $scope.reset_widget(type);
 
-      $scope.order[type].price = order.price.to_human().replace(',','');
+      $scope.order[type].price = order.price.to_human({group_sep: false});
 
       if (sum) {
-        $scope.order[type].first = order.sum.to_human().replace(',','');
+        $scope.order[type].first = order.sum.to_human({group_sep: false});
         $scope.calc_second(type);
       }
 
@@ -529,8 +529,9 @@ TradeTab.prototype.angular = function(module)
       $scope.update_price(type);
       if (order.price_amount && order.price_amount.is_valid() &&
           order.first_amount && order.first_amount.is_valid()) {
-        order.second_amount = order.price_amount.product_human(+order.first);
-        order.second = +order.second_amount.to_human({group_sep: false});
+        // order.second_amount = order.price_amount.product_human(+order.first);
+        order.second_amount = order.price_amount.product_human(order.first_amount);
+        order.second = order.second_amount.to_human({group_sep: false});
       }
     };
 
@@ -547,8 +548,9 @@ TradeTab.prototype.angular = function(module)
       if (order.price_amount  && order.price_amount.is_valid() &&
           order.second_amount && order.second_amount.is_valid()) {
 
-        order.first_amount = Amount.from_json(order.second_amount.to_text_full()).ratio_human(Amount.from_json(order.price_amount.to_text()), {reference_date: new Date()});
-        order.first = +order.first_amount.to_human({group_sep: false});
+        // order.first_amount = Amount.from_json(order.second_amount.to_text_full()).ratio_human(Amount.from_json(order.price_amount.to_text()), {reference_date: new Date()});
+        order.first_amount = Amount.from_json(order.second_amount.to_text_full().replace(/,/g, '')).ratio_human(Amount.from_json(price + '/' + currency + '/' + issuer), {reference_date: new Date()});
+        order.first = order.first_amount.to_human({group_sep: false});
       }
     };
 
@@ -559,11 +561,11 @@ TradeTab.prototype.angular = function(module)
       var issuer = order['first_issuer'];
       var pair = order['currency_pair'].split('/');
       currencyPairChangedByNonUser = true;
-      order['first_currency'] = order['second_currency'];
-      order['first_issuer'] = order['second_issuer'];
-      order['second_currency'] = currency;
-      order['second_issuer'] = issuer;
-      order['currency_pair'] = pair[1] + '/' + pair[0];
+      order.first_currency = order.second_currency;
+      order.first_issuer = order.second_issuer;
+      order.second_currency = currency;
+      order.second_issuer = issuer;
+      order.currency_pair = pair[1] + '/' + pair[0];
       updateSettings();
       updateMRU();
     }
@@ -594,26 +596,34 @@ TradeTab.prototype.angular = function(module)
       var first_currency = order.first_currency = ripple.Currency.from_json(pair[0].substring(0,3));
       var second_currency = order.second_currency = ripple.Currency.from_json(pair[1].substring(0,3));
 
-      if(first_currency.is_native()) {
-        order.first_issuer = '';
-      } else {
-        var contact_to_address1 = webutil.resolveContact($scope.userBlob.data.contacts, pair[0].substring(4));
-        if (contact_to_address1) {
-          order.first_issuer = contact_to_address1;
+      function setIssuer(pairPart, where) {
+        var contact_to_address = webutil.resolveContact($scope.userBlob.data.contacts, pairPart.substring(4));
+        if (contact_to_address) {
+          order[where] = contact_to_address;
         } else {
-          order.first_issuer = pair[0].substring(4);
+          var name = pairPart.substring(4);
+          if (name.substr(0, 1) !== '~') {
+            name = '~' + name;
+          }
+          ripple.AuthInfo.get(Options.domain, name, function(err, response) {
+            if (err) return;
+            $scope.$apply(function() {
+              order[where] = response.address;
+            });
+          });
         }
       }
 
-      if(second_currency.is_native()) {
+      if (first_currency.is_native()) {
+        order.first_issuer = '';
+      } else {
+        setIssuer(pair[0], 'first_issuer');
+      }
+
+      if (second_currency.is_native()) {
         order.second_issuer = '';
       } else {
-        var contact_to_address2 = webutil.resolveContact($scope.userBlob.data.contacts, pair[1].substring(4));
-        if (contact_to_address2) {
-          order.second_issuer = contact_to_address2;
-        } else {
-          order.second_issuer = pair[1].substring(4);
-        }
+        setIssuer(pair[1], 'second_issuer');
       }
 
       // var first_currency = order.first_currency = ripple.Currency.from_json(pair[0]);
@@ -837,11 +847,14 @@ TradeTab.prototype.angular = function(module)
           ($scope.lines[second_issuer+($scope.order.second_currency.has_interest() ? $scope.order.second_currency.to_hex() : $scope.order.second_currency.to_json())]
             && $scope.lines[second_issuer+($scope.order.second_currency.has_interest() ? $scope.order.second_currency.to_hex() : $scope.order.second_currency.to_json())].balance.is_positive());
 
+      canBuy = !second_currency.is_native() || !$scope.account.max_spend ? canBuy : canBuy && $scope.account.max_spend.is_positive();
 
       var canSell = first_currency.is_native() ||
           first_issuer == $scope.address ||
           ($scope.lines[first_issuer+($scope.order.first_currency.has_interest() ? $scope.order.first_currency.to_hex() : $scope.order.first_currency.to_json())]
             && $scope.lines[first_issuer+($scope.order.first_currency.has_interest() ? $scope.order.first_currency.to_hex() : $scope.order.first_currency.to_json())].balance.is_positive());
+
+      canSell = !first_currency.is_native() || !$scope.account.max_spend ? canSell : canSell && $scope.account.max_spend.is_positive();
 
       $scope.order.buy.showWidget = canBuy;
       $scope.order.sell.showWidget = canSell;
@@ -849,11 +862,10 @@ TradeTab.prototype.angular = function(module)
 
     $scope.$watch('first_currency_selected', function() {
       $scope.first_issuer_selected = '';
-      if($scope.first_currency_selected == 'XRP') {
+      if ($scope.first_currency_selected == 'XRP') {
         $scope.gateway_change_form.first_iss.$setValidity('rpDest', true);
         $scope.disable_first_issuer = true;
-      }
-      else {
+      } else {
         $scope.disable_first_issuer = false;
         $scope.first_iss = {};
         gateways.forEach(function(gateway) {
@@ -862,8 +874,8 @@ TradeTab.prototype.angular = function(module)
           accounts.forEach(function(account){
             account.currencies.forEach(function(currency){
               if(currency === $scope.first_currency_selected){
-                // $scope.first_iss[gateway.name] = gateway;
-                $scope.first_iss[account.address] = { name: account.address };
+                $scope.first_iss[gateway.name] = gateway;
+                // $scope.first_iss[account.address] = { name: account.address };
               }
             });
           });
@@ -871,13 +883,12 @@ TradeTab.prototype.angular = function(module)
       }
     });
 
-    $scope.$watch('second_currency_selected', function () {
+    $scope.$watch('second_currency_selected', function() {
       $scope.second_issuer_selected = '';
-      if($scope.second_currency_selected == 'XRP') {
+      if ($scope.second_currency_selected == 'XRP') {
         $scope.gateway_change_form.second_iss.$setValidity('rpDest', true);
         $scope.disable_second_issuer = true;
-      }
-      else {
+      } else {
         $scope.disable_second_issuer = false;
         $scope.second_iss = {};
         gateways.forEach(function(gateway) {
@@ -886,8 +897,7 @@ TradeTab.prototype.angular = function(module)
           accounts.forEach(function(account){
             account.currencies.forEach(function(currency){
               if(currency === $scope.second_currency_selected){
-                // $scope.second_iss[gateway.name] = gateway;
-                $scope.second_iss[account.address] = { name: account.address };
+                $scope.second_iss[gateway.name] = gateway;
               }
             });
           });
@@ -918,14 +928,7 @@ TradeTab.prototype.angular = function(module)
 
       $scope.order.currency_pair = $scope.first_currency_selected + formattedIssuerFirst + '/' + $scope.second_currency_selected + formattedIssuerSecond;
 
-      // var data = $scope.userBlob.data;
-      // if (!data.clients || !data.clients.rippletradecom ||
-      //     !data.clients.rippletradecom.trade_currency_pairs ||
-      //     !angular.isArray(data.clients.rippletradecom.trade_currency_pairs)) {
-      // } else {
-        $scope.userBlob.unshift('/clients/rippletradecom/trade_currency_pairs', { name: $scope.order.currency_pair });
-      // }
-      
+      $scope.userBlob.unshift('/clients/rippletradecom/trade_currency_pairs', { name: $scope.order.currency_pair });
 
       $scope.adding_pair = false;
     };

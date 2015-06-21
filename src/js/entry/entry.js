@@ -38,6 +38,9 @@ require('../services/books');
 require('../services/transactions');
 require('../services/ledger');
 require('../services/popup');
+require('../services/rippletxt');
+require('../services/federation');
+require('../services/domainalias');
 require('../services/filedialog');
 
 // Angular module dependencies
