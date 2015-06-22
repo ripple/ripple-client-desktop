@@ -4,6 +4,7 @@
  * Copy this file to config.js and edit to suit your preferences.
  */
 var Options = {
+  domain: 'rippletrade.com',
   // Rippled to connect
   server: {
     trace: false,

@@ -116,13 +116,12 @@ module.directive('rpDest', ['$timeout', '$parse', 'rpFederation', function ($tim
           return value;
         }
 
-
         // server-side validation
         if (attr.rpDestEmail && emailRegex.test(strippedValue)) {
-          ctrl.rpDestType = "email";
+          ctrl.rpDestType = 'email';
           if (attr.rpDestCheckFederation) {
             return federation.check_email(value)
-              .then(function (result) {
+              .then(function(result) {
                 // Check if this request is still current, exit if not
                 if (value != ctrl.$viewValue) return;
 
@@ -141,6 +140,7 @@ module.directive('rpDest', ['$timeout', '$parse', 'rpFederation', function ($tim
 
             // return $q.when(true);
             ctrl.$setValidity('rpDest', true);
+            return value;
           }
         }
 
