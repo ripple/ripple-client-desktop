@@ -25,24 +25,43 @@ module.controller('NavbarCtrl', ['$scope', '$element', '$compile', 'rpId',
     $scope.show_secondary = !$scope.show_secondary;
   };
 
-  // Username
-  $scope.$watch('userCredentials', function(){
-    var username = $scope.userCredentials.username;
-    $scope.shortUsername = null;
-    if(username && username.length > 25) {
-      $scope.shortUsername = username.substring(0,24)+"...";
-    }
-  }, true);
+  function serverStatusUpdate() {
+    $scope.fee = network.remote.createTransaction()._computeFee();
 
-  $scope.$on('$netConnected', function (e) {
+    if (!$scope.connected && $scope.userCredentials.username) {
+      $scope.serverStatus = 'disconnected';
+    }
+    else if ($scope.connected && $scope.fee) {
+      if ((parseFloat(ripple.Amount.from_json($scope.fee).to_human()) > parseFloat(Options.low_load_threshold)) && (parseFloat($scope.fee) < parseFloat(Options.max_tx_network_fee))) {
+        $scope.serverLoad = 'mediumLoad';
+        $scope.serverStatus = 'mediumLoad';
+      } else if (parseFloat($scope.fee) >= parseFloat(Options.max_tx_network_fee)) {
+        $scope.serverLoad = 'highLoad';
+        $scope.serverStatus = 'highLoad';
+      } else {
+        $scope.serverLoad = '';
+        $scope.serverStatus = 'lowLoad';
+      }
+    }
+    else {
+      $scope.serverStatus = 'connected';
+    }
+  }
+
+  $scope.$watch('connected', serverStatusUpdate, true);
+
+  // Username
+  $scope.$watch('userCredentials', serverStatusUpdate, true);
+
+  $scope.$on('$netConnected', function(e) {
     setConnectionStatus(true);
   });
 
-  $scope.$on('$netDisconnected', function (e) {
+  $scope.$on('$netDisconnected', function(e) {
     setConnectionStatus(false);
   });
 
-  var updateNotifications = function () {
+  var updateNotifications = function() {
     if ($scope.events) {
       $scope.notifications = $scope.events.slice(0,10);
     }
@@ -104,11 +123,6 @@ module.controller('NavbarCtrl', ['$scope', '$element', '$compile', 'rpId',
 
   function setConnectionStatus(connected) {
     $scope.connected = !!connected;
-    if (connected) {
-      notifyEl.find('.type-offline').remove();
-    } else {
-      notifyEl.append('<div class="notification active type-offline">OFFLINE</div>');
-    }
   }
 
   // A notification might have been queued already before the app was fully

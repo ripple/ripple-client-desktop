@@ -1,9 +1,11 @@
 var util = require('util');
 var webutil = require('../util/web');
+var settings = require('../util/settings');
 var Tab = require('../client/tab').Tab;
 var Amount = ripple.Amount;
 var rewriter = require('../util/jsonrewriter');
 var Currency = ripple.Currency;
+var gateways = require('../../../deps/gateways.json');
 
 var TradeTab = function ()
 {
@@ -40,9 +42,14 @@ TradeTab.prototype.angular = function(module)
     // Remember user preference on Convert vs. Trade
     $rootScope.ripple_exchange_selection_trade = true;
 
-    $scope.pairs_query = $scope.pairs_all;
+    // $scope.pairs_query = $scope.pairs_all;
 
     var currencyPairChangedByNonUser = false;
+
+    $scope.first_currency_selected = '';
+    $scope.second_currency_selected = '';
+    $scope.currencies_all = require('../data/currencies');
+    $scope.currencies = [];
 
     var widget = {
       first: '',
@@ -56,6 +63,54 @@ TradeTab.prototype.angular = function(module)
       'min_precision':5,
       'max_sig_digits':20
     };
+
+    for (var i = 0; i < $scope.currencies_all.length; i++) {
+      if ($scope.currencies_all[i].custom_trade_currency_dropdown) {
+        $scope.currencies.push($scope.currencies_all[i].value);
+      }
+    }
+
+    function onBlobIsValid() {
+      $scope.pairs_query = settings.getSetting($scope.userBlob, 'trade_currency_pairs');
+      // Remember user preference on Convert vs. Trade
+      if (!settings.getSetting($scope.userBlob, 'rippleExchangeSelectionTrade', false)) {
+        $scope.userBlob.set('/clients/rippletradecom/rippleExchangeSelectionTrade', true);
+      }
+    }
+
+    if (settings.blobIsValid($scope.userBlob)) {
+      onBlobIsValid();
+    } else {
+      var removeListener = $scope.$on('$blobUpdate', function() {
+        if (!settings.blobIsValid($scope.userBlob)) return;
+        onBlobIsValid();
+        removeListener();
+      });
+    }
+
+    function update_pairs() {
+      var d = $scope.userBlob.data;
+      if (!settings.hasSetting($scope.userBlob, 'trade_currency_pairs')) {
+        $scope.pairs_query = [{name: 'XRP/USD.rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q' },
+          { name: 'XRP/USD.rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B' },
+          { name: 'XRP/JPY.r94s8px6kSw1uZ1MV98dhSRTvc6VMPoPcN' },
+          { name: 'BTC.rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B/XRP' },
+          { name: 'BTC.rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q/XRP' }];
+      }
+      else {
+        $scope.pairs_query = settings.getSetting($scope.userBlob, 'trade_currency_pairs');
+      }
+    }
+
+    if ($scope.userBlob.data) {
+      update_pairs();
+    }
+
+    $scope.$on('$blobUpdate', function() {
+      update_pairs();
+      resetIssuers(false);
+    });
+
 
     $scope.reset = function () {
       $scope.executedOnOfferCreate = 'none';
@@ -92,7 +147,7 @@ TradeTab.prototype.angular = function(module)
       };
 
       updateSettings();
-      updateMRU();
+      // updateMRU();
     };
 
     /**
@@ -101,12 +156,31 @@ TradeTab.prototype.angular = function(module)
      *
      * @param type (buy, sell)
      */
+     /*
     $scope.reset_widget = function(type) {
       $scope.order[type] = jQuery.extend(true, {}, widget);
 
       updateSettings();
-      updateMRU();
+      // updateMRU();
     };
+    */
+
+    $scope.reset_widget = function(type, widgetOnly) {
+      $scope.order[type] = jQuery.extend(true, {}, widget);
+
+      if (widgetOnly) return;
+
+      // Update widgets
+      ['buy','sell'].forEach(function(type){
+        $scope.update_first(type);
+        $scope.update_price(type);
+        $scope.update_second(type);
+      });
+
+      updateCanBuySell();
+      //updateMRU();
+    };
+
 
     /**
      * Sets current listing, and stores it in local storage.
@@ -131,10 +205,10 @@ TradeTab.prototype.angular = function(module)
     $scope.fill_widget = function (type, order, sum) {
       $scope.reset_widget(type);
 
-      $scope.order[type].price = order.price.to_human().replace(',','');
+      $scope.order[type].price = order.price.to_human({group_sep: false});
 
       if (sum) {
-        $scope.order[type].first = order.sum.to_human().replace(',','');
+        $scope.order[type].first = order.sum.to_human({group_sep: false});
         $scope.calc_second(type);
       }
 
@@ -161,28 +235,68 @@ TradeTab.prototype.angular = function(module)
     };
 
     /**
+     * Returns orders currency pair, so we can compare it with current pair.
+     */
+    function getOrderCurrency(entry) {
+      if (!entry) return '';
+      var first_currency = entry.first.currency().to_json();
+      var first_issuer = entry.first.issuer().to_json();
+      var second_currency = entry.second.currency().to_json();
+      var second_issuer = entry.second.issuer().to_json();
+
+      var first = first_currency === 'XRP'
+        ? 'XRP'
+        : first_currency + '.' + first_issuer;
+
+      var second = second_currency === 'XRP'
+        ? 'XRP'
+        : second_currency + '.' + second_issuer;
+
+      var currency_pair = first + '/' + second;
+      return currency_pair;
+    }
+
+    /**
      * Happens when user cliens the currency in "My Orders".
      */
-    $scope.goto_order_currency = function()
-    {
+    $scope.goto_order_currency = function() {
       if (!this.entry) return;
+      if (getOrderCurrency(this.entry) === $scope.order.currency_pair) {
+        // same pair, do nothing
+        return;
+      }
+
       var entry = this.entry;
       var order = $scope.order;
       currencyPairChangedByNonUser = true;
-      order['first_currency'] = this.entry.first.currency().to_json();
-      order['first_issuer'] = this.entry.first.issuer().to_json();
-      order['second_currency'] = this.entry.second.currency().to_json();
-      order['second_issuer'] = this.entry.second.issuer().to_json();
-      order['currency_pair'] = this.entry.first.currency().to_json() + '/' + this.entry.second.currency().to_json();
-      updateSettings();
-      updateMRU();
+      order.first_currency = this.entry.first.currency().to_json();
+      order.first_issuer = this.entry.first.issuer().to_json();
+      order.second_currency = this.entry.second.currency().to_json();
+      order.second_issuer = this.entry.second.issuer().to_json();
+
+      var first = order.first_currency === 'XRP'
+        ? 'XRP'
+        : order.first_currency + '.' + order.first_issuer;
+
+      var second = order.second_currency === 'XRP'
+        ? 'XRP'
+        : order.second_currency + '.' + order.second_issuer;
+
+      order.currency_pair = first + '/' + second;
+
+      var changedPair = updateSettings();
+      // updateMRU();
+      if (changedPair) {
+        $scope.reset_widget('buy', true);
+        $scope.reset_widget('sell', true);
+      }
+      return changedPair;
     }
 
     /**
      * Happens when user clicks on "Cancel" in "My Orders".
      */
-    $scope.cancel_order = function ()
-    {
+    $scope.cancel_order = function() {
       var seq   = this.entry ? this.entry.seq : this.order.Sequence;
       var order = this;
       var tx    = $network.remote.transaction();
@@ -415,8 +529,9 @@ TradeTab.prototype.angular = function(module)
       $scope.update_price(type);
       if (order.price_amount && order.price_amount.is_valid() &&
           order.first_amount && order.first_amount.is_valid()) {
-        order.second_amount = order.price_amount.product_human(+order.first);
-        order.second = +order.second_amount.to_human({group_sep: false});
+        // order.second_amount = order.price_amount.product_human(+order.first);
+        order.second_amount = order.price_amount.product_human(order.first_amount);
+        order.second = order.second_amount.to_human({group_sep: false});
       }
     };
 
@@ -433,8 +548,9 @@ TradeTab.prototype.angular = function(module)
       if (order.price_amount  && order.price_amount.is_valid() &&
           order.second_amount && order.second_amount.is_valid()) {
 
-        order.first_amount = Amount.from_json(order.second_amount.to_text_full()).ratio_human(Amount.from_json(order.price_amount.to_text()), {reference_date: new Date()});
-        order.first = +order.first_amount.to_human({group_sep: false});
+        // order.first_amount = Amount.from_json(order.second_amount.to_text_full()).ratio_human(Amount.from_json(order.price_amount.to_text()), {reference_date: new Date()});
+        order.first_amount = Amount.from_json(order.second_amount.to_text_full().replace(/,/g, '')).ratio_human(Amount.from_json(price + '/' + currency + '/' + issuer), {reference_date: new Date()});
+        order.first = order.first_amount.to_human({group_sep: false});
       }
     };
 
@@ -445,11 +561,11 @@ TradeTab.prototype.angular = function(module)
       var issuer = order['first_issuer'];
       var pair = order['currency_pair'].split('/');
       currencyPairChangedByNonUser = true;
-      order['first_currency'] = order['second_currency'];
-      order['first_issuer'] = order['second_issuer'];
-      order['second_currency'] = currency;
-      order['second_issuer'] = issuer;
-      order['currency_pair'] = pair[1] + '/' + pair[0];
+      order.first_currency = order.second_currency;
+      order.first_issuer = order.second_issuer;
+      order.second_currency = currency;
+      order.second_issuer = issuer;
+      order.currency_pair = pair[1] + '/' + pair[0];
       updateSettings();
       updateMRU();
     }
@@ -476,8 +592,42 @@ TradeTab.prototype.angular = function(module)
         return;
       }
 
-      var first_currency = order.first_currency = ripple.Currency.from_json(pair[0]);
-      var second_currency = order.second_currency = ripple.Currency.from_json(pair[1]);
+
+      var first_currency = order.first_currency = ripple.Currency.from_json(pair[0].substring(0,3));
+      var second_currency = order.second_currency = ripple.Currency.from_json(pair[1].substring(0,3));
+
+      function setIssuer(pairPart, where) {
+        var contact_to_address = webutil.resolveContact($scope.userBlob.data.contacts, pairPart.substring(4));
+        if (contact_to_address) {
+          order[where] = contact_to_address;
+        } else {
+          var name = pairPart.substring(4);
+          if (name.substr(0, 1) !== '~') {
+            name = '~' + name;
+          }
+          ripple.AuthInfo.get(Options.domain, name, function(err, response) {
+            if (err) return;
+            $scope.$apply(function() {
+              order[where] = response.address;
+            });
+          });
+        }
+      }
+
+      if (first_currency.is_native()) {
+        order.first_issuer = '';
+      } else {
+        setIssuer(pair[0], 'first_issuer');
+      }
+
+      if (second_currency.is_native()) {
+        order.second_issuer = '';
+      } else {
+        setIssuer(pair[1], 'second_issuer');
+      }
+
+      // var first_currency = order.first_currency = ripple.Currency.from_json(pair[0]);
+      // var second_currency = order.second_currency = ripple.Currency.from_json(pair[1]);
       var first_issuer = ripple.UInt160.from_json(order.first_issuer);
       var second_issuer = ripple.UInt160.from_json(order.second_issuer);
 
@@ -500,8 +650,15 @@ TradeTab.prototype.angular = function(module)
         order.second_currency._iso_code +
         (order.second_currency.is_native() ? "" : "/" + order.second_issuer);
 
+      var changedPair = false;
       // Load orderbook
       if (order.prev_settings !== key) {
+        changedPair = true;
+        $scope.priceTicker = {
+          bid: 'n/a',
+          ask: 'n/a',
+          spread: 'n/a'
+        };
         loadOffers();
 
         order.prev_settings = key;
@@ -515,6 +672,7 @@ TradeTab.prototype.angular = function(module)
       });
 
       updateCanBuySell();
+      return changedPair;
     }
 
     // This functions is called after the settings have been modified. 
@@ -689,15 +847,92 @@ TradeTab.prototype.angular = function(module)
           ($scope.lines[second_issuer+($scope.order.second_currency.has_interest() ? $scope.order.second_currency.to_hex() : $scope.order.second_currency.to_json())]
             && $scope.lines[second_issuer+($scope.order.second_currency.has_interest() ? $scope.order.second_currency.to_hex() : $scope.order.second_currency.to_json())].balance.is_positive());
 
+      canBuy = !second_currency.is_native() || !$scope.account.max_spend ? canBuy : canBuy && $scope.account.max_spend.is_positive();
 
       var canSell = first_currency.is_native() ||
           first_issuer == $scope.address ||
           ($scope.lines[first_issuer+($scope.order.first_currency.has_interest() ? $scope.order.first_currency.to_hex() : $scope.order.first_currency.to_json())]
             && $scope.lines[first_issuer+($scope.order.first_currency.has_interest() ? $scope.order.first_currency.to_hex() : $scope.order.first_currency.to_json())].balance.is_positive());
 
+      canSell = !first_currency.is_native() || !$scope.account.max_spend ? canSell : canSell && $scope.account.max_spend.is_positive();
+
       $scope.order.buy.showWidget = canBuy;
       $scope.order.sell.showWidget = canSell;
     };
+
+    $scope.$watch('first_currency_selected', function() {
+      $scope.first_issuer_selected = '';
+      if ($scope.first_currency_selected == 'XRP') {
+        $scope.gateway_change_form.first_iss.$setValidity('rpDest', true);
+        $scope.disable_first_issuer = true;
+      } else {
+        $scope.disable_first_issuer = false;
+        $scope.first_iss = {};
+        gateways.forEach(function(gateway) {
+          //$scope.first_iss[gateway.name] = gateway;
+          var accounts = gateway.accounts;
+          accounts.forEach(function(account){
+            account.currencies.forEach(function(currency){
+              if(currency === $scope.first_currency_selected){
+                $scope.first_iss[gateway.name] = gateway;
+                // $scope.first_iss[account.address] = { name: account.address };
+              }
+            });
+          });
+        });
+      }
+    });
+
+    $scope.$watch('second_currency_selected', function() {
+      $scope.second_issuer_selected = '';
+      if ($scope.second_currency_selected == 'XRP') {
+        $scope.gateway_change_form.second_iss.$setValidity('rpDest', true);
+        $scope.disable_second_issuer = true;
+      } else {
+        $scope.disable_second_issuer = false;
+        $scope.second_iss = {};
+        gateways.forEach(function(gateway) {
+          //$scope.second_iss[gateway.name] = gateway;
+          var accounts = gateway.accounts;
+          accounts.forEach(function(account){
+            account.currencies.forEach(function(currency){
+              if(currency === $scope.second_currency_selected){
+                $scope.second_iss[gateway.name] = gateway;
+              }
+            });
+          });
+        });
+      }
+    });
+
+    $scope.gotoSettings = function() {
+      $location.path('/settingstrade');
+    };
+
+    $scope.open_custom_currency_selector = function() {
+      $scope.first_currency_selected = '';
+      $scope.first_issuer_selected = '';
+      $scope.second_currency_selected = '';
+      $scope.second_issuer_selected = '';
+      $scope.adding_pair = true;
+    }
+
+    $scope.add_pair = function() {
+      var formattedIssuerFirst = $scope.first_currency_selected === 'XRP' ? '' : '.' + $scope.first_issuer_selected;
+      var formattedIssuerSecond = $scope.second_currency_selected === 'XRP' ? '' : '.' + $scope.second_issuer_selected;
+      if (($scope.second_currency_selected !== 'XRP' && ($scope.second_issuer_selected == null || $scope.second_issuer_selected === '')) ||
+          ($scope.first_currency_selected  !== 'XRP' && ($scope.first_issuer_selected  == null || $scope.first_issuer_selected  === ''))) {
+        // this could happen if gate is not validated
+        return;
+      }
+
+      $scope.order.currency_pair = $scope.first_currency_selected + formattedIssuerFirst + '/' + $scope.second_currency_selected + formattedIssuerSecond;
+
+      $scope.userBlob.unshift('/clients/rippletradecom/trade_currency_pairs', { name: $scope.order.currency_pair });
+
+      $scope.adding_pair = false;
+    };
+
 
     var rpamountFilter = $filter('rpamount');
 
@@ -740,9 +975,12 @@ TradeTab.prototype.angular = function(module)
         return;
       }
 
+      $scope.reset_widget('buy', true);
+      $scope.reset_widget('sell', true);
+
       updateSettings();
       resetIssuers(true);
-      updateMRU();
+      // updateMRU();
     }, true);
 
     $scope.$on('$blobUpdate', function () {
@@ -756,12 +994,12 @@ TradeTab.prototype.angular = function(module)
 
     $scope.$watch('order.first_issuer', function () {
       updateSettings();
-      updateMRU();
+      // updateMRU();
     });
 
     $scope.$watch('order.second_issuer', function () {
       updateSettings();
-      updateMRU();
+      // updateMRU();
     });
 
     var updateBalances = function(){

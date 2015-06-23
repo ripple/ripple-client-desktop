@@ -10,9 +10,9 @@ var webutil = require('../util/web'),
     Amount = ripple.Amount,
     Currency = ripple.Currency;
 
-var module = angular.module('formatters', []);
+var module = angular.module('formatters', ['domainalias']);
 
-module.directive('rpPrettyIssuer', function () {
+module.directive('rpPrettyIssuer', ['rpDomainAlias', function(aliasService) {
   return {
     restrict: 'EA',
     scope: {
@@ -27,8 +27,12 @@ module.directive('rpPrettyIssuer', function () {
             scope.alias = attr.rpPrettyIssuerDefault ? attr.rpPrettyIssuerDefault : '???';
             return;
           }
-
+          var aliasPromise = aliasService.getAliasForAddress(scope.issuer);
           scope.alias = null;
+          aliasPromise.then(function(result) {
+            scope.alias = result;
+          });
+
           scope.name = null;
           if (scope.contacts) {
             scope.name = webutil.isContact(scope.contacts, scope.issuer);
@@ -45,7 +49,7 @@ module.directive('rpPrettyIssuer', function () {
       };
     }
   };
-});
+}]);
 
 var RP_PRETTY_AMOUNT_DATE = 'rp-pretty-amount-date';
 
@@ -93,7 +97,7 @@ module.directive('rpPrettyIdentity', ['$timeout', function ($timeout) {
     scope: {
       identity: '=rpPrettyIdentity'
     },
-    template: '{{identity | rpcontactname }}',
+    template: '{{identity | rpcontactnamefull | rpripplename:{tilde:true} }}',
     compile: function (element, attr, linker) {
       if (attr.rpPrettyIdentityFilters) {
         element.text('{{identity | ' + attr.rpPrettyIdentityFilters + ' }}');
@@ -158,7 +162,7 @@ module.directive('rpPrettyIdentity', ['$timeout', function ($timeout) {
           tip.bind('mouseleave', onPopoverLeave);
         }
         // XXX Set title to identity
-        console.log(element);
+        // console.log(element);
 
         element.popover('destroy');
         var content = 'Ripple address ' + scope.identity;
@@ -183,6 +187,27 @@ module.directive('rpPrettyIdentity', ['$timeout', function ($timeout) {
             tip = null;
           }
         });
+      };
+    }
+  };
+}]);
+
+module.directive('rpRippleName', ['rpId', function(id) {
+  return {
+    restrict: 'EA',
+    scope: {
+      address: '=rpRippleName'
+    },
+    template: '{{name || address}}',
+    compile: function (element, attr, linker) {
+      return function (scope, element, attr) {
+        function update() {
+          id.resolveName(scope.address, { tilde: true }).then(function(name) {
+            scope.name = name;
+          });
+        }
+        scope.$watch('address', update);
+        update();
       };
     }
   };

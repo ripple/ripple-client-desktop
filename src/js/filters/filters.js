@@ -355,3 +355,21 @@ module.filter('rpheavynormalize', function () {
       .replace(/\s+/g, ' ');
   };
 });
+
+/**
+ * Show Ripple Name
+ *
+ * Shows a ripple name for a given ripple address
+ */
+module.filter("rpripplename", ['rpId', function(id) {
+  return function(address, options) {
+    var ripplename = id.resolveNameSync(address, options);
+    if (ripplename !== address) {
+      return ripplename;
+    }
+    if (address.length > 21) {
+      return address.substring(0, 7) + "…";
+    }
+    return address;
+  }
+}]);

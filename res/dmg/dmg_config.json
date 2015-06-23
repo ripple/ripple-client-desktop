@@ -2,7 +2,7 @@
 
   "title": "Ripple Client for Mac",
 
-  "app": "../../build/pkg/nw/releases/RippleClient/mac/RippleClient.app",
+  "app": "../../build/pkg/nw/releases/RippleClient/osx32/RippleClient.app",
 
   "background": "logo.png",
 

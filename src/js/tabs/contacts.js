@@ -26,12 +26,12 @@ ContactsTab.prototype.angular = function (module) {
   {
     if (!$id.loginStatus) return $id.goId();
 
-    $scope.reset_form = function ()
-    {
+    $scope.reset_form = function() {
       $scope.contact = {
         name: '',
         view: '',
-        address: ''
+        address: '',
+        federation: null
       };
       if ($scope.addForm) $scope.addForm.$setPristine();
     };
@@ -41,8 +41,7 @@ ContactsTab.prototype.angular = function (module) {
     /**
      * Toggle "add contact" form
      */
-    $scope.toggle_form = function ()
-    {
+    $scope.toggle_form = function() {
       $scope.addform_visible = !$scope.addform_visible;
       $scope.reset_form();
     };
@@ -50,15 +49,14 @@ ContactsTab.prototype.angular = function (module) {
     /**
      * Create contact
      */
-    $scope.create = function ()
-    {
+    $scope.create = function() {
       var contact = {
         name: $scope.contact.name,
         view: $scope.contact.view,
         address: $scope.contact.address
       };
 
-      if ($scope.contact.dt) {
+      if ($scope.contact.dt && !$scope.contact.federation) {
         contact.dt = $scope.contact.dt;
       }
 
@@ -85,8 +83,7 @@ ContactsTab.prototype.angular = function (module) {
        *
        * @param index
        */
-      $scope.edit = function (index)
-      {
+      $scope.edit = function(index) {
         $scope.editing = true;
         $scope.editname = $scope.entry.name;
         $scope.editaddress = $scope.entry.address;
@@ -99,8 +96,7 @@ ContactsTab.prototype.angular = function (module) {
        *
        * @param index
        */
-      $scope.update = function (index)
-      {
+      $scope.update = function(index) {
         if (!$scope.inlineAddress.editaddress.$error.rpUnique
             && !$scope.inlineAddress.editaddress.$error.rpDest
             && !$scope.inlineName.editname.$error.rpUnique) {
@@ -111,13 +107,18 @@ ContactsTab.prototype.angular = function (module) {
             address: $scope.editaddress
           };
 
-          if ($scope.editdt) {
+          if ($scope.editdt  && !$scope.contact.federation) {
             entry.dt = $scope.editdt;
           }
 
           // Update blob
           $scope.userBlob.filter('/contacts', 'name', $scope.entry.name,
                                  'extend', '', entry);
+          // delete destination tag
+          if (!$scope.editdt && $scope.entry.dt) {
+            $scope.userBlob.filter('/contacts', 'name', $scope.entry.name,
+                                   'unset', '/dt');
+          }
 
           $scope.editing = false;
         }
@@ -128,10 +129,15 @@ ContactsTab.prototype.angular = function (module) {
        *
        * @param index
        */
-      $scope.remove = function (name) {
+      $scope.remove = function(index) {
         // Update blob
-        $scope.userBlob.filter('/contacts', 'name', $scope.entry.name,
-                               'unset', '');
+        if (!$scope.entry.name) {
+          // there was bug that allowed to create contact without name
+          $scope.userBlob.unset('/contacts/' + index);
+        } else {
+          $scope.userBlob.filter('/contacts', 'name', $scope.entry.name,
+                                 'unset', '');
+        }
       };
 
       /**
@@ -139,13 +145,11 @@ ContactsTab.prototype.angular = function (module) {
        *
        * @param index
        */
-      $scope.cancel = function (index)
-      {
+      $scope.cancel = function(index) {
         $scope.editing = false;
       };
 
-      $scope.send = function (index)
-      {
+      $scope.send = function(index) {
         var search = {to: $scope.entry.name};
 
         $location.path('/send');

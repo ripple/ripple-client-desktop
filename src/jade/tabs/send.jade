@@ -5,6 +5,12 @@ section.col-xs-12.content(ng-controller='SendCtrl')
   group.disconnected(ng-hide='connected')
     p.literal(l10n="err-you-must-be-online-to-see-this-screen", l10n) You have to be online to see this screen
 
+  //- Account is unfunded
+
+  div(ng-show="!loadingAccount && !account.Balance && loadState.account && connected")
+    include ../tabs/banner/unfunded
+    p.literal(l10n="err-you-must-be-funded-before-you-can-send-money") You have to be funded before you can send money
+
   //- 1. Send form
 
   form.row-padding-small.mode-form#sendForm(name="sendForm", role="form"
@@ -18,7 +24,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
         rp-combobox="recipient_query"
         placeholder='Enter a Ripple address or contact'
         ng-model='send.recipient'
-                rp-dest, rp-dest-address, rp-dest-contact
+        rp-dest, rp-dest-address, rp-dest-contact, rp-dest-ripple-name
         rp-dest-email, rp-dest-loading="recipient_loading"
         required
         rp-autofill='$routeParams.to'
@@ -29,7 +35,13 @@ section.col-xs-12.content(ng-controller='SendCtrl')
           .error(rp-error-on='required', l10n)
             | Please enter a recipient.
           .error(rp-error-on='rpDest', l10n)
-            | Recipient should be a contact or Ripple address.
+            | Recipient should be a Ripple name, a contact, or Ripple address.
+          .error(rp-error-on='federation', l10n)
+            | This email address is not Ripple-enabled.
+          .error(rp-error-on='federationDown', l10n)
+            | Could not contact {{send.federationURL}}.<br/>Please try again later or contact support.
+          .error(rp-error-on='btcBridgeWrong', l10n)
+            | Cannot use your specified bitcoin bridge. Please go to Settings &gt; Advanced and update your bitcoin bridge URL to btc2ripple.com.
     ul.tagsLinks
       li
         a(href="", ng-click="send.show_dt_field = true"
