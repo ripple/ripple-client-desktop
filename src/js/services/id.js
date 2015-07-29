@@ -5,25 +5,27 @@
  */
 
 var util = require('util'),
+    webutil = require('../util/web'),
     Base58Utils = require('../util/base58'),
     RippleAddress = require('../util/types').RippleAddress;
 
-var module = angular.module('id', ['authflow', 'blob']);
+var module = angular.module('id', ['authflow', 'blob', 'rippletxt']);
 
 module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$timeout',
-                        'rpAuthFlow', 'rpBlob',
+                        'rpAuthFlow', 'rpBlob', '$q', 'rpRippleTxt', '$http',
                         function($scope, $location, $route, $routeParams, $timeout,
-                                 $authflow, $blob)
+                                 $authflow, $blob, $q, txt, $http)
 {
   /**
    * Identity manager
    *
    * This class manages the encrypted blob and all user-specific state.
    */
-  var Id = function ()
-  {
+  var Id = function() {
     this.account = null;
     this.loginStatus = false;
+    this.resolvedNames = [];
+    this.serviceInvoked = [];
   };
 
   // This object defines the minimum structure of the blob.
@@ -480,6 +482,99 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
         $location.path('/register');
       }
     }
+  };
+
+  /**
+   * Find Ripple Name
+   *
+   * Find a ripple name for a given ripple address
+   */
+  Id.prototype.resolveNameSync = function(address, options) {
+    if (!this.resolvedNames[address]) {
+      if (!this.serviceInvoked[address]) {
+        this.resolveName(address, options);
+      }
+      return address;
+    }
+    return this.resolvedNames[address];
+  };
+
+  /**
+   *
+   */
+  Id.prototype.addressDontHaveName = function(address) {
+    return this.resolvedNames[address] === address;
+  };
+
+  /**
+   * Find Ripple Name
+   *
+   * Find a ripple name for a given ripple address
+   */
+  Id.prototype.resolveName = function(address, options) {
+    var self = this;
+    var deferred = $q.defer();
+    var strippedValue = webutil.stripRippleAddress(address);
+    var rpAddress = ripple.UInt160.from_json(strippedValue);
+    if (!rpAddress.is_valid()) {
+      deferred.resolve(address);
+      return deferred.promise;
+    }
+
+    var opts = jQuery.extend(true, {}, options);
+
+    if (!this.resolvedNames[address]) {
+      if (!this.serviceInvoked[address]) {
+        this.serviceInvoked[address] = deferred;
+
+        // Get the blobvault url
+        txt
+          .get(Options.domain)
+          .then(
+            function(txtData) {
+              if (!txtData.authinfo_url) {
+                deferred.reject(new Error('Authentication is not supported on ' + Options.domain));
+              } else {
+                var url = Array.isArray(txtData.authinfo_url) ? txtData.authinfo_url[0] : txtData.authinfo_url;
+                url += '?username=' + address;
+                $http.get(url)
+                  .success(function(data) {
+                    if (data.username) {
+                      
+                        self.resolvedNames[address] = data.username;
+                      
+                    } else {
+                      // Show the ripple address if there's no name associated with it
+                      self.resolvedNames[address] = address;
+                    }
+
+                    self.serviceInvoked[address] = true;
+                     var result = (self.resolvedNames[address] !== address && opts.tilde) ? '~'.concat(self.resolvedNames[address]) : self.resolvedNames[address];
+                     deferred.resolve(result);
+                    
+                  }).error(function(error, status) {
+                    self.serviceInvoked[address] = false;
+                    deferred.reject(new Error(error));
+                  });
+              }
+            },
+            function(error) {
+              self.serviceInvoked[address] = false;
+              deferred.reject(new Error(error));
+            }
+          );
+      } else {
+        if (!_.isBoolean(this.serviceInvoked[address]) && _.isFunction(this.serviceInvoked[address].resolve)) {
+          return this.serviceInvoked[address].promise;
+        } else {
+          deferred.resolve(address);
+        }
+      }
+    } else {
+      var result = (self.resolvedNames[address] !== address && opts.tilde) ? '~'.concat(self.resolvedNames[address]) : self.resolvedNames[address];
+      deferred.resolve(result);
+    }
+    return deferred.promise;
   };
 
   return new Id();

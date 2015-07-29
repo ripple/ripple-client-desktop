@@ -262,3 +262,15 @@ exports.base64UrlToBase64 = function (encodedData) {
   }
   return encodedData;
 };
+
+/**
+ * Regex check if the string is a valid ripple name
+ *
+ * @param str
+ */
+exports.isRippleName = function (str) {
+  var nameRegex = /^~[a-zA-Z0-9]([\-]?[a-zA-Z0-9]){0,19}$/;
+  console.log('+++++++ webutil.isRippleName: ' + str + ' : ' + nameRegex.test(str));
+
+  return nameRegex.test(str);
+};

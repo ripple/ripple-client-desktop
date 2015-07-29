@@ -49,11 +49,14 @@ module.directive('rpMasterKey', function () {
  * - rp-dest-address     - If set, allows Ripple addresses as destinations.
  * - rp-dest-contact     - If set, allows address book contacts.
  * - rp-dest-model       - If set, updates the model with the resolved ripple address.
+ * - rp-dest-email            - If set, allows federation/email addresses.
+ * - rp-dest-check-federation - If set, check federation address for validity.
+ * - rp-dest-ripple-name      - If set, allows Existing ripple name as destination.
  *
  * If the input can be validly interpreted as one of these types, the validation
  * will succeed.
  */
-module.directive('rpDest', function ($timeout, $parse) {
+module.directive('rpDest', ['$timeout', '$parse', 'rpFederation', function ($timeout, $parse, federation) {
   var emailRegex = /^\S+@\S+\.[^\s.]+$/;
   return {
     restrict: 'A',
@@ -61,21 +64,44 @@ module.directive('rpDest', function ($timeout, $parse) {
     link: function (scope, elm, attr, ctrl) {
       if (!ctrl) return;
 
-      var timeoutPromise, getter;
+      var getter = null,
+          currentCheckTimeout = null;
+
+      function setDestModelValue(value) {
+        if (attr.rpDestModel) {
+          getter = $parse(attr.rpDestModel);
+          getter.assign(scope, value);
+        }
+      }
+      
+      function showLoading(doShow) {
+        if (attr.rpDestLoading) {
+          var getterL = $parse(attr.rpDestLoading);
+          getterL.assign(scope,doShow);
+        }
+      }
+
+
       var validator = function(value) {
         var strippedValue = webutil.stripRippleAddress(value);
         var address = ripple.UInt160.from_json(strippedValue);
 
         ctrl.rpDestType = null;
 
+        $timeout.cancel(currentCheckTimeout);
+        currentCheckTimeout = null;
+
+
+        if (attr.rpDestFederationModel) {
+          getter = $parse(attr.rpDestFederationModel);
+          getter.assign(scope, null);
+        }
+
         if (attr.rpDestAddress && address.is_valid()) {
           ctrl.rpDestType = "address";
           ctrl.$setValidity('rpDest', true);
 
-          if (attr.rpDestModel) {
-            getter = $parse(attr.rpDestModel);
-            getter.assign(scope,value);
-          }
+          setDestModelValue(value);
 
           return value;
         }
@@ -85,11 +111,61 @@ module.directive('rpDest', function ($timeout, $parse) {
           ctrl.rpDestType = "contact";
           ctrl.$setValidity('rpDest', true);
 
-          if (attr.rpDestModel) {
-            getter = $parse(attr.rpDestModel);
-            getter.assign(scope,webutil.getContact(scope.userBlob.data.contacts,strippedValue).address);
-          }
+          setDestModelValue(webutil.getContact(scope.userBlob.data.contacts,strippedValue).address);
 
+          return value;
+        }
+
+        // server-side validation
+        if (attr.rpDestEmail && emailRegex.test(strippedValue)) {
+          ctrl.rpDestType = 'email';
+          if (attr.rpDestCheckFederation) {
+            return federation.check_email(value)
+              .then(function(result) {
+                // Check if this request is still current, exit if not
+                if (value != ctrl.$viewValue) return;
+
+                setDestModelValue(value);
+
+                if (attr.rpDestFederationModel) {
+                  getter = $parse(attr.rpDestFederationModel);
+                  getter.assign(scope, result);
+                }
+                return true;
+              }, function() {
+                return false;
+              });
+          } else {
+            setDestModelValue(value);
+
+            // return $q.when(true);
+            ctrl.$setValidity('rpDest', true);
+            return value;
+          }
+        }
+
+        if (((attr.rpDestRippleName && webutil.isRippleName(value)) ||
+          (attr.rpDestRippleNameNoTilde && value && value[0] !== '~' && webutil.isRippleName('~' + value)))) { // TODO Don't do a client check in validators
+          ctrl.rpDestType = "rippleName";
+
+          currentCheckTimeout = $timeout(function() {
+            showLoading(true);
+            currentCheckTimeout = null;
+
+            ripple.AuthInfo.get(Options.domain, value, function(err, info) {
+              showLoading(false)              ;
+              // Check if this request is still current, exit if not
+              if (value != ctrl.$viewValue) return;
+              scope.$apply(function(){
+                if (info && info.exists) {
+                  ctrl.$setValidity('rpDest', true);
+                  setDestModelValue(info.address);
+                } else {
+                  ctrl.$setValidity('rpDest', false);
+                }
+              });
+            });
+          }, 500);
           return value;
         }
 
@@ -105,7 +181,7 @@ module.directive('rpDest', function ($timeout, $parse) {
       });
     }
   };
-});
+}]);
 
 /**
  * Source and destination tags validator

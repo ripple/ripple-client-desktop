@@ -298,7 +298,7 @@ TrustTab.prototype.angular = function (module)
           $scope.tx_result = 'failed';
           break;
         case 'tel':
-          $scope.tx_result = 'local';
+          $scope.tx_result = "local";
           break;
         case 'tep':
           console.warn('Unhandled engine status encountered!');
@@ -388,7 +388,8 @@ TrustTab.prototype.angular = function (module)
         $scope.editing = true;
 
         $scope.trust = {};
-        $scope.trust.limit = Number($scope.component.limit.to_json().value);
+        // edit as string because Chrome shows tiny numbers in e-notation
+        $scope.trust.limit = String($scope.component.limit.to_json().value);
         $scope.trust.rippling = !$scope.component.no_ripple;
         $scope.trust.limit_peer = Number($scope.component.limit_peer.to_json().value);
         $scope.trust.balance = String($scope.component.balance.to_json().value);
@@ -404,7 +405,7 @@ TrustTab.prototype.angular = function (module)
         $scope.trust.counterparty = $scope.component.account;
 
         $scope.load_orderbook();
-      }
+      };
 
       $scope.delete_account = function()
       {
@@ -451,7 +452,7 @@ TrustTab.prototype.angular = function (module)
           $scope.acctDefaultRippleFlag ? tx.setFlags('ClearNoRipple') : tx.setFlags('NoRipple');
 
           setSecretAndSubmit(tx);
-        }
+        };
 
         var clearBalance = function(selfAddress, issuerAddress, curr, amountObject, callback) {
 
@@ -484,14 +485,14 @@ TrustTab.prototype.angular = function (module)
             var payment = tx.payment(selfAddress, issuerAddress, newAmount);
 
             return tx;
-          }
+          };
 
           var tx = ($scope.orderbookStatus === 'exists') ? sendBalanceToSelf() : sendBalanceToIssuer();
 
           setSecretAndSubmit(tx);
 
           tx.once('proposed', callback);
-        }
+        };
 
         // $scope.counterparty inside the clearBalance callback function does not have counterparty in its scope, therefore, we need an immediate function to capture it.
 
@@ -541,7 +542,7 @@ TrustTab.prototype.angular = function (module)
           }
         });
 
-      }
+      };
 
       $scope.save_account = function () {
 
