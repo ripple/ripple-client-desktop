@@ -540,18 +540,18 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
                 $http.get(url)
                   .success(function(data) {
                     if (data.username) {
-                      if (opts.tilde === true) {
-                        self.resolvedNames[address] = '~'.concat(data.username);
-                      } else {
+                      
                         self.resolvedNames[address] = data.username;
-                      }
+                      
                     } else {
                       // Show the ripple address if there's no name associated with it
                       self.resolvedNames[address] = address;
                     }
 
                     self.serviceInvoked[address] = true;
-                    deferred.resolve(self.resolvedNames[address]);
+                     var result = (self.resolvedNames[address] !== address && opts.tilde) ? '~'.concat(self.resolvedNames[address]) : self.resolvedNames[address];
+                     deferred.resolve(result);
+                    
                   }).error(function(error, status) {
                     self.serviceInvoked[address] = false;
                     deferred.reject(new Error(error));
@@ -571,7 +571,8 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
         }
       }
     } else {
-      deferred.resolve(self.resolvedNames[address]);
+      var result = (self.resolvedNames[address] !== address && opts.tilde) ? '~'.concat(self.resolvedNames[address]) : self.resolvedNames[address];
+      deferred.resolve(result);
     }
     return deferred.promise;
   };
