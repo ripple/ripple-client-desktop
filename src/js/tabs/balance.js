@@ -17,7 +17,7 @@ BalanceTab.prototype.angularDeps = Tab.prototype.angularDeps.concat(['qr']);
 
 BalanceTab.prototype.generateHtml = function ()
 {
-  return require('../../jade/tabs/balance.jade')();
+  return require('../../templates/tabs/balance.jade')();
 };
 
 BalanceTab.prototype.angular = function (module)

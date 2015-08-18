@@ -17,7 +17,7 @@ TrustTab.prototype.mainMenu = 'fund';
 
 TrustTab.prototype.generateHtml = function ()
 {
-  return require('../../jade/tabs/trust.jade')();
+  return require('../../templates/tabs/trust.jade')();
 };
 
 TrustTab.prototype.angular = function (module)

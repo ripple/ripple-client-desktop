@@ -17,7 +17,7 @@ ContactsTab.prototype.aliases = ['contact'];
 
 ContactsTab.prototype.generateHtml = function ()
 {
-  return require('../../jade/tabs/contacts.jade')();
+  return require('../../templates/tabs/contacts.jade')();
 };
 
 ContactsTab.prototype.angular = function (module) {

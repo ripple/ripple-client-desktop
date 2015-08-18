@@ -1,0 +1,407 @@
+section.col-xs-12.content(ng-controller="TrustCtrl")
+
+  //- Disconnected
+
+  group.disconnected(ng-hide="connected")
+    p.literal(l10n) You have to be online to see this screen
+
+  group.disconnected(ng-hide="!connected || loadState.lines")
+    p.literal(l10n) Loading...
+
+  //- Connected
+
+  group(ng-show="connected && loadState.lines")
+    //- N1. Trust form
+    .row
+      .col-sm-12
+        //- N5. Notifications for connect new account
+        group.mode-granted.wide(ng-show='mode=="granted" && account.Balance')
+          group.pending(ng-show='tx_result=="pending"')
+            h2.tx-status(l10n) Connecting a gateway to your Ripple account...
+          group.result-success(ng-show='tx_result=="cleared"')
+            h2.tx-status(l10n) Gateway connected.
+          group.result-error(ng-show='tx_result=="error"')
+            h2.tx-status(l10n) Gateway could not be connected!
+            p(l10n) There was a problem connecting the gateway. Please try again later.
+          group.result-malformed(ng-show='tx_result=="malformed"')
+            h2.tx-status(l10n) There was a problem connecting the gateway. Please try again later.
+            p(l10n) Your request is invalid, reason: {{engine_result}} - {{engine_result_message}}
+          group.result-failed(ng-show='tx_result=="failed"')
+            h2.tx-status(l10n) Gateway connection failed!
+            p(ng-switch on="engine_result")
+              span(ng-switch-when="terNO_LINE", l10n) You have no gateway connected in this currency.
+              span(ng-switch-when="tecINSUF_RESERVE_LINE", l10n) Insufficient reserve to connect gateway.
+              span(ng-switch-when="tecNO_LINE_INSUF_RESERVE", l10n) You must have at
+                |  least {{account.reserve_to_add_trust | rpamount:0}} XRP to connect a gateway.&#32;
+                a(href="http://ripple.com/help/#reserve", l10n) Read more.
+              span(ng-switch-default, l10n) Gateway connection failed to clear,
+                |  reason: {{engine_result_message}}
+          group.result-failed(ng-show='tx_result=="local"')
+            h2.tx-status(l10n) Transaction failed!
+            p(ng-switch on="engine_result")
+              span(ng-switch-when="telINSUF_FEE_P", l10n)
+                | The particular server you sent the transaction to was too busy to forward or process
+                |  your transaction at the fee you included in it.
+      .col-sm-12
+        //- N5. Notifications for edit account
+        group.mode-granted.wide(ng-show='notif !== "clear"')
+          group(ng-switch on="notif")          
+            group.pending(ng-switch-when="loading")
+              h2.tx-status(l10n) Saving changes...
+            group.result-success(ng-switch-when="success")
+              h2.tx-status(l10n) Changes saved!
+            group.result-error(ng-switch-when="error")
+              h2.tx-status(l10n) There was an error while saving your changes.&#32;
+              p(l10n) Please try again later.
+
+      .col-sm-12          
+        //- N5. Notifications for removing account
+        group.mode-granted.wide(ng-show='notif !== "clear"')
+          group(ng-switch on="notif")          
+            group.pending(ng-switch-when="remove_gateway")
+              h2.tx-status(l10n) Removing gateway...
+            group.result-success(ng-switch-when="gateway_removed")
+              h2.tx-status(l10n) Gateway removed!
+            group.result-error(ng-switch-when="error")
+              h2.tx-status(l10n) There was an error while saving your changes.&#32;
+              p(l10n) Please try again later.
+            group.result-error(ng-switch-when="max_fee")
+              h2.tx-status(l10n) Request failed.
+              p(l10n) This request failed because the current network fee is higher than your account limit. You can adjust your maximum network fee in Settings &gt; Advanced, or try again later. <br>
+                | Error code: Network fee exceeded [tejMaxFeeExceeded].
+      .col-sm-12(ng-show='addform_visible && !can_add_trust')
+        .alert.alert-warning(l10n) You must have at least
+          strong  {{account.reserve_to_add_trust | rpamount:0}} XRP
+          |  to add a new trust line.&#32;
+          a(href="https://ripple.com/wiki/Reserves", target="_blank") More information
+    .row(ng-show='connected')
+
+      .col-sm-3
+        include fund/menu
+      .col-sm-9.trust-menu
+        .row.row-padding-small.head(ng-hide='true')
+          .col-sm-5(l10n) Name / Address
+          .col-sm-2
+            a(href="", ng-click="sorting.predicate = 'currency'; sorting.reverse=!sorting.reverse", l10n) Currency
+          .col-sm-2
+            a(href="", ng-click="sorting.predicate = 'balance'; sorting.reverse=!sorting.reverse", l10n) Balance
+          .col-sm-2(l10n) Trust Limit
+        .row
+          .col-xs-12
+            form.row-padding-small#trustForm(name='trustForm',
+              ng-show='mode=="main" && (addform_visible && can_add_trust)')
+              .errorGroup(rp-errors='trust_amount')
+                .error(rp-error-on='required', l10n) Amount field is required
+              .errorGroup(rp-errors='trust_amount_currency')
+                .error(rp-error-on='rpNotXrp', l10n)
+                  | XRP can be sent without extending trust. If you really want
+                  |  to trust in XRP, please use XRR currency code.
+                .error(rp-error-on='required', l10n)
+                  | Currency field is required
+              .row
+                .col-xs-12.form-group
+                  input.form-control#trust_counterparty(
+                    name='trust_counterparty', type='text', rp-combobox="counterparty_query"
+                    l10n-placeholder="Gateway's Ripple address"
+                    ng-model='counterparty_view'
+                    rp-dest, rp-dest-address, rp-dest-contact, rp-not-me, rp-dest-email
+                    rp-dest-model="counterparty"
+                    rp-dest-loading="counterparty_loading"
+                    required
+                    rp-autofill='$routeParams.to'
+                    rp-autofill-counterparty_view
+                    rp-autofill-on='addform_visible = true'
+                    rp-focus, rp-spinner="{{counterparty_loading ? 4 : null}}")
+                  .errorGroup(rp-errors='trust_counterparty')
+                    div(rp-error-valid)
+                      .success(ng-show='counterparty != counterparty_address && counterparty_name && !error_account_reserve')
+                        | {{counterparty_address}}
+                      .error(ng-show='error_account_reserve')
+                        span(l10n) Account does not meet the minimum XRP reserve.&#32;
+                        a(href="https://ripple.com/wiki/Account_Creation", target="_blank", l10n)
+                          | More information
+                    .error(rp-error-on='required', l10n) Please enter a Ripple address or contact.
+                    .error(rp-error-on='rpNotMe', l10n) You've entered your own address.
+                    .error(rp-error-on='rpDest', l10n) Please enter a valid Ripple address or contact.
+              .row
+                .col-xs-12.form-group
+                  label(for='trust_amount', ng-show="advanced_feature_switch", l10n) Amount
+                  label(for='trust_amount', ng-hide="advanced_feature_switch", l10n) Currency
+                  .row(ng-show="advanced_feature_switch")
+                    .col-md-3.col-sm-4.col-xs-3(ng-init="amount = $routeParams.amount ? '' : 1000000000")
+                      input.form-control.value#trust_amount(name='trust_amount'
+                        type='number', step='any', ng-model='amount'
+                        ng-pattern='validation_pattern'
+                        rp-autofill='$routeParams.amount'
+                        rp-autofill-amount
+                        rp-autofill-on='addform_visible = true')
+                    .col-md-6.col-sm-6.col-xs-9
+                      input.form-control.currency-field#trust_amount_currency(name='trust_amount_currency', type='text'
+                        ng-model='currency', rp-combobox="currency_query", rp-combobox-select
+                        rp-autofill='$routeParams.currency || $routeParams.amount'
+                        rp-autofill-currency
+                        rp-autofill-on='addform_visible = true'
+                        rp-not-xrp
+                        required)
+                  .row(ng-hide="advanced_feature_switch")
+                    .col-md-9.col-sm-10.col-xs-12
+                      input.form-control.currency-field#trust_amount_currency(name='trust_amount_currency', type='text'
+                        ng-model='currency', rp-combobox="currency_query", rp-combobox-select
+                        rp-autofill='$routeParams.currency || $routeParams.amount'
+                        rp-autofill-currency
+                        rp-autofill-on='addform_visible = true'
+                        rp-not-xrp
+                        required)
+                  .errorGroup(rp-errors='trust_amount')
+                    .error(rp-error-on='required', l10n) Amount field is required
+                  .errorGroup(rp-errors='trust_amount_currency')
+                    .error(rp-error-on='rpNotXrp', l10n)
+                      | XRP can be sent without extending trust. If you really want
+                      |  to trust in XRP, please use XRR currency code.
+                    .error(rp-error-on='required', l10n)
+                      | Currency field is required
+              .row(ng-show="advanced_feature_switch")
+                .col-xs-12.allow-rippling
+                  label.checkbox(for="trust_allowrippling")
+                    input#trust_allowrippling(
+                      name='trust_allowrippling', type='checkbox'
+                      ng-model='allowrippling')
+                    span(l10n) Allow Rippling
+                  i.fa.fa-question-circle.help-icon(
+                    rp-popover
+                    rp-popover-placement="bottom"
+                    l10n-rp-popover-title="Allow Rippling"
+                    rp-popover-trigger="click"
+                    l10n-data-content="Allow this trust line's balances to be transferred to another issuer you connect to. <a href=https://ripple.com/wiki/No_Ripple target=_blank>More information</a>")
+              .row
+                .col-xs-8.col-sm-7.col-md-6
+                  rp-popup(rp-popup-on-open="grant()") 
+                    a.btn.btn-block.btn-primary.submit(href="", rp-popup-link, ng-disabled='trustForm.$invalid || verifying', l10n) Save
+                    div.connectModal(rp-popup-content)
+                      .modal-header
+                        .navbar-brand.hidden-sm.modal-logo#logo
+                        .modal-title(l10n) Connect
+                      .modal-body
+                        div.modal-prompt(l10n) 
+                          div(l10n-inc) You are connecting a gateway, which means
+                          div(l10n-inc) {{ counterparty_address }} can:
+                        div.grey-focus(ng-show="advanced_feature_switch", l10n)
+                          span.modal-permissions(l10n-inc) - Hold up to&#32;
+                          span(rp-pretty-amount="amount_feedback")
+                          span.modal-permissions(l10n-inc)  on your behalf
+                        div.grey-focus(ng-hide="advanced_feature_switch", l10n)
+                          span.modal-permissions(l10n-inc) - Hold&#32;
+                          span {{ currency }}
+                          span.modal-permissions(l10n-inc)  on your behalf
+                        div.modal-buttons
+                          button.modal-btn.btn.btn-default.btn-success.btn-md(data-dismiss="modal", ng-click="grant_confirmed()",
+                            rp-spinner='{{loading ? 4 : null}}', ng-disabled="loading")
+                            span(ng-show="loading", l10n) Loading...
+                            span(ng-hide="loading", l10n) Confirm
+                          button.modal-btn.btn.btn-cancel.btn-md.btn-cancel(data-dismiss="modal",
+                            ng-click='toggle_form()', ng-hide="loading", l10n) cancel
+                .col-xs-4.col-sm-3.col-md-3
+                  button.btn.btn-block.btn-cancel(type="button", ng-click='toggle_form()', l10n) cancel
+              .row.delete-trust
+                .col-xs-6.col-sm-6.col-md-8.col-lg-9(ng-show='balance !== "0" && orderbookStatus === "exists"')
+                  rp-confirm(
+                    action-text="Are you sure you want to remove this gateway? Ripple Trade will attempt to convert the remaining balance of {{ trust.balance }} {{ trust.currency }} into XRP. This action can't be undone."
+                    action-button-text="Convert balance and remove"
+                    action-button-css="btn btn-default btn-danger"
+                    action-function="delete_line()"
+                    cancel-button-css="btn btn-cancel"
+                    cancel-button-text="cancel"
+                    ng-hide="showPassword==true")
+                      button.btn.btn-block.btn-danger.btn-xs.submit(type="button", ng-click="load_orderbook()", l10n) Remove
+                .col-xs-6.col-sm-6.col-md-8.col-lg-9(ng-show='balance !== "0" && orderbookStatus === "not"')
+                  rp-confirm(
+                    action-text="Are you sure you want to remove this gateway? Ripple Trade will return the balance of {{ trust.balance }} {{ trust.currency }} to the issuer. This action can't be undone."
+                    action-button-text="Return balance and remove"
+                    action-button-css="btn btn-default btn-danger"
+                    action-function="delete_line()"
+                    cancel-button-css="btn btn-cancel"
+                    cancel-button-text="cancel"
+                    ng-hide="showPassword==true")
+                      button.btn.btn-block.btn-danger.btn-xs.submit(type="button", ng-click="load_orderbook()", l10n) Remove
+                .col-xs-6.col-sm-6.col-md-8.col-lg-9(ng-show='balance === "0"')
+                  rp-confirm(
+                    action-text="Are you sure you want to remove this gateway? This action can't be undone."
+                    action-button-text="Remove"
+                    action-button-css="btn btn-default btn-danger"
+                    action-function="delete_line()"
+                    cancel-button-css="btn btn-cancel"
+                    cancel-button-text="cancel"
+                    ng-hide="showPassword==true")
+                      button.btn.btn-block.btn-danger.btn-xs.submit(type="button", ng-click="load_orderbook()", l10n) Remove
+              .row
+                .col-xs-12
+                  p.literal.throbber.verifying(ng-show="verifying", l10n) Verifying address
+          .col-xs-12(ng-show='addform_visible && !can_add_trust')
+            .alert.alert-warning(l10n) You must have at least
+              strong  {{account.reserve_to_add_trust | rpamount:0}} XRP
+              |  to add a new trust line.&#32;
+              a(href="https://ripple.com/wiki/Reserves", target="_blank") More information
+
+
+        .row
+          .unfunded.literal(ng-hide='account.Balance', l10n)
+            | Your account has to be&#32;
+            a(href="https://support.ripplelabs.com/hc/en-us/articles/202964876-Activating-Your-Wallet", target="_blank", l10n-inc) activated
+            | &#32;before you can add a gateway account.
+
+        //- Account is funded
+        .row
+          .col-xs-12.col-sm-4.col-md-3.actions.btn-add-trust
+            a.btn.btn-primary.btn-sm.btn-block.sign(ng-click='toggle_form()', ng-show='!addform_visible && account.Balance',
+            ng-disabled='addform_visible', l10n) Connect gateway 
+
+        .row.row-padding-small.line.padding-vertical-xs(ng-hide="true", ng-repeat='(key, line) in linesArray | orderBy:sorting.sort:sorting.reverse')
+          .col-sm-5 {{line.account | rpcontactnamefull }}
+          .col-sm-2(rp-currency="line.balance")
+          .col-sm-2
+            span(rp-tooltip="{{line.balance | rpamount }}") {{line.balance | rpamount:{rel_precision: 0} }}
+          .col-sm-2
+            rp-trust-line(rp-line-data='line')
+          .col-sm-1.actions
+            button.btn.btn-default.btn-sm(href="", ng-click="edit_line()", l10n) edit
+
+        .currencyBox(ng-repeat="entry in accountLines", ng-class="'currency-' + (entry.components[0].currency | lowercase)")
+          .row.currencyTitle
+            .col-xs-12
+              i(class="icon fa fa-money", ng-class="'fa-' + (entry.components[0].currency | lowercase)")
+              span.currency(rp-currency="entry.components[0].limit", rp-currency-full)
+          .row.head
+            div(
+              ng-class="{ 'col-sm-3 col-xs-2': advanced_feature_switch, 'col-sm-4 col-xs-4 col-md-5': !advanced_feature_switch }"
+              l10n) Gateway
+            div(
+              ng-class="{ 'col-xs-2 col-sm-2': advanced_feature_switch, 'col-xs-4': !advanced_feature_switch }"
+              l10n) Balance
+            div(ng-show="advanced_feature_switch", ng-class="{ 'col-xs-2': advanced_feature_switch }", l10n) Limit
+            div.col-xs-2.col-sm-1(ng-show="advanced_feature_switch", l10n) Min
+            div.col-xs-2(ng-show="advanced_feature_switch", l10n) Rippling
+            div(ng-class="{'col-xs-2' : advanced_feature_switch, 'col-xs-4 col-md-3': !advanced_feature_switch }"
+              l10n) Edit
+          hr#divider
+          .lines
+            .line(ng-controller="AccountRowCtrl", ng-repeat="component in entry.components")
+              .row(ng-class="{ 'frozen-account': component.freeze_peer }")
+                div.gateway(
+                  ng-class="{ 'col-sm-3 col-xs-2': advanced_feature_switch, 'col-md-5 col-sm-4 col-xs-4': !advanced_feature_switch }",
+                  rp-pretty-identity="component.account", rp-pretty-identity-filters="rpcontactnamefull"
+                  ) 
+                div(
+                  ng-class="{ 'col-xs-2 col-sm-2': advanced_feature_switch, 'col-xs-4': !advanced_feature_switch }")
+                  | {{ component.balance | rpamount:{rel_precision: 2} }}
+                div.col-xs-2(ng-show="advanced_feature_switch", ng-class="{ 'col-xs-1': advanced_feature_switch }")
+                  div {{ component.limit | rpamount }}
+                .col-sm-1.col-xs-2(ng-show="advanced_feature_switch && component.limit_peer._offset == '-100'") {{ component.limit_peer | rpamount }}
+                .col-sm-1.col-xs-2(ng-show="advanced_feature_switch && component.limit_peer._offset !== '-100'", ng-hide="component.limit_peer._offset == '-100' || !advanced_feature_switch") -{{ component.limit_peer | rpamount }}
+                .col-sm-2.col-xs-2(ng-show="advanced_feature_switch")
+                  div(ng-show="component.no_ripple", l10n) Off
+                  div(ng-hide="component.no_ripple", l10n) On
+                div(ng-hide="component.freeze_peer", ng-class="{ 'col-xs-2': advanced_feature_switch, 'col-xs-4 col-md-3': !advanced_feature_switch }")
+                  a(href="", ng-hide="editing", ng-click="edit_account()"
+                    l10n) edit
+                  span(ng-show="editing && !advanced_feature_switch")
+                    span(ng-hide="trust.loading")
+                      div.row.row-padding-small
+                        .col-md-7.col-sm-7.col-xs-6
+                          span(ng-show='trust.balance !== "0" && orderbookStatus === "exists"')
+                            rp-confirm(
+                            action-text="Are you sure you want to remove this gateway? Ripple Trade will attempt to convert the remaining balance of {{ trust.balance }} {{ currency }} into XRP. This action can't be undone."
+                            action-button-text="Convert balance and remove"
+                            action-button-css="btn btn-default btn-danger custom-btn"
+                            action-function="delete_account()"
+                            cancel-button-css="btn btn-cancel"
+                            cancel-button-text="cancel"
+                            ng-hide="showPassword==true")
+                              button.btn.btn-block.btn-danger.submit(type="button", ng-click="load_orderbook()", l10n) Remove
+                          span(ng-show='trust.balance !== "0" && orderbookStatus === "not"')
+                            rp-confirm(
+                            action-text="Are you sure you want to remove this gateway? Ripple Trade will return the balance of {{ trust.balance }} {{ currency }} to the issuer. This action can't be undone."
+                            action-button-text="Return balance and remove"
+                            action-button-css="btn btn-default btn-danger custom-btn"
+                            action-function="delete_account()"
+                            cancel-button-css="btn btn-cancel"
+                            cancel-button-text="cancel"
+                            ng-hide="showPassword==true")
+                              button.btn.btn-block.btn-danger.submit(type="button", ng-click="load_orderbook()", l10n) Remove
+                          span(ng-show='trust.balance === "0"')
+                            rp-confirm(
+                            action-text="Are you sure you want to remove this gateway? This action can't be undone."
+                            action-button-text="Remove"
+                            action-button-css="btn btn-default btn-danger custom-btn"
+                            action-function="delete_account()"
+                            cancel-button-css="btn btn-cancel"
+                            cancel-button-text="cancel"
+                            ng-hide="showPassword==true")
+                              button.btn.btn-block.btn-danger.submit(type="button", ng-click="load_orderbook()", l10n) Remove
+                        .col-md-5.col-sm-5.col-xs-6
+                          a.btn.btn-block.btn-cancel(href="", ng-click="cancel()"
+                          ng-disabled="trust.loading", l10n) cancel
+
+                //- Account Freeze
+                div.col-xs-2(ng-show="component.freeze_peer")
+                  i.fa.fa-lock(
+                    rp-popover
+                    rp-popover-placement="bottom"
+                    rp-popover-title='Account Frozen'
+                    rp-popover-trigger="click"
+                    data-content='This account has been frozen. Please contact the issuer to unfreeze your account. <a href=https://ripple.com/wiki/Freeze target=_blank>More about freezing</a>')
+              .row.row-padding-small-xs.editBox(ng-show="editing && advanced_feature_switch")
+                form(ng-class="{ 'frozen-account': component.freeze_peer }"
+                  ng-submit="save_account()")
+                  ng-form(name="accountForm")
+                    .col-sm-1.col-md-1.inputPadding(l10n) Limit
+                    .col-sm-2.col-md-3
+                      input.form-control(name='limit', type='text'
+                        ng-model='trust.limit', ng-pattern='validation_pattern'
+                        ng-disabled='trust.loading', required)
+                    .col-sm-2.col-md-2.inputPadding
+                      div.rippling-checkbox
+                        label(l10n) Rippling&#32;
+                          input(name='rippling', type='checkbox', ng-model='trust.rippling')
+                    .col-sm-7.col-md-6
+                      .row.row-padding-small
+                        .col-xs-6.col-sm-5
+                          button.btn.btn-block.btn-primary#save(type='submit'
+                            ng-disabled='accountForm.$invalid || trust.loading')
+                            span(ng-hide="trust.loading", l10n) Save
+                            span(ng-show="trust.loading", l10n) Saving...
+                        .col-xs-3.col-sm-4.col-md-3(ng-hide="trust.loading")  
+                          .row.text-right
+                            .col-xs-12(ng-show='trust.balance !== "0" && orderbookStatus === "exists"')
+                              rp-confirm(
+                              action-text="Are you sure you want to remove this gateway? Ripple Trade will attempt to convert the remaining balance of {{ trust.balance }} {{ currency }} into XRP. This action can't be undone."
+                              action-button-text="Convert balance and remove"
+                              action-button-css="btn btn-default btn-danger"
+                              action-function="delete_account()"
+                              cancel-button-css="btn btn-cancel"
+                              cancel-button-text="cancel"
+                              ng-hide="showPassword==true")
+                                button.btn.btn-block.btn-danger.btn-xs.submit(type="button", ng-click="load_orderbook()", l10n) Remove
+                            .col-xs-12(ng-show='trust.balance !== "0" && orderbookStatus === "not"')
+                              rp-confirm(
+                              action-text="Are you sure you want to remove this gateway? Ripple Trade will return the balance of {{ trust.balance }} {{ currency }} to the issuer. This action can't be undone."
+                              action-button-text="Return balance and remove"
+                              action-button-css="btn btn-default btn-danger"
+                              action-function="delete_account()"
+                              cancel-button-css="btn btn-link"
+                              cancel-button-text="cancel"
+                              ng-hide="showPassword==true")
+                                button.btn.btn-block.btn-danger.btn-xs.submit(type="button", ng-click="load_orderbook()", l10n) Remove
+                            .col-xs-12(ng-show='trust.balance === "0"')
+                              rp-confirm(
+                              action-text="Are you sure you want to remove this gateway? This action can't be undone."
+                              action-button-text="Remove"
+                              action-button-css="btn btn-default btn-danger "
+                              action-function="delete_account()"
+                              cancel-button-css="btn btn-default cancel-btn btn-cancel"
+                              cancel-button-text="cancel"
+                              ng-hide="showPassword==true")
+                                button.btn.btn-block.btn-danger.btn-xs.submit(type="button", ng-click="load_orderbook()", l10n) Remove
+                        .col-xs-3
+                          a.btn.btn-block.btn-cancel(href="", ng-click="cancel()"
+                            ng-disabled="trust.loading", l10n) cancel
+                      

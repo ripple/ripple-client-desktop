@@ -1,20 +1,5 @@
 {
   "active": [
-    {"code": "ca", "name": "catalan", "nativeName": "Català"},
-    {"code": "de", "name": "german", "nativeName": "Deutsch"},
-    {"code": "en", "name": "english", "nativeName": "English"},
-    {"code": "es", "name": "spanish", "nativeName": "Español"},
-    {"code": "he_IL", "name": "hebrew_israel", "nativeName": "עברית"},
-    {"code": "it", "name": "italian", "nativeName": "Italiano"},
-    {"code": "ja", "name": "japanese", "nativeName": "日本の"},
-    {"code": "nb_NO", "name": "norwegian_bokmal", "nativeName": "Norsk bokmål"},
-    {"code": "nl_NL", "name": "dutch_netherlands", "nativeName": "Nederlands"},
-    {"code": "pl", "name": "polish", "nativeName": "Polski"},
-    {"code": "pt", "name": "portuguese", "nativeName": "Português"},
-    {"code": "ro", "name": "romanian", "nativeName": "Român"},
-    {"code": "ru", "name": "russian", "nativeName": "Русский"},
-    {"code": "sk", "name": "slovak", "nativeName": "Slovenská"},
-    {"code": "tr", "name": "turkish", "nativeName": "Türkçe"},
-    {"code": "zh_CN", "name": "chinese_china", "nativeName": "中文"}
+    {"code": "en", "name": "english", "nativeName": "English"}
   ]
 }

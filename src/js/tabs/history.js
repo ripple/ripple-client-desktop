@@ -16,7 +16,7 @@ HistoryTab.prototype.mainMenu = 'wallet';
 
 HistoryTab.prototype.generateHtml = function ()
 {
-  return require('../../jade/tabs/history.jade')();
+  return require('../../templates/tabs/history.jade')();
 };
 
 HistoryTab.prototype.angular = function (module) {

@@ -14,7 +14,7 @@ EulaTab.prototype.parent = 'main';
 
 EulaTab.prototype.generateHtml = function ()
 {
-  return require('../../jade/tabs/eula.jade')();
+  return require('../../templates/tabs/eula.jade')();
 };
 
 EulaTab.prototype.angular = function (module) {

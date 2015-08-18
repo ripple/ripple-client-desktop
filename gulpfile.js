@@ -1,0 +1,330 @@
+'use strict';
+
+var gulp = require('gulp'),
+  merge = require('merge-stream'),
+  modRewrite = require('connect-modrewrite'),
+  BannerPlugin = require('gulp-webpack/node_modules/webpack/lib/BannerPlugin'),
+  UglifyJsPlugin = require('gulp-webpack/node_modules/webpack/lib/optimize/UglifyJsPlugin'),
+  jade = require('jade'),
+  jadeL10n = require('jade-l10n'),
+  NwBuilder = require('nw-builder'),
+
+  meta = require('./package.json'),
+  languages = require('./l10n/languages.json').active;
+
+var $ = require('gulp-load-plugins')({
+  pattern: ['gulp-*', 'del', 'browser-sync']
+});
+
+var BUILD_DIR = '.build/';
+var TMP_DIR = '.tmp/';
+var PACKAGES_FOLDER = 'packages';
+
+require('events').EventEmitter.prototype._maxListeners = 100;
+
+// Clean the build folder
+gulp.task('clean:dev', function () {
+  $.del.sync([TMP_DIR + '*']);
+});
+
+gulp.task('clean:dist', function () {
+  $.del.sync([BUILD_DIR + '*']);
+});
+
+gulp.task('bower', function() {
+  return $.bower();
+});
+
+// Webpack
+gulp.task('webpack:dev', function() {
+  // TODO jshint
+  // TODO move to js/entry.js
+  return gulp.src('src/js/entry/entry.js')
+    .pipe($.webpack({
+      module: {
+        loaders: [
+          { test: /\.jade$/, loader: "jade-loader" },
+          { test: /\.json$/, loader: "json-loader" }
+        ]
+      },
+      output: {
+        filename: "app.js"
+      },
+      target: 'node-webkit',
+      cache: true,
+      debug: true,
+      devtool: 'eval'
+    }))
+    .pipe(gulp.dest(TMP_DIR + 'js/'))
+    .pipe($.browserSync.reload({stream:true}));
+});
+
+gulp.task('webpack:dist', function() {
+  return gulp.src('src/js/entry/entry.js')
+    .pipe($.webpack({
+      module: {
+        loaders: [
+          { test: /\.jade$/, loader: "jade-loader" },
+          { test: /\.json$/, loader: "json-loader" }
+        ]
+      },
+      output: {
+        filename: "app.js"
+      },
+      plugins: [
+        new BannerPlugin('Ripple Client v' + meta.version + '\nCopyright (c) ' + new Date().getFullYear() + ' ' + meta.author.name + '\nLicensed under the ' + meta.license + ' license.'),
+        new UglifyJsPlugin({
+          compress: {
+            warnings: false
+          }
+        })
+      ],
+      target: 'node-webkit',
+      debug: false
+    }))
+    .pipe(gulp.dest(BUILD_DIR + 'js/'));
+});
+
+// TODO SASS
+// Less
+gulp.task('less', function () {
+  return gulp.src('src/less/ripple/main.less')
+    .pipe($.less({
+      paths: ['src/less']
+    }))
+    .pipe(gulp.dest(TMP_DIR))
+    .pipe($.browserSync.reload({stream:true}));
+});
+
+// Extracts l10n strings from template files
+gulp.task('l10nExtract', function () {
+  return gulp.src('src/templates/**/*.jade')
+    .pipe($.jadeL10nExtractor({
+      filename: 'messages.pot'
+    }))
+    .pipe(gulp.dest('./l10n/templates'))
+});
+
+// Static server
+gulp.task('serve', function() {
+  $.browserSync({
+    open: false,
+    server: {
+      baseDir: [".", TMP_DIR, BUILD_DIR, "./res", "./deps/js", ''],
+      middleware: [
+        modRewrite([
+          '!\\.html|\\.js|\\.css|\\.png|\\.jpg|\\.gif|\\.svg|\\.txt|\\.eot|\\.woff|\\.woff2|\\.ttf$ /index.html [L]'
+        ])
+      ]
+    }
+  });
+});
+
+// Static files
+gulp.task('static', function() {
+  // package.json
+  var pkg = gulp.src(['src/package.json'])
+    .pipe(gulp.dest(BUILD_DIR));
+
+  var icons = gulp.src(['icons/**/*'])
+    .pipe(gulp.dest(BUILD_DIR + 'icons/'));
+
+  var res = gulp.src(['res/**/*'])
+    .pipe(gulp.dest(BUILD_DIR));
+
+  var fonts = gulp.src(['fonts/**/*', 'deps/font-awesome/fonts/**/*'])
+    .pipe(gulp.dest(BUILD_DIR + 'fonts/'));
+
+  // Images
+  var images = gulp.src('img/**/*')
+    .pipe(gulp.dest(BUILD_DIR + 'img/'));
+
+  return merge(pkg, icons, res, fonts, images);
+});
+
+// Version branch
+gulp.task('gitVersion', function (cb) {
+  require('child_process').exec('git rev-parse --abbrev-ref HEAD', function(err, stdout) {
+    meta.gitVersionBranch = stdout.replace(/\n$/, '');
+
+    require('child_process').exec('git describe --tags --always', function(err, stdout) {
+      meta.gitVersion = stdout.replace(/\n$/, '');
+
+      cb(err)
+    })
+  })
+});
+
+// Preprocess
+gulp.task('preprocess:dev', ['gitVersion', 'prepare:dev'], function() {
+  return gulp.src(TMP_DIR + 'templates/en/index.html')
+    .pipe($.preprocess({
+      context: {
+        MODE: 'dev',
+        VERSION: meta.gitVersion,
+        VERSIONBRANCH: meta.gitVersionBranch,
+        VERSIONFULL: meta.gitVersion + '-' + meta.gitVersionBranch
+      }
+    }))
+    .pipe(gulp.dest(TMP_DIR + ''))
+    .pipe($.browserSync.reload({stream:true}))
+});
+
+gulp.task('preprocess:dist', ['gitVersion', 'prepare:dist'], function() {
+  return gulp.src(BUILD_DIR + 'templates/en/index.html')
+    .pipe($.preprocess({
+      context: {
+        MODE: 'dist',
+        VERSION: meta.gitVersion,
+        VERSIONBRANCH: meta.gitVersionBranch,
+        VERSIONFULL: meta.gitVersion
+      }
+    }))
+    .pipe(gulp.dest(BUILD_DIR))
+});
+
+// Languages
+gulp.task('templates:dev', function () {
+  return gulp.src('src/templates/**/*.jade')
+    .pipe($.jade({
+      jade: jade,
+      pretty: true
+    }))
+    .pipe(gulp.dest(TMP_DIR + 'templates/en'));
+});
+
+var languageTasks = [];
+
+languages.forEach(function(language){
+  gulp.task('templates:' + language.code, function(){
+    return gulp.src('src/templates/**/*.jade')
+      .pipe($.jade({
+        jade: jadeL10n,
+        languageFile: 'l10n/' + language.code + '/messages.po',
+        pretty: true
+      }))
+      .pipe(gulp.dest(BUILD_DIR + 'templates/' + language.code));
+  });
+
+  languageTasks.push('templates:' + language.code);
+});
+
+gulp.task('templates:dist', $.sync(gulp).sync(languageTasks));
+
+// Default Task (Dev environment)
+gulp.task('default', ['dev'], function() {
+  gulp.start('serve');
+
+  // Webpack
+  gulp.watch(['src/js/**/*.js'], ['webpack:dev']);
+
+  // Templates
+  $.watch('src/templates/**/*.jade')
+    .pipe($.jadeFindAffected())
+    .pipe($.jade({jade: jade, pretty: true}))
+    .pipe(gulp.dest(TMP_DIR + 'templates/en'))
+    .pipe($.browserSync.reload({stream:true}));
+
+  // Htmls
+  gulp.watch(TMP_DIR + 'templates/en/*.html', ['preprocess:dev']);
+
+  // TODO Config
+
+  gulp.watch('src/less/**/*', ['less']);
+});
+
+// Development
+gulp.task('prepare:dev', ['clean:dev', 'bower', 'webpack:dev', 'less', 'templates:dev']);
+gulp.task('dev', ['prepare:dev', 'preprocess:dev']);
+
+gulp.task('deps', ['preprocess:dist'], function () {
+  var assets = $.useref.assets();
+
+  return gulp.src([BUILD_DIR + 'index.html'])
+    // Concatenates asset files from the build blocks inside the HTML
+    .pipe(assets)
+    // Appends hash to extracted files app.css → app-098f6bcd.css
+    .pipe($.rev())
+    // Adds AngularJS dependency injection annotations
+    // We don't need this, cuz the app doesn't go thru this anymore
+    //.pipe($.if('*.js', $.ngAnnotate()))
+    // Uglifies js files
+    .pipe($.if('*.js', $.uglify()))
+    // Minifies css files
+    .pipe($.if('*.css', $.csso()))
+    // Brings back the previously filtered HTML files
+    .pipe(assets.restore())
+    // Parses build blocks in html to replace references to non-optimized scripts or stylesheets
+    .pipe($.useref())
+    // Rewrites occurences of filenames which have been renamed by rev
+    .pipe($.revReplace())
+    // Minifies html
+    .pipe($.if('*.html', $.minifyHtml({
+      empty: true,
+      spare: true,
+      quotes: true
+    })))
+    // Creates the actual files
+    .pipe(gulp.dest(BUILD_DIR))
+    // Print the file sizes
+    .pipe($.size({ title: BUILD_DIR, showFiles: true }));
+});
+
+// Distribution
+gulp.task('prepare:dist', ['clean:dist', 'bower', 'less', 'l10nExtract', 'webpack:dist', 'templates:dist', 'static']);
+gulp.task('dist', ['prepare:dist', 'deps']);
+
+// Build packages
+gulp.task('build', ['dist'], function() {
+  var nw = new NwBuilder({
+    files: [BUILD_DIR + '**/**'],
+    platforms: ['win', 'osx', 'linux'],
+    // TODO: Use these instead of the nested app/package.json values
+    //appName: meta.name,
+    //appVersion: meta.version,
+    buildDir: PACKAGES_FOLDER,
+    macZip: true,
+    cacheDir: TMP_DIR
+    // TODO: timestamped versions
+    // TODO: macIcns
+    // TODO: winIco
+  });
+
+  return nw.build()
+    .catch(function (error) {
+      console.error(error);
+    });
+});
+
+// Zip packages
+gulp.task('zip', ['build'], function() {
+  // Zip the packages
+  var linux32 = gulp.src(PACKAGES_FOLDER + meta.name + '/linux32/**/*')
+    .pipe($.zip('linux32.zip'))
+    .pipe(gulp.dest(PACKAGES_FOLDER + meta.name));
+
+  var linux64 = gulp.src(PACKAGES_FOLDER + meta.name + '/linux64/**/*')
+    .pipe($.zip('linux64.zip'))
+    .pipe(gulp.dest(PACKAGES_FOLDER + meta.name));
+
+  var osx32 = gulp.src(PACKAGES_FOLDER + meta.name + '/osx32/**/*')
+    .pipe($.zip('osx32.zip'))
+    .pipe(gulp.dest(PACKAGES_FOLDER + meta.name));
+
+  var osx64 = gulp.src(PACKAGES_FOLDER + meta.name + '/osx64/**/*')
+    .pipe($.zip('osx64.zip'))
+    .pipe(gulp.dest(PACKAGES_FOLDER + meta.name));
+
+  var win32 = gulp.src(PACKAGES_FOLDER + meta.name + '/win32/**/*')
+    .pipe($.zip('win32.zip'))
+    .pipe(gulp.dest(PACKAGES_FOLDER + meta.name));
+
+  var win64 = gulp.src(PACKAGES_FOLDER + meta.name + '/win64/**/*')
+    .pipe($.zip('win64.zip'))
+    .pipe(gulp.dest(PACKAGES_FOLDER + meta.name));
+
+  return merge(linux32, linux64, osx32, osx64, win32, win64);
+});
+
+// Final product
+gulp.task('packages', ['build', 'zip']);

@@ -4,11 +4,9 @@
  * The app controller manages the global scope.
  */
 
-var util = require('util'),
-    events = require('events'),
-    rewriter = require('../util/jsonrewriter'),
-    genericUtils = require('../util/generic'),
-    Amount = ripple.Amount;
+var rewriter = require('../util/jsonrewriter'),
+  genericUtils = require('../util/generic'),
+  Amount = ripple.Amount;
 
 var module = angular.module('app', []);
 
@@ -525,7 +523,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
 
   $scope.pairs = $scope.pairs_all.slice(1);
 
-  $scope.app_loaded = true;
+  $scope.app_loaded = 'loaded';
 
   // Moved this to the run block
   // Nav links same page click fix

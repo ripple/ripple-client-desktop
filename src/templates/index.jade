@@ -1,0 +1,111 @@
+doctype
+
+<!--[if lt IE 7]>
+html.no-js.lt-ie9.lt-ie8.lt-ie7(ng-app='rp', ng-controller='AppCtrl', ng-class='[$route.current.tabClass, $route.current.pageMode]', lang='en')
+<![endif]-->
+<!--[if IE 7]>
+html.no-js.lt-ie9.lt-ie8(ng-app='rp', ng-controller='AppCtrl', ng-class='[$route.current.tabClass, $route.current.pageMode]', lang='en')
+<![endif]-->
+<!--[if IE *]>
+html.no-js.lt-ie9(ng-app='rp', ng-controller='AppCtrl', ng-class='[$route.current.tabClass, $route.current.pageMode]', lang='en')
+<![endif]-->
+<!--[if gt IE 8]><!-->
+html.no-js(ng-app='rp', ng-controller='AppCtrl', ng-class='[$route.current.tabClass, $route.current.pageMode]', lang='en')
+<!--<![endif]-->
+
+html(ng-app='rp', ng-controller='AppCtrl', ng-class='[$route.current.tabClass, $route.current.pageMode]')
+  head
+    meta(charset='utf-8')
+    title Ripple Client
+    meta(name='apple-mobile-web-app-capable', ,='', content='yes')
+    meta(name='apple-mobile-web-app-title', content='Ripple Client')
+    meta(name='mobile-web-app-capable', ,='', content='yes')
+    meta(name='mobile-web-app-title', ,='', content='Ripple Client')
+    link(rel='apple-touch-icon', href='img/mobile/icon60.png')
+    link(rel='apple-touch-icon', sizes='76x76', href='img/mobile/icon76.png')
+    link(rel='apple-touch-icon', sizes='120x120', href='img/mobile/icon120.png')
+    link(rel='apple-touch-icon', sizes='152x152', href='img/mobile/icon152.png')
+    link(rel='icon', sizes='196x196', href='img/mobile/icon196.png')
+    link(rel='icon', sizes='128x128', href='img/mobile/icon128.png')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no')
+
+    // build:css css/vendor.css
+    link(href='../deps/font-awesome/css/font-awesome.min.css', rel='stylesheet')
+    // endbuild
+
+    // build:css css/main.css
+    link(href='../fonts/stylesheet.css', rel='stylesheet')
+    link(href='../.tmp/main.css', rel='stylesheet')
+    // endbuild
+
+    // FAVICON
+    link(rel='shortcut icon', href='img/favicon.ico', type='image/x-icon')
+    link(rel='icon', href='img/favicon.ico', type='image/x-icon')
+    // END FAVICON
+
+    // build:js js/head.js
+    script(src='../deps/modernizr.js')
+    // endbuild
+
+  body(ng-class='app_loaded')
+    //- TODO make this work div(ng-include="'templates/' + lang + '/client/layout.html'")
+    div(ng-include="'templates/en/client/layout.html'")
+
+    #appLoading
+      img.loader(src='img/main.png', alt='', title='')
+    // VERSION
+    #version <!-- @echo VERSIONFULL --><!-- @exclude -->[unprocessed]<!-- @endexclude -->
+    #noWebSockets
+      p We apologize, but the Ripple Client needs JavaScript and WebSockets in order to function.
+        br
+        | Please refer to this page and download a browser that supports WebSockets. Thank you!
+        br
+        a(href='http://caniuse.com/websockets') http://caniuse.com/websockets
+
+    // JAVASCRIPT
+
+    // build:js js/vendor.js
+    script(src='../deps/jquery/dist/jquery.js')
+    script(src='../deps/angular/angular.js')
+    script(src='../deps/angular-route/angular-route.js')
+    script(src='../deps/angular-messages/angular-messages.js')
+    script(src='../deps/store.js/store.js')
+    script(src='../deps/ripple/ripple-debug.js')
+    script(src='../deps/ripple-sjcl.js')
+    script(src='../deps/moment/moment.js')
+    script(src='../deps/bootstrap/js/modal.js')
+    script(src='../deps/bootstrap/js/dropdown.js')
+    script(src='../deps/bootstrap/js/tooltip.js')
+    script(src='../deps/bootstrap/js/popover.js')
+    script(src='../deps/angular-bootstrap/ui-bootstrap-tpls.js')
+    script(src='../deps/bootstrap-datepicker.js')
+    script(src='../deps/spin.js/spin.js')
+    script(src='../deps/snapjs/snap.js')
+    script(src='../deps/ng-sortable/dist/ng-sortable.js')
+    script(src='../deps/underscore/underscore.js')
+    // endbuild
+
+    // build:js config.js
+    script(src='../config.js')
+    // endbuild
+
+    script.
+      window.name = 'NG_DEFER_BOOTSTRAP!';
+
+    <!-- @if MODE == 'dev' -->
+    script(type='text/javascript').
+      $.getScript('js/app.js');
+    <!-- @endif -->
+
+    <!-- @if MODE == 'dist' -->
+    script(type='text/javascript').
+      $.ajaxSetup({
+        cache: true
+      });
+      var version = '<!-- @echo VERSION -->';
+      $.getScript('js/app.js?v=' + version);
+    <!-- @endif -->
+
+    // loading state
+    script.
+      setTimeout(function(){ $("body").addClass("loading");}, 100);

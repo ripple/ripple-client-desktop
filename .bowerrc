@@ -1,5 +1,5 @@
 {
-  "directory": "deps/js",
+  "directory": "deps",
   "json": "bower.json"
 }
 
