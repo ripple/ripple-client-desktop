@@ -14,7 +14,7 @@ RegisterTab.prototype.parent = 'main';
 
 RegisterTab.prototype.generateHtml = function ()
 {
-  return require('../../jade/tabs/register.jade')();
+  return require('../../templates/tabs/register.jade')();
 };
 
 RegisterTab.prototype.angular = function (module) {

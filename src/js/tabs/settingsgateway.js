@@ -12,7 +12,7 @@ SettingsGatewayTab.prototype.tabName = 'settingsgateway';
 SettingsGatewayTab.prototype.mainMenu = 'settingsgateway';
 
 SettingsGatewayTab.prototype.generateHtml = function() {
-  return require('../../jade/tabs/settingsgateway.jade')();
+  return require('../../templates/tabs/settingsgateway.jade')();
 };
 
 

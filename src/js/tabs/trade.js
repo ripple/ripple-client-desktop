@@ -17,7 +17,7 @@ TradeTab.prototype.mainMenu = 'trade';
 
 TradeTab.prototype.generateHtml = function ()
 {
-  return require('../../jade/tabs/trade.jade')();
+  return require('../../templates/tabs/trade.jade')();
 };
 
 TradeTab.prototype.angularDeps = Tab.prototype.angularDeps.concat(['books']);

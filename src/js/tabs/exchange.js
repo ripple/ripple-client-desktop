@@ -17,7 +17,7 @@ ExchangeTab.prototype.mainMenu = 'exchange';
 
 ExchangeTab.prototype.generateHtml = function ()
 {
-  return require('../../jade/tabs/exchange.jade')();
+  return require('../../templates/tabs/exchange.jade')();
 };
 
 ExchangeTab.prototype.angular = function (module)

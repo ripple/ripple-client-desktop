@@ -15,7 +15,7 @@ AdvancedTab.prototype.mainMenu = 'advanced';
 
 AdvancedTab.prototype.generateHtml = function ()
 {
-  return require('../../jade/tabs/advanced.jade')();
+  return require('../../templates/tabs/advanced.jade')();
 };
 
 AdvancedTab.prototype.angular = function(module)

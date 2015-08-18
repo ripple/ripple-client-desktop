@@ -13,7 +13,7 @@ SecurityTab.prototype.mainMenu = 'security';
 
 SecurityTab.prototype.generateHtml = function ()
 {
-  return require('../../jade/tabs/security.jade')();
+  return require('../../templates/tabs/security.jade')();
 };
 
 SecurityTab.prototype.angular = function (module) {

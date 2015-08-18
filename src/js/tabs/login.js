@@ -14,7 +14,7 @@ LoginTab.prototype.parent = 'main';
 
 LoginTab.prototype.generateHtml = function ()
 {
-  return require('../../jade/tabs/login.jade')();
+  return require('../../templates/tabs/login.jade')();
 };
 
 LoginTab.prototype.angular = function (module) {

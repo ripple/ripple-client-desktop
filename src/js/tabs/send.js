@@ -20,7 +20,7 @@ SendTab.prototype.angularDeps = Tab.prototype.angularDeps.concat(['keychain']);
 
 SendTab.prototype.generateHtml = function ()
 {
-  return require('../../jade/tabs/send.jade')();
+  return require('../../templates/tabs/send.jade')();
 };
 
 SendTab.prototype.angular = function (module)

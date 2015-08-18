@@ -1,7 +1,7 @@
 var types = require('../util/types');
 
-// Moment.js
-moment = require('moment');
+// Dependencies
+require("setimmediate");
 
 // Load app modules
 require('../controllers/app');
@@ -51,7 +51,8 @@ var appDependencies = [
   'errors',
   // Filters
   'filters',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'ui.sortable'
 ];
 
 // Load tabs
@@ -73,6 +74,23 @@ var tabdefs = [
   require('../tabs/settingsgateway')
 ];
 
+// Language
+window.lang = (function(){
+  var languages = _.pluck(require('../../../l10n/languages.json').active, 'code');
+  var resolveLanguage = function(lang) {
+    if (!lang) return null;
+    if (languages.indexOf(lang) != -1) return lang;
+    if (lang.indexOf("_") != -1) {
+      lang = lang.split("_")[0];
+      if (languages.indexOf(lang) != -1) return lang;
+    }
+    return null;
+  };
+  return resolveLanguage(store.get('ripple_language')) ||
+    resolveLanguage(window.navigator.userLanguage || window.navigator.language) ||
+    'en';
+})();
+
 // Prepare tab modules
 var tabs = tabdefs.map(function (Tab) {
   var tab = new Tab();
@@ -92,26 +110,40 @@ var app = angular.module('rp', appDependencies);
 var rippleclient = window.rippleclient = {};
 rippleclient.app = app;
 rippleclient.types = types;
+// for unit tests
+//rippleclient.rewriter = rewriter;
 
-// Install basic page template
-angular.element('body').prepend(require('../../jade/client/index.jade')());
+// for unit tests
+rippleclient.tabs = {};
+_.each(tabs, function(tab) { rippleclient.tabs[tab.tabName] = tab; });
 
 app.config(['$routeProvider', function ($routeProvider) {
   // Set up routing for tabs
   _.each(tabs, function (tab) {
-    if ("function" === typeof tab.generateHtml) {
-      var template = tab.generateHtml();
+    var config = {
+      tabName: tab.tabName,
+      tabClass: 't-' + tab.tabName,
+      pageMode: 'pm-' + tab.pageMode,
+      mainMenu: tab.mainMenu,
+      templateUrl: 'templates/' + lang + '/tabs/' + tab.tabName + '.html'
+    };
 
-      var config = {
-        tabName: tab.tabName,
-        tabClass: 't-'+tab.tabName,
-        pageMode: 'pm-'+tab.pageMode,
-        mainMenu: tab.mainMenu,
-        template: template
-      };
-
-      $routeProvider.when('/'+tab.tabName, config);
+    if ('balance' === tab.tabName) {
+      $routeProvider.when('/', config);
     }
+
+    $routeProvider.when('/' + tab.tabName, config);
+
+    if (tab.extraRoutes) {
+      _.each(tab.extraRoutes, function(route) {
+        $.extend({}, config, route.config);
+        $routeProvider.when(route.name, config);
+      });
+    }
+
+    _.each(tab.aliases, function (alias) {
+      $routeProvider.when('/' + alias, config);
+    });
   });
 
   // Language switcher
@@ -120,7 +152,7 @@ app.config(['$routeProvider', function ($routeProvider) {
       lang = routeParams.language;
 
       if (!store.disabled) {
-        store.set('ripple_language',lang ? lang : '');
+        store.set('ripple_language', lang ? lang : '');
       }
 
       // problem?
@@ -132,14 +164,14 @@ app.config(['$routeProvider', function ($routeProvider) {
     }
   });
 
-  $routeProvider.otherwise({redirectTo: '/balance'});
+  $routeProvider.otherwise({redirectTo: '/404'});
 }]);
 
 app.run(['$rootScope', '$route', '$routeParams',
   function ($rootScope, $route, $routeParams)
   {
     // This is the desktop client
-    $rootScope.productName = 'Ripple';
+    $rootScope.productName = 'Ripple Client';
 
     // Global reference for debugging only (!)
     if ("object" === typeof rippleclient) {
@@ -156,7 +188,20 @@ app.run(['$rootScope', '$route', '$routeParams',
     var scope = $rootScope;
     $rootScope.$route = $route;
     $rootScope.$routeParams = $routeParams;
+    $rootScope.lang = lang;
     $('#main').data('$scope', scope);
+
+    // put Options to rootScope so it can be used in html templates
+    $rootScope.globalOptions = Options;
+
+    // Show loading while waiting for the template load
+    $rootScope.$on('$routeChangeStart', function() {
+      $rootScope.pageLoading = true;
+    });
+
+    $rootScope.$on('$routeChangeSuccess', function() {
+      $rootScope.pageLoading = false;
+    });
 
     // Once the app controller has been instantiated
     // XXX ST: I think this should be an event instead of a watch
@@ -171,4 +216,20 @@ app.run(['$rootScope', '$route', '$routeParams',
     });
   }]);
 
-if ("function" === typeof angular.resumeBootstrap) angular.resumeBootstrap();
+if ("function" === typeof angular.resumeBootstrap) {
+  angular.resumeBootstrap();
+
+  angular.resumeBootstrap = function() {
+    return false;
+  };
+}
+
+// Edit menu
+var gui = require('nw.gui');
+if (process.platform === "darwin") {
+  var mb = new gui.Menu({type: 'menubar'});
+  mb.createMacBuiltin('Ripple Client', {
+    hideEdit: false
+  });
+  gui.Window.get().menu = mb;
+}
