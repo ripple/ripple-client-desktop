@@ -8,6 +8,10 @@ section.col-xs-12.content(ng-controller="HistoryCtrl")
   group.disconnected(ng-hide="!connected || loadState.transactions")
     p.literal(l10n) Loading history...
 
+  //- Show message if account has not been funded yet.
+  .unfunded(ng-show="!account.Balance && connected")
+    p.literal(l10n) You have to be funded before you can view history  
+
   //- Connected
 
   group.row(ng-show="connected && loadState.transactions && account.Balance")
