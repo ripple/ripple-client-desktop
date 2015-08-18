@@ -8,6 +8,10 @@ section.col-xs-12.content(ng-controller="ExchangeCtrl")
   group.disconnected(ng-hide="!connected || loadState.account")
     p.literal(l10n) Loading...
 
+  //- Show message if account has not been funded yet.
+  .unfunded(ng-show="!account.Balance && connected")
+    p.literal(l10n) You have to be funded before you can convert    
+
   //- Connected
 
   form.mode-form#exchangeForm(name="exchangeForm", ng-show='mode=="form" && account.Balance', ng-submit='exchange_prepared()')
