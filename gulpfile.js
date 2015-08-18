@@ -271,7 +271,7 @@ gulp.task('deps', ['preprocess:dist'], function () {
 });
 
 // Distribution
-gulp.task('prepare:dist', ['clean:dist', 'bower', 'less', 'l10nExtract', 'webpack:dist', 'templates:dist', 'static']);
+gulp.task('prepare:dist', ['clean:dist', 'bower', 'less', 'webpack:dist', 'templates:dist', 'static']);
 gulp.task('dist', ['prepare:dist', 'deps']);
 
 // Build packages
