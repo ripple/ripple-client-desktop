@@ -1,5 +1,5 @@
 {
-  "name": "ripple-client",
+  "name": "RippleClient",
   "version": "1.1.0",
   "description": "Desktop client for the Ripple payment network",
   "author": {

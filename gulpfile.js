@@ -18,7 +18,7 @@ var $ = require('gulp-load-plugins')({
 
 var BUILD_DIR = '.build/';
 var TMP_DIR = '.tmp/';
-var PACKAGES_FOLDER = 'packages';
+var PACKAGES_FOLDER = 'packages/';
 
 require('events').EventEmitter.prototype._maxListeners = 100;
 
