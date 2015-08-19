@@ -1,6 +1,7 @@
 'use strict';
 
 var gulp = require('gulp'),
+  shell = require('gulp-shell'),
   merge = require('merge-stream'),
   modRewrite = require('connect-modrewrite'),
   BannerPlugin = require('gulp-webpack/node_modules/webpack/lib/BannerPlugin'),
@@ -120,6 +121,9 @@ gulp.task('serve', function() {
   });
 });
 
+// Launch node-webkit
+gulp.task('nwlaunch', shell.task(['nw']));
+
 // Static files
 gulp.task('static', function() {
   // package.json
@@ -231,6 +235,7 @@ gulp.task('default', ['dev'], function() {
   // TODO Config
 
   gulp.watch('src/less/**/*', ['less']);
+  gulp.start('nwlaunch');
 });
 
 // Development
