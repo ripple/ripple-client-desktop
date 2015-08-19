@@ -20,8 +20,6 @@ deps/moment/
 deps/spin.js/
 deps/store.js/
 deps/underscore/
-deps/snapjs/
 deps/bootstrap/
 deps/font-awesome/
-deps/ng-sortable/
 deps/ripple-vault-client/

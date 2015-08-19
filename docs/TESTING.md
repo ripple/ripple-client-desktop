@@ -4,7 +4,7 @@ This is a working document that describes the current testing process and outlin
 
 ## Configuration
 For testing `ripple-client` we use Karma as the test runner with `mocha` as the test runner.
-The configuration lives in `test/karma.conf.js`. The tests are run in both `Chrome` and `Firefox`
+The configuration lives in `test/karma.conf.js`. The tests are run in `Chrome`
 
 ## Type of tests
 Test can be split up in three different ways:

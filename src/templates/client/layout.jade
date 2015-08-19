@@ -1,36 +1,3 @@
-
-.mobile-nav(rp-snapper)
-  a.wallet(href="#/balance", ng-class="{active: $route.current.tabName == 'balance'}")
-    span.nav-icon.nav-icon-wallet
-    span(l10n) Balance
-  //- a.sub(href="#/balance", ng-class="{active: $route.current.tabName == 'balance'}", l10n) Balance
-  a.sub(href="#/history", ng-class="{active: $route.current.tabName == 'history'}", l10n) History
-  a.sub(href="#/contacts", ng-class="{active: $route.current.tabName == 'contacts'}", l10n) Contacts
-
-  a.send(href="#/send", ng-class="{active: $route.current.tabName == 'send'}")
-    span.nav-icon.nav-icon-send
-    span(l10n) Send
-
-  a.exchange(href="#/exchange", ng-class="{active: $route.current.tabName == 'exchange'}")
-    span.nav-icon.nav-icon-exchange
-    span(l10n) Convert
-  //- a.sub(href="#/exchange", ng-class="{active: $route.current.tabName == 'exchange'}", l10n) Convert
-  a.sub(href="#/trade", ng-class="{active: $route.current.tabName == 'trade'}", l10n) Trade
-
-  a.fund(href="#/xrp", ng-class="{active: $route.current.tabName == 'xrp'}")
-    span.nav-icon.nav-icon-advanced
-    span(l10n) Fund
-  //- a.sub(href="#/withdraw", ng-class="{active: $route.current.tabName == 'withdraw'}", l10n) Withdraw
-  a.sub(href="#/trust", ng-class="{active: $route.current.tabName == 'trust'}", l10n) Gateways
-
-
-  a.advanced(href="#/security", ng-class="{active: $route.current.tabName == 'security'}")
-    img(src="img/settings-gray.png")
-    span(l10n) Settings
-  a.advanced(href="#", ng-click='logout()')
-    img(src="img/logout-gray.png")
-    span(l10n) Logout
-
 // Wrapper
 div#wrapper
   // Header
