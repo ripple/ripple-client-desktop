@@ -155,7 +155,7 @@ ExchangeTab.prototype.angular = function (module)
                   var alt = {};
                   alt.amount   = Amount.from_json(raw.source_amount);
                   alt.rate     = alt.amount.ratio_human(amount);
-                  alt.send_max = alt.amount.product_human(Amount.from_json('1.01'));
+                  alt.send_max = alt.amount.scale(1.01);
                   alt.paths    = raw.paths_computed
                       ? raw.paths_computed
                       : raw.paths_canonical;
