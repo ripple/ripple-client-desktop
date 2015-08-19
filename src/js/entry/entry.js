@@ -51,8 +51,7 @@ var appDependencies = [
   'errors',
   // Filters
   'filters',
-  'ui.bootstrap',
-  'ui.sortable'
+  'ui.bootstrap'
 ];
 
 // Load tabs
