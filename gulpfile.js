@@ -284,9 +284,9 @@ gulp.task('build', ['dist'], function() {
     //appVersion: meta.version,
     buildDir: PACKAGES_FOLDER,
     macZip: true,
-    cacheDir: TMP_DIR
+    cacheDir: TMP_DIR,
     // TODO: timestamped versions
-    // TODO: macIcns
+    macIcns: './res/dmg/xrp_ripple_logo.icns'
     // TODO: winIco
   });
 
