@@ -8,13 +8,11 @@
  */
 
 var DEFAULT_PAIRS = [
-  {name: 'XAU (-0.5%pa)/XRP', last_used: 2},
-  {name: 'XAU (-0.5%pa)/USD', last_used: 2},
-  {name: 'BTC/XRP', last_used: 1},
-  {name: 'XRP/USD', last_used: 1},
-  {name: 'XRP/EUR', last_used: 1},
-  {name: 'XRP/JPY', last_used: 0},
-  {name: 'XRP/GBP', last_used: 0},
+  {name: 'BTC/XRP', last_used: 2},
+  {name: 'XRP/USD', last_used: 2},
+  {name: 'XRP/EUR', last_used: 2},
+  {name: 'XRP/JPY', last_used: 1},
+  {name: 'XRP/GBP', last_used: 1},
   {name: 'XRP/AUD', last_used: 0},
   {name: 'XRP/CHF', last_used: 0},
   {name: 'XRP/CAD', last_used: 0},
