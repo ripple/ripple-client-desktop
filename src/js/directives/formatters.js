@@ -168,7 +168,7 @@ module.directive('rpPrettyIdentity', ['$timeout', function ($timeout) {
           template: '<div class="popover"><div class="arrow"></div><div class="popover-inner"><div class="popover-content" ></div></div></div>'
         };
         var popover = element.popover(options);
-        tip = element.data('popover').tip();
+        tip = element.data('bs.popover').tip();
         element.bind('mouseenter', onElemEnter);
         element.bind('mouseleave', onElemLeave);
         tip.bind('mouseenter', onPopoverEnter);
