@@ -6,7 +6,9 @@
 
 var rewriter = require('../util/jsonrewriter'),
   genericUtils = require('../util/generic'),
-  Amount = ripple.Amount;
+  Amount = ripple.Amount,
+  gui = require('nw.gui'),
+  win = gui.Window.get();
 
 var module = angular.module('app', []);
 
@@ -15,6 +17,12 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
                               function ($scope, $compile, $id, $net,
                                         keychain, $location, $timeout)
 {
+  // To open external links in the real browser
+  win.on('new-win-policy', function(frame, url, policy) {
+    gui.Shell.openExternal(url);
+    policy.ignore();
+  });
+
   reset();
 
   var account;
