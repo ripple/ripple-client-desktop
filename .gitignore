@@ -4,7 +4,6 @@
 .tx/
 .idea/
 npm-debug.log
-config.json
 packages
 node_modules
 config.js
