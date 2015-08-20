@@ -219,7 +219,9 @@ languages.forEach(function(language){
   languageTasks.push('templates:' + language.code);
 });
 
-gulp.task('templates:dist', runSequence(languageTasks));
+gulp.task('templates:dist', function(){
+  runSequence(languageTasks)
+});
 
 // Default Task (Dev environment)
 gulp.task('default', function() {
@@ -240,7 +242,9 @@ gulp.task('default', function() {
     .pipe(gulp.dest(TMP_DIR + 'templates/en'));
 
   // index.html preprocessing
-  gulp.watch(TMP_DIR + 'templates/en/index.html', ['preprocess:dev']);
+  $.watch(TMP_DIR + 'templates/en/index.html', function(){
+    gulp.start('preprocess:dev');
+  });
 
   // Reload
   $.watch(TMP_DIR + 'templates/**/*', $.browserSync.reload);
