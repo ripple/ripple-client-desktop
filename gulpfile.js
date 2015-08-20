@@ -9,6 +9,7 @@ var gulp = require('gulp'),
   jade = require('jade'),
   jadeL10n = require('jade-l10n'),
   NwBuilder = require('nw-builder'),
+  runSequence = require('run-sequence'),
 
   meta = require('./package.json'),
   languages = require('./l10n/languages.json').active;
@@ -25,7 +26,12 @@ require('events').EventEmitter.prototype._maxListeners = 100;
 
 // Clean the build folder
 gulp.task('clean:dev', function () {
-  $.del.sync([TMP_DIR + '*']);
+  $.del.sync([
+    TMP_DIR + 'js',
+    TMP_DIR + 'templates',
+    TMP_DIR + 'main.css',
+    TMP_DIR + 'index.html'
+  ]);
 });
 
 gulp.task('clean:dist', function () {
@@ -111,7 +117,7 @@ gulp.task('serve', function() {
   $.browserSync({
     open: false,
     server: {
-      baseDir: [".", TMP_DIR, BUILD_DIR, "./res", "./deps/js", ''],
+      baseDir: [".", TMP_DIR, "./res", "./deps/js", ''],
       middleware: [
         modRewrite([
           '!\\.html|\\.js|\\.css|\\.png|\\.jpg|\\.gif|\\.svg|\\.txt|\\.eot|\\.woff|\\.woff2|\\.ttf$ /index.html [L]'
@@ -122,7 +128,7 @@ gulp.task('serve', function() {
 });
 
 // Launch node-webkit
-gulp.task('nwlaunch', shell.task(['nw']));
+gulp.task('nwlaunch', shell.task(['node_modules/.bin/nw']));
 
 // Static files
 gulp.task('static', function() {
@@ -160,7 +166,7 @@ gulp.task('gitVersion', function (cb) {
 });
 
 // Preprocess
-gulp.task('preprocess:dev', ['gitVersion', 'prepare:dev'], function() {
+gulp.task('preprocess:dev', function() {
   return gulp.src(TMP_DIR + 'templates/en/index.html')
     .pipe($.preprocess({
       context: {
@@ -170,11 +176,10 @@ gulp.task('preprocess:dev', ['gitVersion', 'prepare:dev'], function() {
         VERSIONFULL: meta.gitVersion + '-' + meta.gitVersionBranch
       }
     }))
-    .pipe(gulp.dest(TMP_DIR + ''))
-    .pipe($.browserSync.reload({stream:true}))
+    .pipe(gulp.dest(TMP_DIR))
 });
 
-gulp.task('preprocess:dist', ['gitVersion', 'prepare:dist'], function() {
+gulp.task('preprocess:dist', function() {
   return gulp.src(BUILD_DIR + 'templates/en/index.html')
     .pipe($.preprocess({
       context: {
@@ -201,6 +206,7 @@ var languageTasks = [];
 
 languages.forEach(function(language){
   gulp.task('templates:' + language.code, function(){
+
     return gulp.src('src/templates/**/*.jade')
       .pipe($.jade({
         jade: jadeL10n,
@@ -213,11 +219,16 @@ languages.forEach(function(language){
   languageTasks.push('templates:' + language.code);
 });
 
-gulp.task('templates:dist', $.sync(gulp).sync(languageTasks));
+gulp.task('templates:dist', runSequence(languageTasks));
 
 // Default Task (Dev environment)
-gulp.task('default', ['dev'], function() {
-  gulp.start('serve');
+gulp.task('default', function() {
+  runSequence(
+    ['clean:dev', 'bower', 'webpack:dev', 'less', 'templates:dev',  'gitVersion'],
+    'preprocess:dev',
+    'serve',
+    'nwlaunch'
+  );
 
   // Webpack
   gulp.watch(['src/js/**/*.js'], ['webpack:dev']);
@@ -226,23 +237,19 @@ gulp.task('default', ['dev'], function() {
   $.watch('src/templates/**/*.jade')
     .pipe($.jadeFindAffected())
     .pipe($.jade({jade: jade, pretty: true}))
-    .pipe(gulp.dest(TMP_DIR + 'templates/en'))
-    .pipe($.browserSync.reload({stream:true}));
+    .pipe(gulp.dest(TMP_DIR + 'templates/en'));
 
-  // Htmls
-  gulp.watch(TMP_DIR + 'templates/en/*.html', ['preprocess:dev']);
+  // index.html preprocessing
+  gulp.watch(TMP_DIR + 'templates/en/index.html', ['preprocess:dev']);
+
+  // Reload
+  $.watch(TMP_DIR + 'templates/**/*', $.browserSync.reload);
 
   // TODO Config
-
   gulp.watch('src/less/**/*', ['less']);
-  gulp.start('nwlaunch');
 });
 
-// Development
-gulp.task('prepare:dev', ['clean:dev', 'bower', 'webpack:dev', 'less', 'templates:dev']);
-gulp.task('dev', ['prepare:dev', 'preprocess:dev']);
-
-gulp.task('deps', ['preprocess:dist'], function () {
+gulp.task('deps', function () {
   var assets = $.useref.assets();
 
   return gulp.src([BUILD_DIR + 'index.html'])
@@ -275,12 +282,8 @@ gulp.task('deps', ['preprocess:dist'], function () {
     .pipe($.size({ title: BUILD_DIR, showFiles: true }));
 });
 
-// Distribution
-gulp.task('prepare:dist', ['clean:dist', 'bower', 'less', 'webpack:dist', 'templates:dist', 'static']);
-gulp.task('dist', ['prepare:dist', 'deps']);
-
 // Build packages
-gulp.task('build', ['dist'], function() {
+gulp.task('build', function() {
   var nw = new NwBuilder({
     files: [BUILD_DIR + '**/**'],
     platforms: ['win', 'osx', 'linux'],
@@ -302,7 +305,7 @@ gulp.task('build', ['dist'], function() {
 });
 
 // Zip packages
-gulp.task('zip', ['build'], function() {
+gulp.task('zip', function() {
   // Zip the packages
   var linux32 = gulp.src(PACKAGES_FOLDER + meta.name + '/linux32/**/*')
     .pipe($.zip('linux32.zip'))
@@ -332,4 +335,12 @@ gulp.task('zip', ['build'], function() {
 });
 
 // Final product
-gulp.task('packages', ['build', 'zip']);
+gulp.task('packages', function() {
+  return runSequence(
+    ['clean:dist', 'bower', 'webpack:dist', 'less', 'templates:dist', 'static', 'gitVersion'],
+    'preprocess:dist',
+    'deps',
+    'build',
+    'zip'
+  )
+});
