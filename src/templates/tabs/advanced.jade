@@ -14,7 +14,7 @@ section.col-xs-12.content(ng-controller="AdvancedCtrl")
             .col-xs-3.col-sm-3.col-md-2
               a.btn.btn-block.btn-cancel(href="", ng-click="editMaxNetworkFee = true", l10n) edit
           .row.row-padding-small.field-edit-row(ng-show="editMaxNetworkFee")
-            .col-xs-12.col-sm-9.col-md-6.input-group
+            .col-xs-12.col-sm-6.col-md-6.input-group#maxnetworkfeeForm
               input.form-control.maxNetworkFee#maxNetworkFee(
               name='maxNetworkFee', type='text'
               ng-model='max_tx_network_fee_human'
@@ -24,9 +24,9 @@ section.col-xs-12.content(ng-controller="AdvancedCtrl")
               rp-amount-xrp-limit
               rp-amount-currency='{{xrp.name}}')
               span.input-group-addon(ng-bind="xrp.name")
-            .col-xs-6.col-sm-6.col-md-3
+            .col-xs-6.col-sm-3.col-md-3
               button.btn.btn-block.btn-success.btn-xs.submit#saveMaxNetworkFee(type='submit', ng-disabled='maxnetworkfeeForm.$invalid', l10n) Save
-            .col-xs-3.col-sm-3.col-md-1.text-center#cancel
+            .col-xs-3.col-sm-3.col-md-3.text-center#cancel
               a.btn.btn-cancel.btn-block(href="", ng-click="cancelEditMaxNetworkFee()", l10n) cancel
 
         h4#serverSettings(l10n) Server settings
