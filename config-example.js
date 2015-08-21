@@ -30,7 +30,10 @@ var Options = {
 
   advanced_feature_switch: false,
 
-  gateway_max_limit: 1000000000
+  gateway_max_limit: 1000000000,
+
+  // Should only be used for development purposes
+  persistent_auth: false
 };
 
 // Load client-side overrides

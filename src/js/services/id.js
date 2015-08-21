@@ -126,29 +126,6 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
         $scope.address = $scope.userBlob.data.account_id;
       }
     });
-
-    if (!!store.get('ripple_auth')) {
-      
-      self.relogin(function(err, blob) {
-        if (!blob) {
-          self.logout();  
-          $location.path('/login');
-        }
-      });
-    }
-
-    $(window).bind('storage', function (e) {
-      // http://stackoverflow.com/questions/18476564/ie-localstorage-event-misfired
-      if (document.hasFocus()) return;
-
-      if (e.originalEvent.key == 'ripple_auth' && e.originalEvent.oldValue && !e.originalEvent.newValue) {
-        $timeout(function(){ $scope.$broadcast('$idRemoteLogout'); }, 0);
-      }
-
-      if (e.originalEvent.key == 'ripple_auth' && !e.originalEvent.oldValue && e.originalEvent.newValue) {
-        $timeout(function(){ $scope.$broadcast('$idRemoteLogin'); }, 0);
-      }
-    });
   };
 
   Id.prototype.setUsername = function (username)
@@ -181,11 +158,6 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
   Id.prototype.isLoggedIn = function ()
   {
     return this.loginStatus;
-  };
-
-  Id.prototype.storeLoginKeys = function (url, username, keys)
-  {
-    store.set('ripple_auth', {url:url, username: username, keys: keys});
   };
 
   Id.prototype.verify = function (opts, callback) {
@@ -243,13 +215,6 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
       $scope.userBlob = blob;
 
       self.setUsername(username);
-
-//      self.setAccount(blob.data.account_id);
-//      self.setLoginKeys(keys);
-//      self.storeLoginKeys(username, keys);
-//      self.loginStatus = true;
-//      $scope.$broadcast('$blobUpdate');
-
       self.setAccount(blob.data.account_id);
       self.loginStatus = true;
       $scope.$broadcast('$blobUpdate');
@@ -313,13 +278,19 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
           actualUsername = username;
         }
 
+        // For development
+        if (Options.persistent_auth) {
+          sessionStorage.auth = JSON.stringify({
+            walletfile: opts.walletfile,
+            password: password
+          })
+        }
+
         $scope.userBlob = blob;
         self.setUsername(actualUsername);
 
-
         self.setAccount(blob.data.account_id);
         self.setLoginKeys(keys);
-        self.storeLoginKeys(blob.url, actualUsername, keys);
         store.set('device_id', blob.device_id);
         self.loginStatus = true;
         $scope.$broadcast('$blobUpdate');
@@ -334,47 +305,6 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
         }
       }
     });
-  };
-  
-  Id.prototype.relogin = function (callback) {
-    var self     = this;
-    var auth     = store.get('ripple_auth');
-    var deviceID = store.get('device_id');
-    if (!auth || !auth.keys) {
-      return callback(new Error('Missing authentication keys'));
-    }
-    
-    // XXX This is technically not correct, since we don't know yet whether
-    //     the login will succeed. But we need to set it now, because the page
-    //     controller will likely query it long before we get a response from
-    //     the login system.
-    //
-    //     Will work fine as long as any relogin error triggers a logout and
-    //     logouts trigger a full page reload.
-    self.loginStatus = true;    
-    
-    $authflow.relogin(auth.url, auth.keys, deviceID, function (err, blob) {
-      
-      if (err) {
-        
-        // Failed to relogin
-        console.log("client: id: failed to relogin:", err.message || err.toString());
-        callback(err);        
-        
-      } else {
-        // Ensure certain properties exist
-        $.extend(true, blob, Id.minimumBlob);
-
-        $scope.userBlob = blob;
-        self.setUsername(auth.username);
-        self.setAccount(blob.data.account_id);
-        self.setLoginKeys(auth.keys);
-        self.loginStatus = true;
-        $scope.$broadcast('$blobUpdate');
-        store.set('ripple_known', true);
-        callback(null, blob);
-      }
-    });    
   };
 
   Id.prototype.verifyToken = function (options, callback) {
@@ -404,7 +334,6 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
       self.setUsername(options.username);
       self.setAccount(options.blob.data.account_id);
       self.setLoginKeys(keys);
-      self.storeLoginKeys(options.blob.url, options.username, keys);
       store.set('device_id', options.blob.device_id);
       self.loginStatus = true;
       $scope.$broadcast('$blobUpdate');
@@ -415,7 +344,7 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
   
   Id.prototype.logout = function ()
   {
-    store.remove('ripple_auth');
+    sessionStorage.auth = '';
 
     //remove deviceID if remember me is not set
     if (!store.get('remember_me')) {
@@ -467,6 +396,23 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
    */
   Id.prototype.goId = function () {
     if (!this.isLoggedIn()) {
+      // Relogin (for development)
+      if (sessionStorage.auth) {
+        var auth = $.parseJSON(sessionStorage.auth);
+
+        this.login({
+          username: 'local',
+          password: auth.password,
+          walletfile: auth.walletfile
+        }, function () {
+          $scope.$apply(function(){
+            //$location.path('/balance');
+          });
+        });
+
+        return;
+      }
+
       if (_.size($routeParams)) {
         var tab = $route.current.tabName;
         $location.search('tab', tab);

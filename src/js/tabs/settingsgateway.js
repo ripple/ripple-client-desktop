@@ -21,7 +21,7 @@ SettingsGatewayTab.prototype.angular = function(module)
   module.controller('SettingsGatewayCtrl', ['$scope', 'rpId', 'rpKeychain', 'rpNetwork',
                                     function ($scope, id, keychain, network)
   {
-    if (!id.loginStatus) return id.goId();
+    if (!id.loginStatus) id.goId();
 
     // from new Ripple lib
     var RemoteFlags = {

@@ -27,7 +27,7 @@ BalanceTab.prototype.angular = function (module)
   module.controller('BalanceCtrl', ['$rootScope', 'rpId',
                                      function ($scope, $id)
   {
-    if (!$id.loginStatus) return $id.goId();
+    if (!$id.loginStatus) $id.goId();
   }]);
 };
 
