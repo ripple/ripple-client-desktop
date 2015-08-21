@@ -52,12 +52,12 @@ section.col-xs-12.content(ng-controller="AdvancedCtrl")
                   label
                     input(type="checkbox", name="secure", ng-model='server.secure')
                     span(l10n) Secure
-              .col-xs-6.col-sm-6.col-md-3
+              .col-xs-3.col-sm-3.col-md-2
                 button.btn.btn-block.btn-success.btn-xs.submit#save(type='submit'
                 ng-disabled='serverForm.$invalid', l10n) Save
-              .col-xs-3.col-sm-3.col-md-2(ng-show="hasRemove()")
-              button.btn.btn-block.btn-danger.btn-xs.submit#delete(type="button", ng-click="remove()", ng-show="hasRemove()", l10n) Delete
-              .col-xs-3.col-sm-3.col-md-1.text-center#cancel
+              .col-xs-6.col-sm-6.col-md-2(ng-show="hasRemove()")
+                button.btn.btn-block.btn-danger.btn-xs.submit#delete(type="button", ng-click="remove()", ng-show="hasRemove()", l10n) Delete
+              .col-xs-6.col-sm-6.col-md-2.text-center#cancel
                 a.btn.btn-cancel.btn-block(href="", ng-click="cancel()", ng-hide="noCancel()", l10n) cancel
             .row.advanced-form-row(ng-hide="editing")
               .col-xs-6.col-sm-5.col-md-3
