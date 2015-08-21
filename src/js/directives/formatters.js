@@ -158,7 +158,6 @@ module.directive('rpPrettyIdentity', ['$timeout', function ($timeout) {
           tip.bind('mouseleave', onPopoverLeave);
         }
         // XXX Set title to identity
-        console.log(element);
 
         element.popover('destroy');
         var content = 'Ripple address ' + scope.identity;
