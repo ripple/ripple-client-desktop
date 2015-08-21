@@ -30,7 +30,7 @@ SendTab.prototype.angular = function (module)
                                  function ($scope, $timeout, $routeParams, $id,
                                            $network, keychain)
   {
-    if (!$id.loginStatus) return $id.goId();
+    if (!$id.loginStatus) $id.goId();
 
     var timer;
 

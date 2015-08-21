@@ -35,7 +35,7 @@ TradeTab.prototype.angular = function(module)
                                             $routeParams, $location, $filter,
                                             keychain, $rootScope)
   {
-    if (!id.loginStatus) return id.goId();
+    if (!id.loginStatus) id.goId();
 
     // Remember user preference on Convert vs. Trade
     $rootScope.ripple_exchange_selection_trade = true;

@@ -23,7 +23,7 @@ HistoryTab.prototype.angular = function (module) {
   module.controller('HistoryCtrl', ['$scope', 'rpId', 'rpNetwork',
                                      function ($scope, $id, $network)
   {
-    if (!$id.loginStatus) return $id.goId();
+    if (!$id.loginStatus) $id.goId();
 
     var history = [];
 

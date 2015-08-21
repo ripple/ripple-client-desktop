@@ -22,7 +22,7 @@ SecurityTab.prototype.angular = function (module) {
                                      function ($scope, $id,
                                                keychain, $timeout, authflow, popup)
   {
-    if (!$id.loginStatus) return $id.goId();
+    if (!$id.loginStatus) $id.goId();
 
     $scope.settingsPage = 'security';
     

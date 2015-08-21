@@ -27,7 +27,7 @@ TrustTab.prototype.angular = function (module)
                                   function ($scope, books, $timeout, $routeParams, id,
                                             $filter, $network, keychain)
   {
-    if (!id.loginStatus) return id.goId();
+    if (!id.loginStatus) id.goId();
 
     var RemoteFalagDefaultRipple = 0x00800000;
 
