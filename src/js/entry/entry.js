@@ -232,3 +232,9 @@ if (process.platform === "darwin") {
   });
   gui.Window.get().menu = mb;
 }
+
+// To open external links in the real browser
+win.on('new-win-policy', function(frame, url, policy) {
+  gui.Shell.openExternal(url);
+  policy.ignore();
+});

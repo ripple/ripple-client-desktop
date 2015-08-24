@@ -17,12 +17,6 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
                               function ($scope, $compile, $id, $net,
                                         keychain, $location, $timeout)
 {
-  // To open external links in the real browser
-  win.on('new-win-policy', function(frame, url, policy) {
-    gui.Shell.openExternal(url);
-    policy.ignore();
-  });
-
   reset();
 
   var account;
