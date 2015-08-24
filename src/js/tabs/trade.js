@@ -131,10 +131,10 @@ TradeTab.prototype.angular = function(module)
     $scope.fill_widget = function (type, order, sum) {
       $scope.reset_widget(type);
 
-      $scope.order[type].price = order.price.to_human().replace(',','');
+      $scope.order[type].price = order.price.to_human({group_sep: false});
 
       if (sum) {
-        $scope.order[type].first = order.sum.to_human().replace(',','');
+        $scope.order[type].first = order.sum.to_human({group_sep: false});
         $scope.calc_second(type);
       }
 
@@ -415,8 +415,8 @@ TradeTab.prototype.angular = function(module)
       $scope.update_price(type);
       if (order.price_amount && order.price_amount.is_valid() &&
           order.first_amount && order.first_amount.is_valid()) {
-        order.second_amount = order.price_amount.product_human(+order.first);
-        order.second = +order.second_amount.to_human({group_sep: false});
+        order.second_amount = order.price_amount.product_human(order.first_amount);
+        order.second = order.second_amount.to_human({group_sep: false});
       }
     };
 
@@ -433,11 +433,19 @@ TradeTab.prototype.angular = function(module)
       if (order.price_amount  && order.price_amount.is_valid() &&
           order.second_amount && order.second_amount.is_valid()) {
 
-        order.first_amount = Amount.from_json(order.second_amount.to_text_full()).ratio_human(Amount.from_json(order.price_amount.to_text()), {reference_date: new Date()});
-        order.first = +order.first_amount.to_human({group_sep: false});
+        if (!order.price_amount.is_native()) {
+          var price = order.price_amount.to_human({group_sep: false});
+          var currency = order.price_amount.currency().to_json();
+          var issuer = order.price_amount.issuer().to_json();
+
+          // use replace(/,/g,'') until ripple lib fixed
+          order.first_amount = Amount.from_json(order.second_amount.to_text_full().replace(/,/g, '')).ratio_human(Amount.from_json(price + '/' + currency + '/' + issuer), {reference_date: new Date()});
+        } else {
+          order.first_amount = Amount.from_json(order.second_amount.to_text_full().replace(/,/g, '')).ratio_human(Amount.from_json(order.price_amount.to_text()), {reference_date: new Date()});
+        }
+        order.first = order.first_amount.to_human({group_sep: false});
       }
     };
-
     $scope.flip_issuer = function () {
       var order = $scope.order;
       if (!order.valid_settings) return;
