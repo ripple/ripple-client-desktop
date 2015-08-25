@@ -66,6 +66,11 @@ module.directive('rpDest', function ($timeout, $parse) {
         var strippedValue = webutil.stripRippleAddress(value);
         var address = ripple.UInt160.from_json(strippedValue);
 
+        if (typeof strippedValue !== 'string'
+          || (strippedValue.length && strippedValue[0] !== 'r')) {
+            address = ripple.UInt160.from_json();
+        }
+
         ctrl.rpDestType = null;
 
         if (attr.rpDestAddress && address.is_valid()) {
