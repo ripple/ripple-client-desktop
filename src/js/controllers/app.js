@@ -537,6 +537,11 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
   // });
 
   $scope.$on('$idAccountLoad', function (e, data) {
+    // fix blob if wrong
+    if (_.isArray($scope.userBlob.data.clients)) {
+      $scope.userBlob.unset('/clients');
+    }
+
     // Server is connected
     if ($scope.connected) {
       handleAccountLoad(e, data);
