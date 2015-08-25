@@ -170,3 +170,19 @@ form.ng-invalid .btn-success {
 .input-margin-group {
   margin-bottom: 20px;
 }
+
+.radio,
+.checkbox {
+  display: block;
+  min-height: @line-height-computed; // clear the floating input if there is no label text
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-left: 20px;
+  vertical-align: middle;
+  label {
+    display: inline;
+    margin-bottom: 0;
+    font-weight: normal;
+    cursor: pointer;
+  }
+}
