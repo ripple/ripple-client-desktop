@@ -38,6 +38,40 @@ LoginTab.prototype.angular = function (module) {
       }, false);
     };
 
+    // wallet file drang & drop
+    // prevent default behavior from changing page on dropped file
+    window.ondragover = function(e) {
+      e.preventDefault();
+      return false;
+    };
+
+    window.ondrop = function(e) {
+      e.preventDefault();
+      return false;
+    };
+
+    var holder = document.getElementById('walletfile');
+    holder.ondragover = function() {
+      this.className += this.className.indexOf(' dragover') == -1 ? ' dragover' : '';
+      return false;
+    };
+
+    holder.ondragleave = function() {
+      console.log("this.className", this.className);
+      this.className = this.className.replace(" dragover", "");
+      return false;
+    };
+
+    holder.ondrop = function(e) {
+      e.preventDefault();
+
+      $scope.$apply(function() {
+        $scope.walletfile = e.dataTransfer.files[0].path;
+      });
+
+      return false;
+    };
+
     $scope.error = '';
     $scope.username = '';
     $scope.password = '';
