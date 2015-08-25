@@ -134,12 +134,8 @@ AdvancedTab.prototype.angular = function(module)
         }
 
         $scope.editing = false;
-        console.log('---- ServerRowCtrl::cancel index: ' + $scope.index);
-        console.log(JSON.stringify($scope.server));
         $scope.server = $.extend({ '$$hashKey' : $scope.server.$$hashKey }, $scope.optionsBackup.server.servers[$scope.index]);
         Options.server.servers[$scope.index] = $.extend({}, $scope.optionsBackup.server.servers[$scope.index]);
-        console.log(JSON.stringify($scope.server));
-        console.log(JSON.stringify(Options.server.servers));
       }
 
       $scope.noCancel = function () {
