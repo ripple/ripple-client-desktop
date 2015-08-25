@@ -249,7 +249,7 @@ var JsonRewriter = module.exports = {
       } else {
         transaction.hash = 'unknown';
         transaction.date = new Date().getTime();
-        transaction.dateRaw = ripple.utils.fromTimestamp(fromTimestamp);
+        transaction.dateRaw = ripple.utils.fromTimestamp(transaction.date);
       }
       return {transaction: transaction, error: err};
     }
