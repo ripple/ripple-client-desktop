@@ -118,7 +118,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
       descending: true,
       limit: Options.transactions_per_page
     })
-      .on('success', handleAccountTx)
+      .on('transactions', handleAccountTx)
       .on('error', handleAccountTxError).request();
 
     // Outstanding offers
