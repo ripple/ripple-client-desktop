@@ -9,6 +9,7 @@
 
 ## Build
 
+- In the ripple-client-desktop repository, make a copy of the `config_example.js` file and name it `config.js`
 - Run `gulp` in your command line for development
 
 - Run `gulp packages` in your command line for the production ready client
