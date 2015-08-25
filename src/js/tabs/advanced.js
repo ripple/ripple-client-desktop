@@ -43,11 +43,20 @@ AdvancedTab.prototype.angular = function(module)
     $scope.editAcctOptions = false;
     $scope.max_tx_network_fee_human = ripple.Amount.from_json($scope.options.max_tx_network_fee).to_human();
 
-    $scope.saveBlob = function () {
+    $scope.saveSetings = function() {
+      // force serve ports to be number
+      _.each($scope.options.server.servers, function(s) {
+        s.port = +s.port;
+      });
       // Save in local storage
       if (!store.disabled) {
-        store.set('ripple_settings', JSON.stringify($scope.options));
+        store.set('ripple_settings', angular.toJson($scope.options));
       }
+    }
+
+    $scope.saveBlob = function() {
+
+      $scope.saveSetings();
 
       $scope.editBlob = false;
 
@@ -59,22 +68,10 @@ AdvancedTab.prototype.angular = function(module)
       // Save in local storage
       if (!store.disabled) {
         $scope.options.max_tx_network_fee = ripple.Amount.from_human($scope.max_tx_network_fee_human).to_json();
-        store.set('ripple_settings', JSON.stringify($scope.options));
+        store.set('ripple_settings', angular.toJson($scope.options));
       }
 
       $scope.editMaxNetworkFee = false;
-
-      // Reload
-      location.reload();
-    };
-
-    $scope.saveAcctOptions = function () {
-      if (!store.disabled) {
-        // Save in local storage
-        store.set('ripple_settings', JSON.stringify($scope.options));
-      }
-
-      $scope.editAcctOptions = false;
 
       // Reload
       location.reload();
@@ -123,10 +120,7 @@ AdvancedTab.prototype.angular = function(module)
       $scope.remove = function () {
         $scope.options.server.servers.splice($scope.index,1);
 
-        // Save in local storage
-        if (!store.disabled) {
-          store.set('ripple_settings', JSON.stringify($scope.options));
-        }
+        $scope.saveSetings();
       }
 
       $scope.hasRemove = function () {
@@ -140,8 +134,8 @@ AdvancedTab.prototype.angular = function(module)
         }
 
         $scope.editing = false;
-        $scope.server = $.extend({}, $scope.optionsBackup.server.servers[$scope.index]);
-
+        $scope.server = $.extend({ '$$hashKey' : $scope.server.$$hashKey }, $scope.optionsBackup.server.servers[$scope.index]);
+        Options.server.servers[$scope.index] = $.extend({}, $scope.optionsBackup.server.servers[$scope.index]);
       }
 
       $scope.noCancel = function () {
@@ -152,13 +146,10 @@ AdvancedTab.prototype.angular = function(module)
         $scope.server.isEmptyServer = false;
         $scope.editing = false;
 
-        // Save in local storage
-        if (!store.disabled) {
-          store.set('ripple_settings', JSON.stringify($scope.options));
-        }
+        $scope.saveSetings();
 
-        // Reload
-      location.reload();
+          // Reload
+        location.reload();
       };
     }
   ]);
