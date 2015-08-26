@@ -26,7 +26,7 @@ html(ng-app='rp', ng-controller='AppCtrl', ng-class='[$route.current.tabClass, $
     meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no')
 
     // build:css css/vendor.css
-    link(href='../deps/font-awesome/css/font-awesome.min.css', rel='stylesheet')
+    link(href='../node_modules/font-awesome/css/font-awesome.min.css', rel='stylesheet')
     // endbuild
 
     // build:css css/main.css
@@ -59,25 +59,10 @@ html(ng-app='rp', ng-controller='AppCtrl', ng-class='[$route.current.tabClass, $
         a(href='http://caniuse.com/websockets') http://caniuse.com/websockets
 
     // JAVASCRIPT
+    script(src='js/vendor.js')
 
-    // build:js js/vendor.js
-    script(src='../deps/jquery/dist/jquery.js')
-    script(src='../deps/angular/angular.js')
-    script(src='../deps/angular-route/angular-route.js')
-    script(src='../deps/angular-messages/angular-messages.js')
-    script(src='../deps/store.js/store.js')
-    script(src='../deps/ripple/ripple-debug.js')
-    script(src='../deps/ripple-sjcl.js')
-    script(src='../deps/moment/moment.js')
-    script(src='../deps/bootstrap/js/modal.js')
-    script(src='../deps/bootstrap/js/dropdown.js')
-    script(src='../deps/bootstrap/js/tooltip.js')
-    script(src='../deps/bootstrap/js/popover.js')
-    script(src='../deps/angular-bootstrap/ui-bootstrap-tpls.js')
+    // build:js js/deps.js
     script(src='../deps/bootstrap-datepicker.js')
-    script(src='../deps/spin.js/spin.js')
-    script(src='../deps/underscore/underscore.js')
-    script(src='../deps/ng-sortable/dist/ng-sortable.js')
     // endbuild
 
     // build:js config.js

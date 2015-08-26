@@ -225,8 +225,14 @@ if ("function" === typeof angular.resumeBootstrap) {
   };
 }
 
-// Edit menu
+/**
+ * NW.js stuff
+ */
+
 var gui = require('nw.gui');
+var win = gui.Window.get();
+
+// Edit menu
 if (process.platform === "darwin") {
   var mb = new gui.Menu({type: 'menubar'});
   mb.createMacBuiltin('Ripple Client', {

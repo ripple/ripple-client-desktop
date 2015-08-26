@@ -6,9 +6,7 @@
 
 var rewriter = require('../util/jsonrewriter'),
   genericUtils = require('../util/generic'),
-  Amount = ripple.Amount,
-  gui = require('nw.gui'),
-  win = gui.Window.get();
+  Amount = ripple.Amount;
 
 var module = angular.module('app', []);
 
