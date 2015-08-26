@@ -45,7 +45,7 @@ module.factory('rpPopup', ['$compile',
     actionButtonText = (actionButtonText) ? actionButtonText : "Ok";
     actionButtonCss = (actionButtonCss) ? actionButtonCss : "btn btn-info";
     cancelButtonText = (cancelButtonText) ? cancelButtonText : "Cancel";
-    cancelButtonCss = (cancelButtonCss) ? cancelButtonCss : "";
+    cancelButtonCss = (cancelButtonCss) ? cancelButtonCss : "btn btn-cancel";
 
     var popup = popupService.getPopup(true);
     var confirmHTML = '<div class="modal-dialog"><div class="modal-content">';
