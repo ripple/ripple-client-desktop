@@ -38,11 +38,32 @@ gulp.task('clean:dist', function () {
   $.del.sync([BUILD_DIR + '*']);
 });
 
-gulp.task('bower', function() {
-  return $.bower();
+// Webpack
+gulp.task('webpack:vendor:dev', function() {
+  return gulp.src('src/js/entry/vendor.js')
+    .pipe($.webpack({
+      output: {
+        filename: "vendor.js"
+      },
+      target: 'node-webkit',
+      cache: true,
+      debug: true
+    }))
+    .pipe(gulp.dest(TMP_DIR + 'js/'))
 });
 
-// Webpack
+gulp.task('webpack:vendor:dist', function() {
+  return gulp.src('src/js/entry/vendor.js')
+    .pipe($.webpack({
+      output: {
+        filename: "vendor.js"
+      },
+      target: 'node-webkit',
+      debug: false
+    }))
+    .pipe(gulp.dest(BUILD_DIR + 'js/'))
+});
+
 gulp.task('webpack:dev', function() {
   // TODO jshint
   // TODO move to js/entry.js
@@ -59,8 +80,7 @@ gulp.task('webpack:dev', function() {
       },
       target: 'node-webkit',
       cache: true,
-      debug: true,
-      devtool: 'eval'
+      debug: true
     }))
     .pipe(gulp.dest(TMP_DIR + 'js/'))
     .pipe($.browserSync.reload({stream:true}));
@@ -142,7 +162,7 @@ gulp.task('static', function() {
   var res = gulp.src(['res/**/*'])
     .pipe(gulp.dest(BUILD_DIR));
 
-  var fonts = gulp.src(['fonts/**/*', 'deps/font-awesome/fonts/**/*'])
+  var fonts = gulp.src(['fonts/**/*', 'node_modules/font-awesome/fonts/**/*'])
     .pipe(gulp.dest(BUILD_DIR + 'fonts/'));
 
   // Images
@@ -226,7 +246,7 @@ gulp.task('templates:dist', function(){
 // Default Task (Dev environment)
 gulp.task('default', function() {
   runSequence(
-    ['clean:dev', 'bower', 'webpack:dev', 'less', 'templates:dev',  'gitVersion'],
+    ['clean:dev', 'webpack:dev', 'webpack:vendor:dev', 'less', 'templates:dev',  'gitVersion'],
     'preprocess:dev',
     'serve',
     'nwlaunch'
@@ -242,7 +262,7 @@ gulp.task('default', function() {
     .pipe(gulp.dest(TMP_DIR + 'templates/en'));
 
   // index.html preprocessing
-  $.watch(TMP_DIR + 'templates/en/index.html', function(){
+  $.watch(TMP_DIR + 'templates/en/*.html', function(){
     gulp.start('preprocess:dev');
   });
 
@@ -341,7 +361,7 @@ gulp.task('zip', function() {
 // Final product
 gulp.task('packages', function() {
   return runSequence(
-    ['clean:dist', 'bower', 'webpack:dist', 'less', 'templates:dist', 'static', 'gitVersion'],
+    ['clean:dist', 'webpack:dist', 'webpack:vendor:dist', 'less', 'templates:dist', 'static', 'gitVersion'],
     'preprocess:dist',
     'deps',
     'build',
