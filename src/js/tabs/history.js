@@ -103,7 +103,8 @@ HistoryTab.prototype.angular = function (module) {
       var params = {
         account: $id.account,
         ledger_index_min: -1,
-        limit: 200
+        limit: 200,
+        binary: false
       };
 
       var getTx = function(){
@@ -410,7 +411,8 @@ HistoryTab.prototype.angular = function (module) {
         account: $id.account,
         ledger_index_min: -1,
         limit: limit,
-        marker: $scope.tx_marker
+        marker: $scope.tx_marker,
+        binary: false
       };
 
       $network.remote.requestAccountTransactions(params)

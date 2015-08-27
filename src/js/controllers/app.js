@@ -114,7 +114,8 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
       account: data.account,
       ledger_index_min: -1,
       descending: true,
-      limit: Options.transactions_per_page
+      limit: Options.transactions_per_page,
+      binary: false
     })
       .on('transactions', handleAccountTx)
       .on('error', handleAccountTxError).request();
