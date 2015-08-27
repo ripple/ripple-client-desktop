@@ -30,9 +30,14 @@ LoginTab.prototype.angular = function (module) {
       return;
     }
 
+    if(!!store.get('walletfile')) {
+      $scope.walletfile = store.get('walletfile');
+    }
+
     $scope.fileInputClick = function(element){
       filedialog.openFile(function(evt) {
         $scope.$apply(function() {
+          store.set('walletfile', evt);
           $scope.walletfile = evt;
         });
       }, false);
@@ -57,7 +62,6 @@ LoginTab.prototype.angular = function (module) {
     };
 
     holder.ondragleave = function() {
-      console.log("this.className", this.className);
       this.className = this.className.replace(" dragover", "");
       return false;
     };
@@ -66,6 +70,7 @@ LoginTab.prototype.angular = function (module) {
       e.preventDefault();
 
       $scope.$apply(function() {
+        store.set('walletfile', e.dataTransfer.files[0].path);
         $scope.walletfile = e.dataTransfer.files[0].path;
       });
 
