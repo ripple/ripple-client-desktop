@@ -32,6 +32,7 @@ LoginTab.prototype.angular = function (module) {
 
     if(!!store.get('walletfile')) {
       $scope.walletfile = store.get('walletfile');
+      angular.element("#login_password").focus();
     }
 
     $scope.fileInputClick = function(element){
@@ -39,6 +40,7 @@ LoginTab.prototype.angular = function (module) {
         $scope.$apply(function() {
           store.set('walletfile', evt);
           $scope.walletfile = evt;
+          angular.element("#login_password").focus();
         });
       }, false);
     };
@@ -72,6 +74,7 @@ LoginTab.prototype.angular = function (module) {
       $scope.$apply(function() {
         store.set('walletfile', e.dataTransfer.files[0].path);
         $scope.walletfile = e.dataTransfer.files[0].path;
+        angular.element("#login_password").focus();
       });
 
       return false;
