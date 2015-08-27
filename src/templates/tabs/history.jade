@@ -93,7 +93,6 @@ section.col-xs-12.content(ng-controller="HistoryCtrl")
         li(class="{{entry.transaction.type}}", ng-repeat="entry in historyShow track by entry.hash"
             ng-click='details[entry.hash] = !details[entry.hash]'
             ng-class="{open: details[entry.hash]}"
-            ng-class-odd="'odd'"
             rp-pretty-amount-date="entry.dateRaw")
           .info
             span.type &nbsp;
@@ -108,7 +107,7 @@ section.col-xs-12.content(ng-controller="HistoryCtrl")
             span.i(ng-show="entry.details")
               i.fa.fa-arrow-down
             span.dt {{entry.date | date:'EEE, MMM d, h:mm:ss a'}}
-            span.desc(ng-hide="entry.details", ng-switch on="entry.transaction.type")
+            span.desc(ng-hide="entry.details", ng-switch="entry.transaction.type")
               span(ng-switch-when="sent")
                 span(l10n, rp-span-spacing) You sent
                   span.amount(rp-pretty-amount="entry.transaction.amountSent || entry.transaction.amount")
@@ -170,7 +169,7 @@ section.col-xs-12.content(ng-controller="HistoryCtrl")
                     span(l10n) The client failed to parse this transaction. The developers have been notified of the issue.
               span(ng-switch-default)
                 include ./history/effects.jade
-            span.desc(ng-show="entry.details", ng-switch on="entry.details.type")
+            span.desc(ng-show="entry.details", ng-switch="entry.details.type")
               span(ng-switch-when="giveaway")
                 span(l10n, rp-span-spacing)
                   span {{entry.details.app.name}}
