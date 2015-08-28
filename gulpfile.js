@@ -312,8 +312,8 @@ gulp.task('build', function() {
     files: [BUILD_DIR + '**/**'],
     platforms: ['win', 'osx', 'linux'],
     // TODO: Use these instead of the nested app/package.json values
-    //appName: meta.name,
-    //appVersion: meta.version,
+    appName: meta.name + '-' + meta.version,
+    appVersion: meta.version,
     buildDir: PACKAGES_FOLDER,
     macZip: true,
     cacheDir: TMP_DIR,
