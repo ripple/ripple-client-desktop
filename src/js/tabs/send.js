@@ -739,7 +739,9 @@ SendTab.prototype.angular = function (module)
         dt = webutil.getDestTagFromAddress($scope.send.recipient);
       }
 
-      tx.destination_tag(dt ? +dt : undefined); // 'cause +dt is NaN when dt is undefined
+      if (dt) {
+        tx.destination_tag(+dt);
+      }
 
       tx.payment($id.account, address, amount.to_json());
 
