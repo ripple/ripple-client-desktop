@@ -50,6 +50,7 @@ gulp.task('webpack:vendor:dev', function() {
       debug: true
     }))
     .pipe(gulp.dest(TMP_DIR + 'js/'))
+    .pipe($.browserSync.reload({stream:true}));
 });
 
 gulp.task('webpack:vendor:dist', function() {
@@ -253,7 +254,10 @@ gulp.task('default', function() {
   );
 
   // Webpack
-  gulp.watch(['src/js/**/*.js'], ['webpack:dev']);
+  gulp.watch(['src/js/**/*.js', '!src/js/entry/vendor.js'], ['webpack:dev']);
+
+  // Webpack for vendor files
+  gulp.watch(['src/js/entry/vendor.js'], ['webpack:vendor:dev']);
 
   // Templates
   $.watch('src/templates/**/*.jade')
