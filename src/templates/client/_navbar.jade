@@ -68,21 +68,21 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
                       strong.nowrap  {{entry.transaction.amount | rpamount}} {{entry.transaction.amount | rpcurrency}}
                       |  to
                       span.address(title="{{entry.transaction.counterparty}}")  {{entry.transaction.counterparty | rpcontactnamefull }}
-                    include ../tabs/history/effects.jade
+                    include ../tabs/history/_effects.jade
                   .transaction(ng-switch-when="received")
                     span.address(title="{{entry.transaction.counterparty}}", l10n)
                       span {{entry.transaction.counterparty | rpcontactnamefull }}
                       |  sent you
                       strong.nowrap  {{entry.transaction.amount | rpamount:{reference_date:entry.dateRaw} }} {{entry.transaction.amount | rpcurrency}}
-                    include ../tabs/history/effects.jade
+                    include ../tabs/history/_effects.jade
                   .transaction(ng-switch-when="exchange")
-                    include ../tabs/history/effects.jade
+                    include ../tabs/history/_effects.jade
                   .transaction(ng-switch-when="trusted")
                     span.address(title="{{entry.transaction.counterparty}}", l10n)
                       | {{entry.transaction.counterparty | rpcontactname}} now trusts you for
                     strong.nowrap  {{entry.transaction.amount | rpamount}}
                       | {{entry.transaction.amount | rpcurrency}}
-                    include ../tabs/history/effects.jade
+                    include ../tabs/history/_effects.jade
                   .transaction(ng-switch-when="trusting")
                     span(l10n) You have now connected to the gateway&#32;
                       span.address(title="{{entry.transaction.counterparty}}")
@@ -91,9 +91,9 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
                       strong.nowrap {{entry.transaction.amount | rpamount:{reference_date:entry.dateRaw} }}
                         | {{entry.transaction.amount | rpcurrency}}
                       | .
-                    include ../tabs/history/effects.jade
+                    include ../tabs/history/_effects.jade
                   .transaction(ng-switch-when="offernew")
-                    include ../tabs/history/effects.jade
+                    include ../tabs/history/_effects.jade
                   .transaction(ng-switch-when="offercancel")
                     span(l10n) You cancelled an order accepting&#32;
                       strong.nowrap {{entry.transaction.pays | rpamount}}
@@ -101,16 +101,16 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
                       |  for&#32;
                       strong.nowrap {{entry.transaction.gets | rpamount}}
                         | {{entry.transaction.gets | rpcurrency}}
-                    include ../tabs/history/effects.jade
+                    include ../tabs/history/_effects.jade
                   .transaction(ng-switch-when="accountset", l10n)
                     | Account details have been changed
                   .transaction(ng-switch-when="rippling")
                     span(l10n) Rippling
-                    include ../tabs/history/effects.jade
+                    include ../tabs/history/_effects.jade
                   .transaction(ng-switch-when="failed", l10n)
                     | Failed transaction
                   .transaction(ng-switch-default)
-                    include ../tabs/history/effects.jade
+                    include ../tabs/history/_effects.jade
                 .date {{entry.date | rpfromnow}}
               li.history(ng-show="notifications.length")
                 a(href="#/history", l10n) View Full History
@@ -125,22 +125,21 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
               li: a.logout(ng-click='logout()', l10n)
                 i.icon-logout
                 |  Log Out
-  .subnav(ng-show="$route.current.mainMenu == 'wallet'")
+  .subnav
     .container
-      ul
+      ul(ng-show="$route.current.mainMenu == 'wallet'")
         li(ng-class="{active: $route.current.tabName == 'balance'}")
           a(href="#/balance", l10n) Balance
         li(ng-class="{active: $route.current.tabName == 'history'}")
           a(href="#/history", l10n) History
         li(ng-class="{active: $route.current.tabName == 'contacts'}")
           a(href="#/contacts", l10n) Contacts
-  .subnav(ng-show="$route.current.mainMenu == 'exchange' || $route.current.mainMenu == 'trade'")
-    .container
-      ul
+      ul(ng-show="$route.current.mainMenu == 'exchange' || $route.current.mainMenu == 'trade'")
         li(ng-class="{active: $route.current.tabName == 'exchange'}")
           a(href="#/exchange", l10n) Simple
         li(ng-class="{active: $route.current.tabName == 'trade'}")
           a(href="#/trade", l10n) Advanced
+
   //- .subnav(ng-show="$route.current.mainMenu == 'fund'")
     .container
       ul
@@ -148,3 +147,4 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
           a(href="#/xrp", l10n) Fund
         li(ng-class="{active: $route.current.tabName == 'withdraw'}")
           a(href="#/withdraw", l10n) Withdraw
+

@@ -9,7 +9,7 @@ section.col-xs-12.content(ng-controller='FundCtrl')
   //- Funding
   .row(ng-show='connected')
     .col-sm-3
-      include fund/menu
+      include fund/_menu
     .col-sm-9.list
       .fundAcct(ng-show="currencyPage == 'accounts'", ng-controller='TrustCtrl')
         .row

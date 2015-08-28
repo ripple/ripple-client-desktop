@@ -11,7 +11,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
   //- Account is unfunded
 
   div(ng-show="!loadingAccount && !account.Balance && loadState.account && connected")
-    include ../tabs/banner/unfunded
+    include ../tabs/banner/_unfunded
     p.literal(l10n="err-you-must-be-funded-before-you-can-send-money") You have to be funded before you can send money
 
   //- 1. Send form
@@ -257,13 +257,13 @@ section.col-xs-12.content(ng-controller='SendCtrl')
   //- N4. Waiting for transaction result page
 
   group.mode-sending(ng-show='mode=="sending" && account.Balance && connected')
-    include ../messages/sendconvert/waiting
+    include ../messages/sendconvert/_waiting
     hr
     //- p: button.btn.btn-default(ng-click='reset()', l10n) Stop waiting
 
   //- N5a. Error page
   group.mode-error(ng-show='mode=="error" && account.Balance && connected')
-    include ../messages/sendconvert/localerror
+    include ../messages/sendconvert/_localerror
     p: button.btn.btn-link.btn-default(ng-click='cancelConfirm()', l10n) cancel
 
   //- N5b. Ripple error page
@@ -301,7 +301,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
   //- N5c. Sent page
 
   group.mode-status(ng-show='mode=="status" && account.Balance && connected')
-    include ../messages/sendconvert/confirmation
+    include ../messages/sendconvert/_confirmation
     group.actions
       hr
       .text-success(ng-show='addressSaved', class="actionLink", l10n) Contact saved!
