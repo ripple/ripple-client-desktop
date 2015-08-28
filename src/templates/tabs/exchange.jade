@@ -11,7 +11,7 @@ section.col-xs-12.content(ng-controller="ExchangeCtrl")
       div(class="loading_sections", l10n) Loading... 
 
   div(ng-show="!loadingAccount && !account.Balance && loadState.account && connected")
-    include ../tabs/banner/unfunded
+    include ../tabs/banner/_unfunded
     p.literal(l10n="err-you-must-be-funded-before-you-can-exchange-money") You have to be funded before you can submit an order.
 
   //- Show message if account has not been funded yet.
@@ -123,19 +123,19 @@ section.col-xs-12.content(ng-controller="ExchangeCtrl")
   //- N4. Waiting for transaction result page
 
   group.mode-sending(ng-show='mode=="sending" && account.Balance')
-    include ../messages/sendconvert/waiting
+    include ../messages/sendconvert/_waiting
     hr
     //- p: button.btn.btn-default(ng-click='reset()', l10n) Stop waiting
 
   //- N5. Error page
   group.mode-error(ng-show='mode=="error" && account.Balance')
-    include ../messages/sendconvert/localerror
+    include ../messages/sendconvert/_localerror
     p: button.btn.btn-link.btn-default(ng-click='cancelConfirm()', l10n) cancel
 
   //- N6. Confirmed page 
 
   group.mode-status(ng-show='mode=="status" && account.Balance')
-    include ../messages/sendconvert/confirmation
+    include ../messages/sendconvert/_confirmation
     group.actions
       hr
       div(class="actionLink")

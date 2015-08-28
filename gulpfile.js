@@ -216,11 +216,22 @@ gulp.task('preprocess:dist', function() {
 // Languages
 gulp.task('templates:dev', function () {
   return gulp.src('src/templates/**/*.jade')
+    // filter out unchanged partials
+    .pipe($.cached('jade'))
+
+    // find files that depend on the files that have changed
+    .pipe($.jadeInheritance({basedir: 'src/templates'}))
+
+    // filter out partials (folders and files starting with "_" )
+    .pipe($.filter(function (file) {
+      return !/\/_/.test(file.path) && !/^_/.test(file.relative);
+    }))
+
     .pipe($.jade({
       jade: jade,
       pretty: true
     }))
-    .pipe(gulp.dest(TMP_DIR + 'templates/en'));
+    .pipe(gulp.dest(TMP_DIR + 'templates/en'))
 });
 
 var languageTasks = [];
@@ -260,10 +271,7 @@ gulp.task('default', function() {
   gulp.watch(['src/js/entry/vendor.js'], ['webpack:vendor:dev']);
 
   // Templates
-  $.watch('src/templates/**/*.jade')
-    .pipe($.jadeFindAffected())
-    .pipe($.jade({jade: jade, pretty: true}))
-    .pipe(gulp.dest(TMP_DIR + 'templates/en'));
+  gulp.watch(['src/templates/**/*.jade'], ['templates:dev']);
 
   // index.html preprocessing
   $.watch(TMP_DIR + 'templates/en/*.html', function(){

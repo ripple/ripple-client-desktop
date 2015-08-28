@@ -12,7 +12,7 @@ section.col-xs-12.content(ng-controller="TradeCtrl")
   //- Connected
 
   div(ng-show="!loadingAccount && !account.Balance && loadState.account && connected && !debug")
-    include ../tabs/banner/unfunded
+    include ../tabs/banner/_unfunded
 
   group(ng-show="connected && loadState.offers")
     .settings

@@ -1,7 +1,7 @@
 section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
 
   div(ng-show="!loadingAccount && !account.Balance && loadState.account && connected && !debug")
-    include ../tabs/banner/unfunded
+    include ../tabs/banner/_unfunded
   .row
     .col-sm-12.notification-wrapper
       .alert.alert-success(ng-show="success.bridge", l10n) Your bitcoin bridge has been changed successfully.
@@ -9,7 +9,7 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
       .alert.alert-info(ng-show="edit.defaultRippleFlagSaving", l10n) Updating DefaultRipple flag...
       .alert.alert-success(ng-show="notif == 'defaultRippleUpdated'", l10n) DefaultRipple flag updated
     .col-sm-3
-      include settings/navbar
+      include settings/_navbar
     group.disconnected(ng-hide="connected")
       p.literal(l10n) You have to be online to see this screen
 
