@@ -1,7 +1,7 @@
 {
   "main": "index.html",
   "name": "RippleClient",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Ripple Client",
   "window": {
     "frame": true,
