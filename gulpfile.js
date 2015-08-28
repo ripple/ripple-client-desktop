@@ -317,6 +317,7 @@ gulp.task('build', function() {
     buildDir: PACKAGES_FOLDER,
     macZip: true,
     cacheDir: TMP_DIR,
+    version: '0.12.3',
     // TODO: timestamped versions
     macIcns: './res/dmg/xrp_ripple_logo.icns'
     // TODO: winIco

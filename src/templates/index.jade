@@ -59,7 +59,9 @@ html(ng-app='rp', ng-controller='AppCtrl', ng-class='[$route.current.tabClass, $
         a(href='http://caniuse.com/websockets') http://caniuse.com/websockets
 
     // JAVASCRIPT
+    // build:js(.tmp) js/vendor.js
     script(src='js/vendor.js')
+    // endbuild
 
     // build:js js/deps.js
     script(src='../deps/bootstrap-datepicker.js')
