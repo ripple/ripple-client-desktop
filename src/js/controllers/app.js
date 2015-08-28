@@ -39,6 +39,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
 
   function reset()
   {
+    $scope.offlineMode = false;
     $scope.account = {};
     $scope.lines = {};
     $scope.offers = {};
