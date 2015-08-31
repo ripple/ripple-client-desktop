@@ -31,7 +31,7 @@ module.factory('rpNetwork', ['$rootScope', function($scope)
     this.connected = false;
   };
 
-  Network.prototype.init = function() {
+  Network.prototype.connect = function() {
     try {
       this.remote.connect();
     } catch (e) {
@@ -41,8 +41,11 @@ module.factory('rpNetwork', ['$rootScope', function($scope)
       this.remote = new ripple.Remote(Options.server, true);
       this.remote.on('connected', this.handleConnect.bind(this));
       this.remote.on('disconnected', this.handleDisconnect.bind(this));
-      this.remote.connect();
     }
+  };
+
+  Network.prototype.disconnect = function() {
+    this.remote.disconnect();
   };
 
   /**
@@ -60,21 +63,26 @@ module.factory('rpNetwork', ['$rootScope', function($scope)
   Network.prototype.handleConnect = function (e)
   {
     var self = this;
-    $scope.$apply(function () {
-      self.connected = true;
-      $scope.connected = true;
-      $scope.$broadcast('$netConnected');
-    });
+
+    self.connected = true;
+    $scope.connected = true;
+    $scope.$broadcast('$netConnected');
+
+    if(!$scope.$$phase) {
+      $scope.$apply()
+    }
   };
 
   Network.prototype.handleDisconnect = function (e)
   {
     var self = this;
-    $scope.$apply(function () {
-      self.connected = false;
-      $scope.connected = false;
-      $scope.$broadcast('$netDisconnected');
-    });
+    self.connected = false;
+    $scope.connected = false;
+    $scope.$broadcast('$netDisconnected');
+
+    if(!$scope.$$phase) {
+      $scope.$apply()
+    }
   };
 
   return new Network();

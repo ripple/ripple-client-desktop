@@ -19,8 +19,17 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
 
   var account;
 
-  // For announcement banner
+  // TODO make this wallet specific
+  $scope.onlineMode = !!store.get('onlineMode');
 
+  // Remember the onlineMode switch value and handle the connection
+  $scope.switchOnlineMode = function(){
+    $scope.onlineMode = !$scope.onlineMode;
+    $scope.onlineMode ? $net.connect() : $net.disconnect();
+    store.set('onlineMode', $scope.onlineMode);
+  };
+
+  // For announcement banner
   $scope.showAnnouncement = store.get('announcement');
 
   if('undefined' === typeof $scope.showAnnouncement) $scope.showAnnouncement = true;
@@ -566,8 +575,9 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
   }
 
   $net.listenId($id);
-  $net.init();
   $id.init();
+
+  $scope.onlineMode ? $net.connect() : $net.disconnect();
 
   $scope.logout = function () {
     $id.logout();
