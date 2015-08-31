@@ -141,7 +141,7 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
           a(href="#/trade", l10n) Advanced
       ul
         li#offlineModeSwitch
-          input(type="checkbox", bs-switch, ng-model="offlineMode"
+          input(type="checkbox", bs-switch, ng-model="onlineMode", ng-change="switchOnlineMode()"
             switch-size="small", switch-on-text="Online", switch-off-text="Offline"
             switch-on-color="success", switch-animate="off")
 
