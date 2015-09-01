@@ -70,7 +70,6 @@ var tabdefs = [
   require('../tabs/advanced'),
   require('../tabs/security'),
   require('../tabs/tx'),
-  require('../tabs/xrp'),
   require('../tabs/eula'),
   require('../tabs/settingsgateway'),
   require('../tabs/settingstrade')

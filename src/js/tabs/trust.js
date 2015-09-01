@@ -409,7 +409,7 @@ TrustTab.prototype.angular = function (module)
       $scope.delete_account = function()
       {
         $scope.trust.loading = true;
-        $scope.load_notification('remove_gateway');
+        $scope.load_notification('remove_trustline');
 
         var setSecretAndSubmit = function(tx) {
           keychain.requestSecret(id.account, id.username, function (err, secret) {
@@ -435,7 +435,7 @@ TrustTab.prototype.angular = function (module)
 
               console.log('Transaction has been submitted with response:', res);
               $scope.trust.loading = false;
-              $scope.load_notification('gateway_removed');
+              $scope.load_notification('trustline_removed');
             });
 
           });
