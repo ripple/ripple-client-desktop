@@ -2,6 +2,7 @@ var types = require('../util/types');
 
 // Dependencies
 require("setimmediate");
+var fs = require('fs');
 
 // Load app modules
 require('../controllers/app');
@@ -16,6 +17,7 @@ require('../directives/directives');
 require('../directives/datalinks');
 require('../directives/errors');
 require('../directives/qr');
+require('../directives/signedTransaction');
 require('../filters/filters');
 require('../services/globalwrappers');
 require('../services/id');
