@@ -16,7 +16,7 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
           li#nav-exchange(ng-class="{active: $route.current.mainMenu == 'exchange' || $route.current.mainMenu == 'trade'}", ng-show="ripple_exchange_selection_trade")
             a(href="#/trade", l10n) Trade
           li#nav-fund(ng-class="{active: $route.current.mainMenu == 'fund'}")
-            a(href="#/xrp", l10n) Fund
+            a(href="#/trust", l10n) Trustlines
         ul.nav.navbar-nav.navbar-right
           //- li.dropdown.balances-dropdown
           //-   p.navbar-text(ng-show="!loadState.account", l10n) Loading your balance...
