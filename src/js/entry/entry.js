@@ -74,7 +74,9 @@ var tabdefs = [
   require('../tabs/tx'),
   require('../tabs/eula'),
   require('../tabs/settingsgateway'),
-  require('../tabs/settingstrade')
+  require('../tabs/settingstrade'),
+  require('../tabs/coldwallet'),
+  require('../tabs/submit')
 ];
 
 // Language
