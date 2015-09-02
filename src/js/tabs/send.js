@@ -68,6 +68,11 @@ SendTab.prototype.angular = function (module)
         $scope.send.recipient_address = address;
       }
 
+      // Used in offline mode
+      if (!$scope.send.fee) {
+        $scope.send.fee = Options.max_tx_network_fee;
+      }
+
       $scope.update_destination();
     }, true);
 
@@ -143,10 +148,14 @@ SendTab.prototype.angular = function (module)
       send.self = recipient === $scope.address;
 
       // Check destination tag visibility
-      $scope.check_dt_visibility();
+      if ($scope.onlineMode) {
+        $scope.check_dt_visibility();
 
-      if (destUpdateTimeout) $timeout.cancel(destUpdateTimeout);
-      destUpdateTimeout = $timeout($scope.update_destination_remote, 500);
+        if (destUpdateTimeout) $timeout.cancel(destUpdateTimeout);
+        destUpdateTimeout = $timeout($scope.update_destination_remote, 500);
+      } else {
+        $scope.check_destination();
+      }
     };
 
     $scope.update_destination_remote = function () {
@@ -166,6 +175,13 @@ SendTab.prototype.angular = function (module)
       var recipient = send.recipient_actual || send.recipient_address;
 
       if (!ripple.UInt160.is_valid(recipient)) return;
+
+      if (!$scope.onlineMode) {
+        $scope.send.path_status  = "none";
+        $scope.send.currency_choices = ['XRP'];
+        $scope.send.recipient_resolved = true;
+        return;
+      }
 
       var account = $network.remote.account(recipient);
 
@@ -591,7 +607,9 @@ SendTab.prototype.angular = function (module)
       $scope.send.alt = null;
 
       // Force pathfinding reset
-      $scope.update_paths();
+      if ($scope.onlineMode) {
+        $scope.update_paths();
+      }
     };
 
     $scope.resetAddressForm = function() {
@@ -754,9 +772,6 @@ SendTab.prototype.angular = function (module)
         }
       }
 
-      var maxLedger = Options.tx_last_ledger || 3;
-      tx.lastLedger($network.remote._ledger_current_index + maxLedger);
-
       tx.on('success', function (res) {
         $scope.onTransactionSuccess(res, tx);
       });
@@ -769,7 +784,20 @@ SendTab.prototype.angular = function (module)
         $scope.onTransactionError(res, tx);
       });
 
-      tx.submit();
+      var maxLedger = Options.tx_last_ledger || 3;
+
+      if ($scope.onlineMode) {
+        // TODO do we need this in offline mode?
+        tx.lastLedger($network.remote._ledger_current_index + maxLedger);
+        tx.submit();
+      }
+      else {
+        tx.tx_json.Sequence = Number($scope.send.sequence);
+        tx.tx_json.Fee = $scope.send.fee;
+        tx.complete();
+        $scope.signedTransaction = tx.sign().serialize().to_hex();
+        $scope.mode = "offlineSending";
+      }
 
       $scope.confirmedTime = new Date();
     };
