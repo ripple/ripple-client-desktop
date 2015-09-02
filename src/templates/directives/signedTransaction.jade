@@ -1,0 +1,12 @@
+.signedTransaction
+  h2 Signed transaction
+  .row
+    .col-md-8
+      //- TODO all js goes into directive
+      textarea.txBlob(readonly="readonly") {{signedTransaction}}
+    .col-md-4
+      .row
+        .col-md-6
+          button.btn.btn-small.btn-primary.btn-block(ng-click="copy()") Copy
+        .col-md-6
+          button.btn.btn-small.btn-primary.btn-block(ng-click="save()") Save to disk
