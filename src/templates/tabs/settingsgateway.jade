@@ -8,6 +8,9 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
       .alert.alert-success(ng-show="success.advanced_feature_switch", l10n) Trustline advanced settings have been changed successfully.
       .alert.alert-info(ng-show="edit.defaultRippleFlagSaving", l10n) Updating DefaultRipple flag...
       .alert.alert-success(ng-show="notif == 'defaultRippleUpdated'", l10n) DefaultRipple flag updated
+      .alert.alert-info(ng-show="edit.requireAuthFlagSaving", l10n) Updating RequireAuth flag...
+      .alert.alert-success(ng-show="notif == 'requireAuthUpdated'", l10n) RequireAuth flag updated
+      .alert.alert-danger(ng-show="notif == 'requireAuthFailed'", l10n) RequireAuth flag update failed. {{engine_result}}: {{engine_result_message}}
     .col-sm-3
       include settings/_navbar
     group.disconnected(ng-hide="connected")
@@ -72,3 +75,29 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
               ng-disabled='serverForm.$invalid', l10n) Save
             .col-xs-3(ng-show="hasRemove()")
               button.btn.btn-block.btn-danger.btn-xs.submit#delete(type="button", ng-click="remove()", ng-show="hasRemove()", l10n) Delete
+        form.trust-line-form(name="accountsAdvForm", ng-submit='save("requireAuthFlag")')
+          .descriptor(l10n) Gateways: Enable if you require authorization for users to hold balances by this account
+          .row.advanced-form-row(ng-hide="edit.requireAuthFlag")
+            .col-xs-6.col-sm-5.col-md-3
+              .description(l10n) RequireAuth flag
+            .col-xs-3.col-sm-4.col-md-4
+              .description(ng-show="currentRequireAuthFlagSetting && !edit.requireAuthFlagSaving", l10n) Enabled
+              .description(ng-hide="currentRequireAuthFlagSetting || edit.requireAuthFlagSaving", l10n) Disabled
+              .description(ng-show="edit.requireAuthFlagSaving")
+                img(src="img/button-s.png", class="loader")
+            .col-xs-3.col-sm-3.col-md-2
+              a.btn.btn-cancel.btn-block(href="", ng-click="edit.requireAuthFlag = true", ng-hide="edit.requireAuthFlagSaving", l10n) edit
+          .row.row-padding-small.edit-trust-line(ng-show="edit.requireAuthFlag")
+            .col-xs-6.col-sm-5.col-md-3
+              .description(l10n) RequireAuth flag
+            .col-xs-4.col-sm-4.col-md-3
+              div.helperInput
+                label
+                  input(type="checkbox", name="acct_adv"
+                  ng-model="isRequireAuthFlagEnabled")
+                  span(l10n) Enable
+            .col-xs-12.col-sm-4.col-md-4
+              button.btn.btn-block.btn-success.btn-xs.submit#save(type='submit'
+              ng-disabled='serverForm.$invalid', l10n) Save
+            .col-xs-3(ng-show="hasRemove()")
+              button.btn.btn-block.btn-danger.btn-xs.submit#delete(type="button", ng-click="remove()", ng-show="hasRemove()", l10n) Delete      

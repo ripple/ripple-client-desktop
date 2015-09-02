@@ -73,7 +73,9 @@ SettingsGatewayTab.prototype.angular = function(module)
     $scope.edit = {
       advanced_feature_switch: false,
       defaultRippleFlag: false,
-      defaultRippleFlagSaving: false
+      defaultRippleFlagSaving: false,
+      requireAuthFlag: false,
+      requireAuthFlagSaving: false
     };
 
     // Initialize the notification object
@@ -124,6 +126,40 @@ SettingsGatewayTab.prototype.angular = function(module)
             });
           }
           break;
+        case 'requireAuthFlag':
+          // Need to set flag on account_root only when chosen option is different from current setting
+          if ($scope.currentRequireAuthFlagSetting !== $scope.isRequireAuthFlagEnabled) {
+            $scope.edit.requireAuthFlagSaving = true;
+            var tx = network.remote.transaction();
+            !$scope.isRequireAuthFlagEnabled ? tx.accountSet(id.account, undefined, Transaction.set_clear_flags.AccountSet.asfRequireAuth) : tx.accountSet(id.account, Transaction.set_clear_flags.AccountSet.asfRequireAuth);
+            tx.on('success', function(res) {
+              $scope.$apply(function() {
+                $scope.edit.requireAuthFlagSaving = false;
+                $scope.load_notification('requireAuthUpdated');
+              });
+            });
+            tx.on('error', function(res) {
+              console.warn(res);
+              $scope.$apply(function() {
+                $scope.edit.requireAuthFlagSaving = false;
+                $scope.engine_result = res.engine_result;
+                $scope.engine_result_message = res.engine_result_message;
+                $scope.load_notification('requireAuthFailed');
+              });
+            });
+
+            keychain.requestSecret(id.account, id.username, function(err, secret) {
+              if (err) {
+                console.log('Error: ', err);
+                $scope.isRequireAuthFlagEnabled = !$scope.isRequireAuthFlagEnabled;
+                $scope.edit.requireAuthFlagSaving = false;
+                return;
+              }
+              tx.secret(secret);
+              tx.submit();
+            });
+          }
+          break;  
         default:
           $scope.saveBlob();
       }
@@ -143,6 +179,10 @@ SettingsGatewayTab.prototype.angular = function(module)
       // Check if account has DefaultRipple flag set
       $scope.isDefaultRippleFlagEnabled = !!($scope.account.Flags & RemoteFlags.account_root.DefaultRipple);
       $scope.currentDefaultRipplingFlagSetting = $scope.isDefaultRippleFlagEnabled;
+
+      // Check if account has RequireAuth flag set
+      $scope.isRequireAuthFlagEnabled = !!($scope.account.Flags & RemoteFlags.account_root.RequireAuth);
+      $scope.currentRequireAuthFlagSetting = $scope.isRequireAuthFlagEnabled;
     }, true);
 
   }]);
