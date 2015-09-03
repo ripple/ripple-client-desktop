@@ -9,15 +9,15 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
         ul.nav.navbar-nav.topMenu
           li#nav-wallet(ng-class="{active: $route.current.mainMenu == 'wallet'}")
             a(href="#/balance", l10n) Overview
-          li#nav-send(ng-class="{active: $route.current.mainMenu == 'send'}")
+          li#nav-send(ng-class="{active: $route.current.mainMenu == 'send'}", ng-hide="readOnly")
             a(href="#/send", l10n) Send
-          li#nav-exchange(ng-class="{active: $route.current.mainMenu == 'exchange' || $route.current.mainMenu == 'trade'}", ng-show="!ripple_exchange_selection_trade")
+          li#nav-exchange(ng-class="{active: $route.current.mainMenu == 'exchange' || $route.current.mainMenu == 'trade'}", ng-show="!ripple_exchange_selection_trade && !readOnly")
             a(href="#/exchange", l10n) Trade
-          li#nav-exchange(ng-class="{active: $route.current.mainMenu == 'exchange' || $route.current.mainMenu == 'trade'}", ng-show="ripple_exchange_selection_trade")
+          li#nav-exchange(ng-class="{active: $route.current.mainMenu == 'exchange' || $route.current.mainMenu == 'trade'}", ng-show="ripple_exchange_selection_trade || readOnly")
             a(href="#/trade", l10n) Trade
           li#nav-fund(ng-class="{active: $route.current.mainMenu == 'fund'}")
             a(href="#/trust", l10n) Trustlines
-          li#nav-coldwallet(ng-class="{active: $route.current.mainMenu == 'coldwallet'}")
+          li#nav-coldwallet(ng-class="{active: $route.current.mainMenu == 'coldwallet'}", ng-hide="readOnly")
             a(href="#/coldwallet", l10n) Cold Wallet
         ul.nav.navbar-nav.navbar-right
           //- li.dropdown.balances-dropdown
@@ -119,8 +119,7 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
           li.settings.dropdown
             a.dropdown-toggle.fa.fa-cog(data-toggle="dropdown")
             ul.dropdown-menu
-              li.divider
-              li: a(href="#/security", l10n)
+              li: a(href="#/security", ng-hide="readOnly", l10n)
                 i.icon-settings
                 |  Settings
               li.divider
@@ -134,10 +133,10 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
           a(href="#/balance", l10n) Balance
         li(ng-class="{active: $route.current.tabName == 'history'}")
           a(href="#/history", l10n) History
-        li(ng-class="{active: $route.current.tabName == 'contacts'}")
+        li(ng-class="{active: $route.current.tabName == 'contacts'}", ng-hide="readOnly")
           a(href="#/contacts", l10n) Contacts
       ul(ng-show="$route.current.mainMenu == 'exchange' || $route.current.mainMenu == 'trade'")
-        li(ng-class="{active: $route.current.tabName == 'exchange'}")
+        li(ng-class="{active: $route.current.tabName == 'exchange'}", ng-hide="readOnly")
           a(href="#/exchange", l10n) Simple
         li(ng-class="{active: $route.current.tabName == 'trade'}")
           a(href="#/trade", l10n) Advanced
@@ -146,7 +145,7 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
           a(href="#/coldwallet", l10n) Overview
         li(ng-class="{active: $route.current.tabName == 'submit'}")
           a(href="#/submit", l10n) Submit Transactions
-      ul
+      ul(ng-hide="readOnly")
         li#offlineModeSwitch
           input(type="checkbox", bs-switch, ng-model="onlineMode", ng-change="switchOnlineMode()"
             switch-size="small", switch-on-text="Online", switch-off-text="Offline"

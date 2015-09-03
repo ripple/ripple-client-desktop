@@ -15,7 +15,7 @@ section.col-xs-12.content(ng-controller="TradeCtrl")
     include ../tabs/banner/_unfunded
 
   group(ng-show="connected && loadState.offers")
-    .settings
+    .settings(ng-hide="readOnly")
       .row
         .col-sm-10.col-md-7.col-lg-7.col-xs-10.currency-config
           input.form-control.currency#currency_pair(
@@ -107,7 +107,7 @@ section.col-xs-12.content(ng-controller="TradeCtrl")
       |  gateway's address.&#32;
 
     group(ng-if="order.valid_settings")
-      ul.ticker
+      ul.ticker(ng-hide="readOnly")
         .row
           li.col-xs-6.col-sm-3
             span(l10n) Bid
@@ -135,7 +135,7 @@ section.col-xs-12.content(ng-controller="TradeCtrl")
         p.literal(l10n) You have to be funded before you can trade
 
       //- 1. Order widgets
-      group.row.send-widgets(ng-show="account.Balance")
+      group.row.send-widgets(ng-show="account.Balance && !readOnly")
         .col-xs-12.col-sm-6(ng-repeat="type in ['buy','sell']")
           .trade-widget(ng-switch="order[type].mode")
             .head
@@ -435,12 +435,12 @@ section.col-xs-12.content(ng-controller="TradeCtrl")
         span(l10n)  Error: {{cancelError}}  
         a.dismiss(href="", ng-click="dismissCancelError()", l10n)  hide
         
-      h3
+      h3(ng-hide="readOnly")
         span(l10n) Orderbook
         small.toggle(ng-click="hideOrderBook = !hideOrderBook")
           span(ng-show="hideOrderBook", l10n) show
           span(ng-hide="hideOrderBook", l10n) hide
-      div(ng-hide="hideOrderBook")
+      div(ng-hide="hideOrderBook || readOnly")
         .listings.orders
           //- TODO highlight changes
           .row.orderbook
