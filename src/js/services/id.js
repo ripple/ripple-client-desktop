@@ -345,6 +345,7 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
   Id.prototype.logout = function ()
   {
     sessionStorage.auth = '';
+    sessionStorage.authReadOnly = '';
 
     //remove deviceID if remember me is not set
     if (!store.get('remember_me')) {
@@ -388,6 +389,19 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
     });
   };
 
+  Id.prototype.enterReadOnlyMode = function (address) {
+    $scope.readOnly = true;
+    $scope.address = address;
+    this.setAccount(address);
+    this.setUsername(address);
+    this.loginStatus = true;
+
+    // For Development
+    if (Options.persistent_auth) {
+      sessionStorage.authReadOnly = address;
+    }
+  };
+
   /**
    * Go to an identity page.
    *
@@ -409,6 +423,13 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
             //$location.path('/balance');
           });
         });
+
+        return;
+      }
+
+      // Read only mode (for development)
+      else if (sessionStorage.authReadOnly) {
+        this.enterReadOnlyMode(sessionStorage.authReadOnly);
 
         return;
       }

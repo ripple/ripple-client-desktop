@@ -815,6 +815,8 @@ TradeTab.prototype.angular = function(module)
      * Load orderbook
      */
     function loadOffers() {
+      if ($scope.readOnly) return;
+
       // Make sure we unsubscribe from any previously loaded orderbook
       if ($scope.book && "function" === typeof $scope.book.unsubscribe) {
         $scope.book.unsubscribe();

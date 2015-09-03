@@ -261,20 +261,10 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
             | Your account has to be activated before you can add a counterparty account.
 
         //- Account is funded
-        .row
+        .row(ng-hide="readOnly")
           .col-xs-12.col-sm-4.col-md-3.actions.btn-add-trust
             a.btn.btn-primary.btn-sm.btn-block.sign(ng-click='toggle_form()', ng-show='!addform_visible && account.Balance',
             ng-disabled='addform_visible', l10n) Add trustline
-
-        .row.row-padding-small.line.padding-vertical-xs(ng-hide="true", ng-repeat='(key, line) in linesArray | orderBy:sorting.sort:sorting.reverse')
-          .col-sm-5 {{line.account | rpcontactnamefull }}
-          .col-sm-2(rp-currency="line.balance")
-          .col-sm-2
-            span(rp-tooltip="{{line.balance | rpamount }}") {{line.balance | rpamount:{rel_precision: 0} }}
-          .col-sm-2
-            rp-trust-line(rp-line-data='line')
-          .col-sm-1.actions
-            button.btn.btn-default.btn-sm(href="", ng-click="edit_line()", l10n) edit
 
         .currencyBox(ng-repeat="entry in accountLines", ng-class="'currency-' + (entry.components[0].currency | lowercase)")
           .row.currencyTitle
@@ -291,7 +281,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
             div(ng-show="advanced_feature_switch", ng-class="{ 'col-xs-2': advanced_feature_switch }", l10n) Limit
             div.col-xs-2.col-sm-1(ng-show="advanced_feature_switch", l10n) Min
             div.col-xs-2(ng-show="advanced_feature_switch", l10n) Rippling
-            div(ng-class="{'col-xs-2' : advanced_feature_switch, 'col-xs-4 col-md-3': !advanced_feature_switch }"
+            div(ng-class="{'col-xs-2' : advanced_feature_switch, 'col-xs-4 col-md-3': !advanced_feature_switch }", ng-hide="readOnly"
               l10n) Edit
           hr#divider
           .lines
@@ -312,7 +302,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                   div(ng-show="component.no_ripple", l10n) Off
                   div(ng-hide="component.no_ripple", l10n) On
                 div(ng-hide="component.freeze_peer", ng-class="{ 'col-xs-2': advanced_feature_switch, 'col-xs-4 col-md-3': !advanced_feature_switch }")
-                  a(href="", ng-hide="editing", ng-click="edit_account()"
+                  a(href="", ng-hide="editing || readOnly", ng-click="edit_account()"
                     l10n) edit
                   span(ng-show="editing && !advanced_feature_switch")
                     span(ng-hide="trust.loading")
