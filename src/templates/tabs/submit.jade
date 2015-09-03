@@ -32,7 +32,6 @@ section.single.content(ng-controller="SubmitCtrl")
       .form-group(ng-show="txFiles.length")
         .row
           .col-md-3
-            //- TODO loading
             button.btn.btn-submit.btn-block.btn-success(type="submit"
               ng-disabled="submitForm.$invalid || loading", rp-spinner="{{loading ? 4 : null}}")
               span(l10n) Submit

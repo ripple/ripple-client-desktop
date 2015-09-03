@@ -45,6 +45,8 @@ LoginTab.prototype.angular = function (module) {
       }, false);
     };
 
+    $scope.mode = 'open';
+
     // wallet file drang & drop
     // prevent default behavior from changing page on dropped file
     window.ondragover = function(e) {
@@ -130,8 +132,7 @@ LoginTab.prototype.angular = function (module) {
     // Probably this is an AngularJS issue. Had no time to check it yet.
     $scope.$watch('password');
 
-    $scope.submitForm = function()
-    {
+    $scope.submitForm = function() {
       if ($scope.ajax_loading) return;
 
       if (!$scope.walletfile) {
@@ -172,6 +173,12 @@ LoginTab.prototype.angular = function (module) {
       $scope.error = '';
       $scope.status = 'Fetching wallet...';
     };
+
+    $scope.submitReadOnlyForm = function() {
+      $id.enterReadOnlyMode($scope.readOnly);
+
+      $location.path('/balance');
+    }
   }]);
 
   /**

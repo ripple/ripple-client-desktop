@@ -1,40 +1,61 @@
 section.col-xs-12.content(ng-controller="LoginCtrl")
 
-  .auth-attention.text-center(l10n)
-    | You will not be able to login to the desktop client using a username/password
-    |  you create on Ripple Trade. You can only use a secret key to access an
-    |  existing Ripple account. This is because the desktop client stores your
-    |  login information locally on your computer, so your account
-    |  is as safe as the security of your personal computer.
+  .row.options
+    .col-md-offset-3.col-md-6
+      ul.nav.nav-pills
+        li(ng-class="{active: mode=='open'}")
+          a(href="", ng-click="mode='open'") Open Account
+        li(ng-class="{active: mode=='readOnly'}")
+          a(href="", ng-click="mode='readOnly'") Read Only Mode
 
-  .row.auth-form-container.col-sm-offset-2.col-sm-8.col-md-offset-3.col-md-6
-    .auth-form-wrapper
-      form(name='loginForm', ng-disabled="loginForm.$invalid || ajax_loading", , ng-submit='submitForm()')
-        h2(l10n) Open account
+  .row.auth-form-container(ng-show="mode=='open'")
+    .col-md-offset-3.col-md-6
+      .auth-form-wrapper
+        form(name='loginForm', ng-disabled="loginForm.$invalid || ajax_loading", , ng-submit='submitForm()')
+          h2(l10n) Open account
 
-        .form-group
-          a.btn.btn-block.btn-link(href='#register', l10n) Create new account
+          .form-group
+            a.btn.btn-block.btn-link(href='#register', l10n) Create new account
 
-        .form-group
-          a.btn.btn-block.btn-default#walletfile(ng-click='fileInputClick()', l10n) Select account file {{walletfile}}
+          .form-group
+            a.btn.btn-block.btn-default#walletfile(ng-click='fileInputClick()', l10n) Select account file {{walletfile}}
 
-        .form-group.hide
-          label(for='login_walletfile', l10n) Select account file
-          input.form-control#login_walletfile(name='login_walletfile', type="file"
-            ng-model='walletfile')
-        .form-group
-          label(for='login_password', l10n) Account password
-          input.form-control#login_password(name='login_password', type='password'
-            ng-model='password', required)
-        .text-error(ng-show='error')
-          br
-          span {{error}}
-        .text-status(ng-show='status')
-          span {{status}}
+          .form-group.hide
+            label(for='login_walletfile', l10n) Select account file
+            input.form-control#login_walletfile(name='login_walletfile', type="file"
+              ng-model='walletfile')
+          .form-group
+            label(for='login_password', l10n) Account password
+            input.form-control#login_password(name='login_password', type='password'
+              ng-model='password', rp-focus-on-empty, required)
+          .text-error(ng-show='error')
+            br
+            span {{error}}
+          .text-status(ng-show='status')
+            span {{status}}
 
-          .backend(ng-repeat="message in backendMessages")
-            b {{message.backend}} &#32;
-            span {{message.message}}
-        .submit-btn-container
-          button.btn.btn-submit.btn-block.btn-success(type='submit', ng-disabled="loginForm.$invalid || ajax_loading", rp-spinner="{{ajax_loading ? 4 : null}}")
-            span(l10n) Open account
+            .backend(ng-repeat="message in backendMessages")
+              b {{message.backend}} &#32;
+              span {{message.message}}
+          .submit-btn-container
+            button.btn.btn-submit.btn-block.btn-success(type='submit', ng-disabled="loginForm.$invalid || ajax_loading", rp-spinner="{{ajax_loading ? 4 : null}}")
+              span(l10n) Open account
+
+  .row.auth-form-container(ng-show="mode=='readOnly'")
+    .col-md-offset-3.col-md-6
+      .auth-form-wrapper
+        form(name='readOnlyForm', ng-disabled="readOnlyForm.$invalid || ajax_loading", ng-submit='submitReadOnlyForm()')
+          h2(l10n) Open Account
+
+          .form-group
+            label(for='readOnlyAddress', l10n) Enter Ripple Address
+            //- TODO ripple address validation
+            input.form-control(name='readOnly', ng-model='readOnly'
+              rp-focus-on-empty, required)
+          .text-error(ng-show='error')
+            //- TODO error on ripple address validation
+            span {{error}}
+
+          .submit-btn-container
+            button.btn.btn-submit.btn-block.btn-success(type='submit', ng-disabled="submitReadOnlyForm.$invalid || ajax_loading", rp-spinner="{{ajax_loading ? 4 : null}}")
+              span(l10n) Open account
