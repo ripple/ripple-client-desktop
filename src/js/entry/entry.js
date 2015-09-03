@@ -2,7 +2,6 @@ var types = require('../util/types');
 
 // Dependencies
 require("setimmediate");
-var fs = require('fs');
 
 // Load app modules
 require('../controllers/app');
@@ -74,7 +73,9 @@ var tabdefs = [
   require('../tabs/tx'),
   require('../tabs/eula'),
   require('../tabs/settingsgateway'),
-  require('../tabs/settingstrade')
+  require('../tabs/settingstrade'),
+  require('../tabs/coldwallet'),
+  require('../tabs/submit')
 ];
 
 // Language
