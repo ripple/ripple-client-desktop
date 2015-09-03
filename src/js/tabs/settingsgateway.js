@@ -75,7 +75,9 @@ SettingsGatewayTab.prototype.angular = function(module)
       defaultRippleFlag: false,
       defaultRippleFlagSaving: false,
       requireAuthFlag: false,
-      requireAuthFlagSaving: false
+      requireAuthFlagSaving: false,
+      globalFreezeFlag: false,
+      globalFreezeFlagSaving: false
     };
 
     // Initialize the notification object
@@ -159,7 +161,42 @@ SettingsGatewayTab.prototype.angular = function(module)
               tx.submit();
             });
           }
-          break;  
+          break;
+        case 'globalFreezeFlag':
+          // Need to set flag on account_root only when chosen option is different from current setting
+          if ($scope.currentGlobalFreezeFlagSetting !== $scope.isGlobalFreezeFlagEnabled) {
+            $scope.edit.globalFreezeFlagSaving = true;
+            var tx = network.remote.transaction();
+            // One call is for adding the globalFreeze flag and one is for removing it
+            !$scope.isGlobalFreezeFlagEnabled ? tx.accountSet(id.account, undefined, Transaction.set_clear_flags.AccountSet.asfGlobalFreeze) : tx.accountSet(id.account, Transaction.set_clear_flags.AccountSet.asfGlobalFreeze);
+            tx.on('success', function(res) {
+              $scope.$apply(function() {
+                $scope.edit.globalFreezeFlagSaving = false;
+                $scope.load_notification('globalFreezeUpdated');
+              });
+            });
+            tx.on('error', function(res) {
+              console.warn(res);
+              $scope.$apply(function() {
+                $scope.edit.globalFreezeFlagSaving = false;
+                $scope.engine_result = res.engine_result;
+                $scope.engine_result_message = res.engine_result_message;
+                $scope.load_notification('globalFreezeFailed');
+              });
+            });
+
+            keychain.requestSecret(id.account, id.username, function(err, secret) {
+              if (err) {
+                console.log('Error: ', err);
+                $scope.isGlobalFreezeFlagEnabled = !$scope.isGlobalFreezeFlagEnabled;
+                $scope.edit.globalFreezeFlagSaving = false;
+                return;
+              }
+              tx.secret(secret);
+              tx.submit();
+            });
+          }
+          break;
         default:
           $scope.saveBlob();
       }
@@ -183,6 +220,10 @@ SettingsGatewayTab.prototype.angular = function(module)
       // Check if account has RequireAuth flag set
       $scope.isRequireAuthFlagEnabled = !!($scope.account.Flags & RemoteFlags.account_root.RequireAuth);
       $scope.currentRequireAuthFlagSetting = $scope.isRequireAuthFlagEnabled;
+
+      // Check if account has GlobalFreeze flag set
+      $scope.isGlobalFreezeFlagEnabled = !!($scope.account.Flags & RemoteFlags.account_root.GlobalFreeze);
+      $scope.currentGlobalFreezeFlagSetting = $scope.isGlobalFreezeFlagEnabled;
     }, true);
 
   }]);
