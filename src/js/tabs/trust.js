@@ -29,8 +29,8 @@ TrustTab.prototype.angular = function (module)
   {
     if (!id.loginStatus) id.goId();
 
-    var RemoteFalagDefaultRipple = 0x00800000;
-
+    var RemoteFlagDefaultRipple = 0x00800000;
+    var AuthEnabled = 0x00040000;
     $scope.advanced_feature_switch = Options.advanced_feature_switch;
     $scope.trust = {};
 
@@ -72,7 +72,14 @@ TrustTab.prototype.angular = function (module)
 
     // User should not even be able to try granting a trust if the reserve is insufficient
     $scope.$watch('account', function() {
-      $scope.acctDefaultRippleFlag = ($scope.account.Flags & RemoteFalagDefaultRipple);
+      $scope.acctDefaultRippleFlag = ($scope.account.Flags & RemoteFlagDefaultRipple);
+      // Allow user to set auth on a trustline only if their account has auth enabled
+      $scope.disallowAuth = !($scope.account.Flags & AuthEnabled);
+      if ($scope.disallowAuth) {
+        $scope.setAuthMessage = 'This account has not enabled authorization, so there is no need to set authorization on a trustline.'
+      } else {
+        $scope.setAuthMessage = 'Authorize the other party to hold issuances from this account.'
+      }
 
       $scope.can_add_trust = false;
       if ($scope.account.Balance && $scope.account.reserve_to_add_trust) {
@@ -196,10 +203,21 @@ TrustTab.prototype.angular = function (module)
       tx.addMemo('client', 'rt' + $scope.version);
 
 
+      var flags = [];
+      // Set or clear Rippling flag
+      if ($scope.allowrippling) {
+        flags.push('ClearNoRipple');
+      } else {
+        flags.push('SetNoRipple');
+      }
+      // Set auth flag (this cannot be unset)
+      if ($scope.tfSetfAuth) {
+        flags.push('SetAuth');
+      }
       // Flags
       tx
         .rippleLineSet(id.account, amount)
-        .setFlags($scope.allowrippling ? 'ClearNoRipple' : 'NoRipple')
+        .setFlags(flags)
         .on('proposed', function(res){
           $scope.$apply(function () {
             setEngineStatus(res, false);
