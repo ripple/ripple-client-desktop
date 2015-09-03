@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var module = angular.module('app');
 
 module.directive('signedTransaction', ['rpFileDialog', function(fileDialog) {

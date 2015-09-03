@@ -2,7 +2,6 @@ var types = require('../util/types');
 
 // Dependencies
 require("setimmediate");
-var fs = require('fs');
 
 // Load app modules
 require('../controllers/app');

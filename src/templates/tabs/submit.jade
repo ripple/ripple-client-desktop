@@ -1,1 +1,38 @@
-section.single.ddpage.content(ng-controller="SubmitCtrl")
+//- TODO sometimes doesn't add the file at first time
+section.single.content(ng-controller="SubmitCtrl")
+
+  group.disconnected(ng-hide="connected")
+    p.literal(l10n) You have to be online to see this screen
+
+  group(ng-if="connected")
+    //- TODO add transaction by copy/pasting the signedtransaction into a textarea
+    form(name="submitForm", ng-submit='submit()')
+      //- TODO order transactions by sequence number
+      .txFileRow(ng-controller="TxRowCtrl", ng-repeat="txFile in txFiles")
+        .row
+          //- TODO multiple drag and drop
+          //- TODO show more info about the transaction
+          .col-md-8.fileName {{txFile}}
+          .col-md-4
+            .pull-right
+              a(ng-hide="state", href="", ng-click="remove()") Remove
+              span(ng-show="state == 'pending'") Pending...
+              //- TODO better error messages
+              span(ng-show="state == 'error'") Something went wrong
+              //- TODO add hide button after the final result
+              //- TODO show better messages
+              span(ng-show="state == 'done'") {{result}}
+
+        .form-group.hide
+          input.form-control(type="file", name="tx[{{$index}}]", ng-model="txFile")
+      .form-group
+        //- TODO check to not add the same file again (throws an exception)
+        a.txFileInput(ng-click='fileInputClick()', l10n)
+          | + Add transaction file(s)
+      .form-group(ng-show="txFiles.length")
+        .row
+          .col-md-3
+            //- TODO loading
+            button.btn.btn-submit.btn-block.btn-success(type="submit"
+              ng-disabled="submitForm.$invalid || loading", rp-spinner="{{loading ? 4 : null}}")
+              span(l10n) Submit
