@@ -162,7 +162,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     .error(rp-error-on='required', l10n)
                       | Currency field is required
               .row(ng-show="advanced_feature_switch")
-                .col-xs-12.allow-rippling
+                .col-xs-6.allow-rippling
                   label.checkbox(for="trust_allowrippling")
                     input#trust_allowrippling(
                       name='trust_allowrippling', type='checkbox'
@@ -174,6 +174,18 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     l10n-rp-popover-title="Allow Rippling"
                     rp-popover-trigger="click"
                     l10n-data-content="Allow this trust line's balances to be transferred to another issuer you connect to. <a href=https://ripple.com/wiki/No_Ripple target=_blank>More information</a>")
+                .col-xs-6.allow-rippling
+                  label.checkbox(for="trust_tfSetfAuth")
+                    input#trust_tfSetfAuth(
+                      name='trust_tfSetfAuth', type='checkbox'
+                      ng-model='tfSetfAuth', ng-disabled='disallowAuth')
+                    span(l10n) Set Authentication
+                  i.fa.fa-question-circle.help-icon(
+                    rp-popover
+                    rp-popover-placement="bottom"
+                    l10n-rp-popover-title="Set Authentication"
+                    rp-popover-trigger="click"
+                    l10n-data-content="{{setAuthMessage}} <a href=https://ripple.com/build/transactions/#trustset-flags>More information</a>")
               .row
                 .col-xs-8.col-sm-7.col-md-6
                   rp-popup(rp-popup-on-open="grant()") 
