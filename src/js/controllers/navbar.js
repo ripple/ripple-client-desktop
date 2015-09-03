@@ -60,12 +60,16 @@ module.controller('NavbarCtrl', ['$scope', '$element', '$compile', 'rpId',
   });
 
   var updateNotifications = function() {
-    if ($scope.events) {
+    if (!$scope.onlineMode) {
+      $scope.notifications = "";
+    }
+    else if ($scope.events) {
       $scope.notifications = $scope.events.slice(0,10);
     }
   };
 
   $scope.$on('$eventsUpdate', updateNotifications);
+  $scope.$watch('onlineMode', updateNotifications, true);
 
   /**
    * Marks all the notifications as seen.
