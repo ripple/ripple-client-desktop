@@ -214,7 +214,13 @@ TrustTab.prototype.angular = function (module)
       if ($scope.tfSetfAuth) {
         flags.push('SetAuth');
       }
-      // Flags
+      // Set or clear the freeze flag
+      if ($scope.tfSetFreeze) {
+        flags.push('SetFreeze');
+      } else {
+        flags.push('ClearFreeze');
+      }
+
       tx
         .rippleLineSet(id.account, amount)
         .setFlags(flags)
@@ -408,6 +414,7 @@ TrustTab.prototype.angular = function (module)
         $scope.trust = {};
         $scope.trust.limit = Number($scope.component.limit.to_json().value);
         $scope.trust.rippling = !$scope.component.no_ripple;
+        $scope.trust.freeze = $scope.component.freeze;
         $scope.trust.limit_peer = Number($scope.component.limit_peer.to_json().value);
         $scope.trust.balance = String($scope.component.balance.to_json().value);
         $scope.trust.balanceAmount = $scope.component.balance;
@@ -466,8 +473,13 @@ TrustTab.prototype.angular = function (module)
           tx.addMemo('client', 'rt' + $scope.version);
 
           tx.trustSet(idAccount, '0' + '/' + lineCurrency + '/' + lineAccount);
-          $scope.acctDefaultRippleFlag ? tx.setFlags('ClearNoRipple') : tx.setFlags('NoRipple');
-
+          var flags = ['ClearFreeze'];
+          if ($scope.acctDefaultRippleFlag) {
+            flags.push('ClearNoRipple');
+          } else {
+            flags.push('SetNoRipple');
+          }
+          tx.setFlags(flags);
           setSecretAndSubmit(tx);
         }
 
@@ -586,13 +598,25 @@ TrustTab.prototype.angular = function (module)
         tx.addMemo('client', 'rt' + $scope.version);
 
         // Flags
+        var flags = [];
+        // Set or clear Rippling flag
+        if ($scope.trust.rippling) {
+          flags.push('ClearNoRipple');
+        } else {
+          flags.push('SetNoRipple');
+        }
+        if ($scope.trust.freeze) {
+          flags.push('SetFreeze');
+        } else {
+          flags.push('ClearFreeze');
+        }
+
         tx
           .rippleLineSet(id.account, amount)
-          .setFlags($scope.trust.rippling ? 'ClearNoRipple' : 'NoRipple')
+          .setFlags(flags)
           .on('success', function(res) {
             $scope.$apply(function () {
               setEngineStatus(res, true);
-
               $scope.trust.loading = false
               $scope.load_notification('success');
               $scope.editing = false;
