@@ -46,19 +46,22 @@ SubmitTab.prototype.angular = function (module)
 
       var i = 0;
       // Listening for child scope transaction submission results
-      $scope.$on('submitted', function(){
+      $scope.$on('submitted', function(scope){
         i++;
 
         if ($scope.txFiles.length <= i) {
           $scope.loading = false;
+          $scope.state = scope.targetScope.state || $scope.state;
         }
       })
     }
   ]);
-
+  
   // Individual transaction row controller
   module.controller('TxRowCtrl', ['$scope', 'rpNetwork',
     function ($scope, network) {
+      $scope.state = undefined;
+      
       // Remove the transaction from the list
       $scope.remove = function(){
         $scope.txFiles.splice($scope.index,1);
@@ -91,6 +94,7 @@ SubmitTab.prototype.angular = function (module)
               if (err) {
                 console.log('err', err);
                 $scope.state = 'error';
+                $scope.$emit('submitted');
                 return;
               }
 
