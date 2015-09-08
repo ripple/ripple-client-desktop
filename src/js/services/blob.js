@@ -126,6 +126,24 @@ module.factory('rpBlob', ['$rootScope', function ($scope)
     });
   };
 
+  // Store regular key wallet in a file
+  BlobObj.prototype.persistRegular = function(walletfile)
+  {
+    var blob = $.extend(this, {});
+
+    // New wallet file
+    blob.walletfile = walletfile;
+
+    // Empty contact list
+    blob.set('/contacts', []);
+
+    // Remove the secret key
+    blob.unset('/masterkey');
+
+    // Create date
+    blob.set('/created', (new Date()).toJSON());
+  };
+
   BlobObj.prototype.encrypt = function()
   {
     // Filter Angular metadata before encryption
