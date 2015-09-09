@@ -23,6 +23,11 @@ SettingsGatewayTab.prototype.angular = function(module)
   {
     if (!id.loginStatus) id.goId();
 
+    // Used in offline mode
+    if (!$scope.fee) {
+      $scope.fee = Options.max_tx_network_fee;
+    }
+
     // from new Ripple lib
     var RemoteFlags = {
       // AccountRoot
@@ -92,7 +97,53 @@ SettingsGatewayTab.prototype.angular = function(module)
       $scope.editBlob = false;
     };
 
-    $scope.save = function(type) {
+    $scope.addFlag = function(type) {
+      if (!_.includes(['defaultRippleFlag', 'requireAuthFlag', 'globalFreezeFlag'], type)) {
+        return;
+      }
+
+      var tx = network.remote.transaction();
+      tx.accountSet(id.account, Transaction.set_clear_flags.AccountSet['asf' + type.charAt(0).toUpperCase() + type.slice(1, -4)]);
+      tx.tx_json.Sequence = Number($scope.settings.sequence);
+      tx.tx_json.Fee = $scope.fee;
+      keychain.requestSecret(id.account, id.username, function(err, secret) {
+        if (err) {
+          console.log('Error: ', err);
+          $scope.edit[type] = false;
+          return;
+        }
+        tx.secret(secret);
+        tx.complete();
+        $scope.signedTransaction = tx.sign().serialize().to_hex();
+        $scope.offlineSettingsChange = true;
+        $scope.edit[type] = false;
+      });
+    };
+
+    $scope.removeFlag = function(type) {
+      if (!_.includes(['defaultRippleFlag', 'requireAuthFlag', 'globalFreezeFlag'], type)) {
+        return;
+      }
+
+      var tx = network.remote.transaction();
+      tx.accountSet(id.account, undefined, Transaction.set_clear_flags.AccountSet['asf' + type.charAt(0).toUpperCase() + type.slice(1, -4)]);
+      tx.tx_json.Sequence = Number($scope.settings.sequence);
+      tx.tx_json.Fee = $scope.fee;
+      keychain.requestSecret(id.account, id.username, function(err, secret) {
+        if (err) {
+          console.log('Error: ', err);
+          $scope.edit[type] = false;
+          return;
+        }
+        tx.secret(secret);
+        tx.complete();
+        $scope.signedTransaction = tx.sign().serialize().to_hex();
+        $scope.offlineSettingsChange = true;
+        $scope.edit[type] = false;
+      });
+    };
+
+    $scope.saveSetting = function(type) {
       switch (type) {
         case 'advanced_feature_switch':
           $scope.saveBlob();
