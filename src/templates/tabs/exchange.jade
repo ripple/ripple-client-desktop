@@ -12,11 +12,7 @@ section.col-xs-12.content(ng-controller="ExchangeCtrl")
 
   div(ng-show="!loadingAccount && !account.Balance && loadState.account && connected")
     include ../tabs/banner/_unfunded
-    p.literal(l10n="err-you-must-be-funded-before-you-can-exchange-money") You have to be funded before you can submit an order.
-
-  //- Show message if account has not been funded yet.
-  .unfunded(ng-show="!account.Balance && connected")
-    p.literal(l10n) You have to be funded before you can convert    
+    p.literal(l10n="err-you-must-be-funded-before-you-can-exchange-money") You have to be funded before you can convert    
 
   //- Connected
 
