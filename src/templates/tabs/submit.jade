@@ -18,10 +18,15 @@ section.single.content(ng-controller="SubmitCtrl")
               a(ng-hide="state", href="", ng-click="remove()") Remove
               span(ng-show="state == 'pending'") Pending...
               //- TODO better error messages
-              span(ng-show="state == 'error'") Something went wrong
-              //- TODO add hide button after the final result
+              span(ng-show="state == 'error'")
+                | Something went wrong
+                a(ng-click="remove()")
+                  i.fa.fa-times
               //- TODO show better messages
-              span(ng-show="state == 'done'") {{result}}
+              span(ng-show="state == 'done'")
+                | {{result}} 
+                a(ng-click="remove()")
+                  i.fa.fa-times
 
         .form-group.hide
           input.form-control(type="file", name="tx[{{$index}}]", ng-model="txFile")
