@@ -8,7 +8,7 @@ section.col-xs-12.content(ng-controller="SecurityCtrl")
       .showSecurity(ng-show="settingsPage == 'security'")
         div
           h4(l10n) Security settings
-          .section
+          .section(ng-show="userBlob.data.masterkey")
             .descriptor(l10n) Secret key
             label(l10n) Your secret key unlocks access to your account funds. Please write it down and store it
               |  somewhere private and safe. In the event you lose your password, you can use this secret
@@ -35,8 +35,8 @@ section.col-xs-12.content(ng-controller="SecurityCtrl")
               .col-md-1
                 a(href="", ng-click="showRegularKey = true", ng-hide="showRegularKey", l10n) Show
                 a(href="", ng-click="showRegularKey = false", ng-show="showRegularKey", l10n) Hide
-              .col-md-3
+              .col-md-3(ng-show="userBlob.data.masterkey")
                 //- TODO some help here, informing that the regular wallet file doesn't contain the master key
                 a(href="", ng-click="saveRegularKey()", l10n) Save Wallet File
-              .col-md-1
+              .col-md-1(ng-show="userBlob.data.masterkey")
                 a(href="", ng-click="removeRegularKey()", l10n) Remove
