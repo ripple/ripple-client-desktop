@@ -309,7 +309,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
           case 'exchange':
             var funded = false;
             processedTxn.effects.some(function(effect) {
-              if (_.contains(['offer_bought','offer_funded','offer_partially_funded'], effect.type)) {
+              if (_.includes(['offer_bought','offer_funded','offer_partially_funded'], effect.type)) {
                 funded = true;
                 effects.push(effect);
                 return true;
@@ -347,7 +347,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
         // Iterate on each effect to find offers
         processedTxn.effects.forEach(function (effect) {
           // Only these types are offers
-          if (_.contains([
+          if (_.includes([
             'offer_created',
             'offer_funded',
             'offer_partially_funded',
@@ -396,7 +396,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
     var balancesUpdated;
 
     $.each(effects, function () {
-      if (_.contains([
+      if (_.includes([
         'trust_create_local',
         'trust_create_remote',
         'trust_change_local',
@@ -471,7 +471,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
   var storeCurrenciesAll = store.get('ripple_currencies_all') || [];
 
   // run through all currencies
-  _.each($scope.currencies_all, function(currency) {
+  _.forEach($scope.currencies_all, function(currency) {
 
     // find the currency in the local storage
     var allCurrencyHit = _.where(storeCurrenciesAll, {value: currency.value})[0];
@@ -515,7 +515,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
   $scope.pairs_all.sort(compare_last_used);
 
   $scope.currencies_all_keyed = {};
-  _.each($scope.currencies_all, function(currency){
+  _.forEach($scope.currencies_all, function(currency){
     $scope.currencies_all_keyed[currency.value] = currency;
   });
 
@@ -632,7 +632,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
 
   $scope.generate_issuer_currencies = function () {
     var isIssuer = {};
-    _.each($scope.lines, function(line){
+    _.forEach($scope.lines, function(line){
       if (line.limit_peer.is_positive()) {
         isIssuer[line.balance.currency().to_hex()] = true;
       }

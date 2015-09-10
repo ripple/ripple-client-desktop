@@ -105,7 +105,7 @@ function(net, $q, $scope, $filter, $id) {
 
     var key = action === "asks" ? "TakerGets" : "TakerPays";
     var sum;
-    _.each(newData, function (order, i) {
+    _.forEach(newData, function (order, i) {
       if (sum) sum = order.sum = sum.add(order[key]);
       else sum = order.sum = order[key];
     });

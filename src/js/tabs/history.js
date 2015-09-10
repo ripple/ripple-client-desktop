@@ -181,7 +181,7 @@ HistoryTab.prototype.angular = function (module) {
     $scope.$watch('types', function(){
       var arr = [];
       var checked = {};
-      _.each($scope.types, function(type,index){
+      _.forEach($scope.types, function(type,index){
         if (type.checked) {
           arr = arr.concat(type.types);
         }
@@ -262,11 +262,11 @@ HistoryTab.prototype.angular = function (module) {
 
           // Type filter
           if (event.transaction && event.transaction.type === 'error') ; // Always show errors
-          else if (event.transaction && !_.contains($scope.filters.types,event.transaction.type))
+          else if (event.transaction && !_.includes($scope.filters.types,event.transaction.type))
             return;
 
           // Some events don't have transactions.. this is a temporary fix for filtering offers
-          else if (!event.transaction && !_.contains($scope.filters.types,'offernew'))
+          else if (!event.transaction && !_.includes($scope.filters.types,'offernew'))
             return;
 
           // Currency filter
@@ -301,7 +301,7 @@ HistoryTab.prototype.angular = function (module) {
             event.showEffects = effects;
 
             // Trade filter - remove open orders that haven't been filled/partially filled
-            if (_.contains($scope.filters.types,'exchange') && !_.contains($scope.filters.types,'offercancel')) {
+            if (_.includes($scope.filters.types,'exchange') && !_.includes($scope.filters.types,'offercancel')) {
               if ((event.transaction && event.transaction.type === 'offernew' && !isFundedTrade) || isCancellation)
                 return
             }
@@ -379,7 +379,7 @@ HistoryTab.prototype.angular = function (module) {
 
         $scope.filters.currencies_is_active = false;
 
-        _.each(currencies, function(currency){
+        _.forEach(currencies, function(currency){
           var checked = ($scope.filters.currencies[currency] && $scope.filters.currencies[currency].checked) || firstProcess;
           objCurrencies[currency] = {'checked':checked};
 

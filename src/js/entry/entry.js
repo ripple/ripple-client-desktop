@@ -119,11 +119,11 @@ rippleclient.types = types;
 
 // for unit tests
 rippleclient.tabs = {};
-_.each(tabs, function(tab) { rippleclient.tabs[tab.tabName] = tab; });
+_.forEach(tabs, function(tab) { rippleclient.tabs[tab.tabName] = tab; });
 
 app.config(['$routeProvider', function ($routeProvider) {
   // Set up routing for tabs
-  _.each(tabs, function (tab) {
+  _.forEach(tabs, function (tab) {
     var config = {
       tabName: tab.tabName,
       tabClass: 't-' + tab.tabName,
@@ -139,13 +139,13 @@ app.config(['$routeProvider', function ($routeProvider) {
     $routeProvider.when('/' + tab.tabName, config);
 
     if (tab.extraRoutes) {
-      _.each(tab.extraRoutes, function(route) {
+      _.forEach(tab.extraRoutes, function(route) {
         $.extend({}, config, route.config);
         $routeProvider.when(route.name, config);
       });
     }
 
-    _.each(tab.aliases, function (alias) {
+    _.forEach(tab.aliases, function (alias) {
       $routeProvider.when('/' + alias, config);
     });
   });

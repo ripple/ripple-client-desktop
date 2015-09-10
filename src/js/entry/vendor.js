@@ -4,7 +4,7 @@ window.store = require('store');
 window.Spinner = require('spin');
 window.ripple = require('ripple-lib');
 window.sjcl = window.ripple.sjcl;
-window._ = require('underscore');
+window._ = require('lodash');
 
 require('angular');
 require('angular-route');
