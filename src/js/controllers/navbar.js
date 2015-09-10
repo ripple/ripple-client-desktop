@@ -94,7 +94,7 @@ module.controller('NavbarCtrl', ['$scope', '$element', '$compile', 'rpId',
       $scope.unseenNotifications.count = 0;
 
       // Set seen for all the events
-//      _.each($scope.events, function(event){
+//      _.forEach($scope.events, function(event){
 //        event.unseen = false;
 //      })
     }

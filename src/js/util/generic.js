@@ -8,11 +8,11 @@
  */
 exports.uniqueObjArray = function(arr1, arr2, key) {
   var obj = {};
-  _.each(arr1, function(v) {
+  _.forEach(arr1, function(v) {
     obj[v[key]] = v;
   });
 
-  _.each(arr2, function(v) {
+  _.forEach(arr2, function(v) {
     if (!(v[key] in obj)) {
       obj[v[key]] = v;
     }

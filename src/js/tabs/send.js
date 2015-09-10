@@ -291,14 +291,14 @@ SendTab.prototype.angular = function (module)
       var currencies = [];
 
       // Make sure none of the currency_choices_constraints are pending
-      if (_.values(send.currency_choices_constraints).indexOf('pending') !== -1) {
+      if (_.includes(_.values(send.currency_choices_constraints), 'pending')) {
         send.path_status = 'account-currencies';
         send.currency_choices = [];
         return;
       } else {
         // The possible currencies are the intersection of all provided currency
         // constraints.
-        currencies = _.intersection.apply(_, _.values(send.currency_choices_constraints));
+        currencies = _.intersection(_.values(send.currency_choices_constraints));
         currencies = _.uniq(_.compact(currencies));
 
         // create the display version of the currencies

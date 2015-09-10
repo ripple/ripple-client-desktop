@@ -45,7 +45,7 @@ AdvancedTab.prototype.angular = function(module)
 
     $scope.saveSetings = function() {
       // force serve ports to be number
-      _.each($scope.options.server.servers, function(s) {
+      _.forEach($scope.options.server.servers, function(s) {
         s.port = +s.port;
       });
       // Save in local storage

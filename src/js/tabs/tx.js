@@ -43,7 +43,7 @@ TxTab.prototype.angular = function (module)
           $scope.state = 'loaded';
           // XXX This is for the upcoming tx RPC call format change.
           var tx = res.tx ? res.tx : res;
-          _.extend($scope.transaction, res);
+          _.assign($scope.transaction, res);
 
           $scope.amountSent = rewriter.getAmountSent(tx, tx.meta);
         });
