@@ -124,6 +124,48 @@ module.factory('rpNW', ['rpId',
       });
     }
 
+    // drag and drop helper
+    nwService.dnd = function(dropezoneId, options) {
+      window.ondragover = function(e) {
+        e.preventDefault();
+        return false;
+      };
+
+      window.ondrop = function(e) {
+        e.preventDefault();
+        return false;
+      };
+
+      if (dropezoneId) {
+        var holder = document.getElementById(dropezoneId);
+        if (holder) {
+          holder.ondragover = function() {
+            this.className += this.className.indexOf(' dragover') == -1 ? ' dragover' : '';
+            options && options.onDragOver && options.onDragOver(e);
+            return false;
+          };
+
+          holder.ondragleave = function() {
+            this.className = this.className.replace(' dragover', '');
+            options && options.onDragLeave && options.onDragLeave(e);
+            return false;
+          };
+
+          holder.ondrop = function(e) {
+            e.preventDefault();
+            options && options.onDrop && options.onDrop(e);
+            return false;
+          };
+        } else {
+          console.err("dropzone element with id " + dropezoneId + " was not found");
+          return;
+        }
+      } else {
+        console.err("dropzone element selector id not specified");
+        return;
+      }
+    }
+
     return nwService;
   }
 ]);

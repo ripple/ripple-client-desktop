@@ -27,8 +27,8 @@ section.single.content(ng-controller="SubmitCtrl")
           input.form-control(type="file", name="tx[{{$index}}]", ng-model="txFile")
       .form-group
         //- TODO check to not add the same file again (throws an exception)
-        a.txFileInput(ng-click='fileInputClick()', l10n)
-          | + Add transaction file(s)
+        a.txFileInput#txDropZone(ng-click='fileInputClick()', ng-init="initDropzone()" l10n)
+          | + Add or drop transaction file(s) here
       .form-group(ng-show="txFiles.length")
         .row
           .col-md-3
