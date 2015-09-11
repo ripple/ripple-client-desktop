@@ -1,19 +1,9 @@
 section.col-xs-12.content(ng-controller="TrustCtrl")
 
-  //- Disconnected
-
-  group.disconnected(ng-hide="connected")
-    p.literal(l10n) You have to be online to see this screen
-
-  group.disconnected(ng-hide="!connected || loadState.lines")
-    p.literal(l10n) Loading...
-
-  //- Connected
-
-  div(ng-show="!loadingAccount && !account.Balance && loadState.account && connected")
+  div(ng-show="!loadingAccount && (!account.Balance && connected) && loadState.account")
     include ../tabs/banner/_unfunded
 
-  group(ng-show="connected && loadState.lines")
+  group(ng-show="(connected && loadState.lines) || !onlineMode")
     //- N1. Trust form
     .row
       .col-sm-12
@@ -77,7 +67,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
           strong  {{account.reserve_to_add_trust | rpamount:0}} XRP
           |  to add a new trust line.&#32;
           a(href="https://ripple.com/wiki/Reserves", target="_blank") More information
-    .row(ng-show='connected')
+    .row
 
       .col-sm-12.trust-menu
         .row.row-padding-small.head(ng-hide='true')
@@ -161,6 +151,17 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                       |  to trust in XRP, please use XRR currency code.
                     .error(rp-error-on='required', l10n)
                       | Currency field is required
+              .row(ng-show='advanced_feature_switch' && '!onlineMode')
+                .col-md-3.col-sm-4.col-xs-3
+                  input.form-control#send_sequence(
+                    name='send_sequence', type='number'
+                    ng-model='sequence'
+                    ng-required='!onlineMode', placeholder="sequence")
+                .col-md-3.col-sm-4.col-xs-3
+                  input.form-control#send_fee(
+                  name='send_fee', type='number'
+                  ng-model='fee'
+                  ng-required='!onlineMode', placeholder="fee")
               .row(ng-show="advanced_feature_switch")
                 .col-xs-4.allow-rippling
                   label.checkbox(for="trust_allowrippling")
@@ -228,7 +229,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                 .col-xs-4.col-sm-3.col-md-3
                   button.btn.btn-block.btn-cancel(type="button", ng-click='toggle_form()', l10n) cancel
               .row.delete-trust
-                .col-xs-6.col-sm-6.col-md-8.col-lg-9(ng-show='balance !== "0" && orderbookStatus === "exists"')
+                .col-xs-6.col-sm-6.col-md-8.col-lg-9(ng-show='balance !== "0" && orderbookStatus === "exists" && onlineMode')
                   rp-confirm(
                     action-text="Are you sure you want to remove this trustline? Ripple Client will attempt to convert the remaining balance of {{ trust.balance }} {{ trust.currency }} into XRP. This action can't be undone."
                     action-button-text="Convert balance and remove"
@@ -238,7 +239,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     cancel-button-text="cancel"
                     ng-hide="showPassword==true")
                       button.btn.btn-block.btn-danger.btn-xs.submit(type="button", ng-click="load_orderbook()", l10n) Remove
-                .col-xs-6.col-sm-6.col-md-8.col-lg-9(ng-show='balance !== "0" && orderbookStatus === "not"')
+                .col-xs-6.col-sm-6.col-md-8.col-lg-9(ng-show='balance !== "0" && orderbookStatus === "not" && onlineMode')
                   rp-confirm(
                     action-text="Are you sure you want to remove this trustline? Ripple Client will return the balance of {{ trust.balance }} {{ trust.currency }} to the issuer. This action can't be undone."
                     action-button-text="Return balance and remove"
@@ -248,7 +249,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     cancel-button-text="cancel"
                     ng-hide="showPassword==true")
                       button.btn.btn-block.btn-danger.btn-xs.submit(type="button", ng-click="load_orderbook()", l10n) Remove
-                .col-xs-6.col-sm-6.col-md-8.col-lg-9(ng-show='balance === "0"')
+                .col-xs-6.col-sm-6.col-md-8.col-lg-9(ng-show='balance === "0" && onlineMode')
                   rp-confirm(
                     action-text="Are you sure you want to remove this trustline? This action can't be undone."
                     action-button-text="Remove"
@@ -266,16 +267,23 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
               strong  {{account.reserve_to_add_trust | rpamount:0}} XRP
               |  to add a new trust line.&#32;
               a(href="https://ripple.com/wiki/Reserves", target="_blank") More information
+          //- Offline Sending
+          group.mode-status(ng-show='mode=="offlineSending"')
+            signed-transaction(data="{{signedTransaction}}", sequence="{{sequence}}")
+            group.actions
+              div(class="actionLink")
+                a(href="", ng-click="toggle_form()", l10n) Back to trustlines
+              hr
 
 
         .row
-          .unfunded.literal(ng-hide='account.Balance', l10n)
+          .unfunded.literal(ng-hide='account.Balance || !onlineMode', l10n)
             | Your account has to be activated before you can add a counterparty account.
 
         //- Account is funded
         .row(ng-hide="readOnly")
           .col-xs-12.col-sm-4.col-md-3.actions.btn-add-trust
-            a.btn.btn-primary.btn-sm.btn-block.sign(ng-click='toggle_form()', ng-show='!addform_visible && account.Balance',
+            a.btn.btn-primary.btn-sm.btn-block.sign(ng-click='toggle_form()', ng-show='!addform_visible && ((account.Balance && connected) || !onlineMode)',
             ng-disabled='addform_visible', l10n) Add trustline
 
         .currencyBox(ng-repeat="entry in accountLines", ng-class="'currency-' + (entry.components[0].currency | lowercase)")
@@ -299,6 +307,13 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
           hr#divider
           .lines
             .line(ng-controller="AccountRowCtrl", ng-repeat="component in entry.components")
+              //- Offline Sending
+              group.mode-status(ng-show='mode=="offlineEdit"')
+                signed-transaction(data="{{signedTransaction}}", sequence="{{txSequence}}")
+                group.actions
+                  div(class="actionLink")
+                    a(href="", ng-click="close_sign_form()", l10n) Close
+                  hr
               .row(ng-class="{ 'frozen-account': component.freeze_peer }")
                 div.gateway(
                   ng-class="{ 'col-sm-3 col-xs-2': advanced_feature_switch, 'col-md-5 col-sm-4 col-xs-4': !advanced_feature_switch }",
@@ -324,7 +339,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     span(ng-hide="trust.loading")
                       div.row.row-padding-small
                         .col-md-7.col-sm-7.col-xs-6
-                          span(ng-show='trust.balance !== "0" && orderbookStatus === "exists"')
+                          span(ng-show='trust.balance !== "0" && orderbookStatus === "exists" && onlineMode')
                             rp-confirm(
                             action-text="Are you sure you want to remove this trustline? Ripple Client will attempt to convert the remaining balance of {{ trust.balance }} {{ currency }} into XRP. This action can't be undone."
                             action-button-text="Convert balance and remove"
@@ -334,7 +349,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                             cancel-button-text="cancel"
                             ng-hide="showPassword==true")
                               button.btn.btn-block.btn-danger.submit(type="button", ng-click="load_orderbook()", l10n) Remove
-                          span(ng-show='trust.balance !== "0" && orderbookStatus === "not"')
+                          span(ng-show='trust.balance !== "0" && orderbookStatus === "not" && onlineMode')
                             rp-confirm(
                             action-text="Are you sure you want to remove this trustline? Ripple Client will return the balance of {{ trust.balance }} {{ currency }} to the issuer. This action can't be undone."
                             action-button-text="Return balance and remove"
@@ -344,7 +359,17 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                             cancel-button-text="cancel"
                             ng-hide="showPassword==true")
                               button.btn.btn-block.btn-danger.submit(type="button", ng-click="load_orderbook()", l10n) Remove
-                          span(ng-show='trust.balance === "0"')
+                          span(ng-show='trust.balance === "0" && onlineMode')
+                            rp-confirm(
+                            action-text="Are you sure you want to remove this trustline? This action can't be undone."
+                            action-button-text="Remove"
+                            action-button-css="btn btn-default btn-danger custom-btn"
+                            action-function="delete_account()"
+                            cancel-button-css="btn btn-cancel"
+                            cancel-button-text="cancel"
+                            ng-hide="showPassword==true")
+                              button.btn.btn-block.btn-danger.submit(type="button", ng-click="load_orderbook()", l10n) Remove
+                          span(ng-show='!onlineMode')
                             rp-confirm(
                             action-text="Are you sure you want to remove this trustline? This action can't be undone."
                             action-button-text="Remove"
@@ -383,6 +408,17 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                       div.rippling-checkbox
                         label(l10n) Freeze&#32;
                           input(name='freeze', type='checkbox', ng-model='trust.freeze')
+                    .row(ng-show='advanced_feature_switch' && '!onlineMode')
+                      .col-sm-1.col-md-2
+                        input.form-control#send_sequence(
+                          name='send_sequence', type='number'
+                          ng-model='sequence'
+                          ng-required='!onlineMode', placeholder="sequence")
+                      .col-sm-1.col-md-2
+                        input.form-control#send_fee(
+                        name='send_fee', type='number'
+                        ng-model='fee'
+                        ng-required='!onlineMode', placeholder="fee")
                     .col-sm-7.col-md-6
                       .row.row-padding-small
                         .col-xs-6.col-sm-5
@@ -392,7 +428,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                             span(ng-show="trust.loading", l10n) Saving...
                         .col-xs-3.col-sm-4.col-md-3(ng-hide="trust.loading")  
                           .row.text-right
-                            .col-xs-12(ng-show='trust.balance !== "0" && orderbookStatus === "exists"')
+                            .col-xs-12(ng-show='trust.balance !== "0" && orderbookStatus === "exists" && onlineMode')
                               rp-confirm(
                               action-text="Are you sure you want to remove this trustline? Ripple Client will attempt to convert the remaining balance of {{ trust.balance }} {{ currency }} into XRP. This action can't be undone."
                               action-button-text="Convert balance and remove"
@@ -402,7 +438,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                               cancel-button-text="cancel"
                               ng-hide="showPassword==true")
                                 button.btn.btn-block.btn-danger.btn-xs.submit(type="button", ng-click="load_orderbook()", l10n) Remove
-                            .col-xs-12(ng-show='trust.balance !== "0" && orderbookStatus === "not"')
+                            .col-xs-12(ng-show='trust.balance !== "0" && orderbookStatus === "not" && onlineMode')
                               rp-confirm(
                               action-text="Are you sure you want to remove this trustline? Ripple Client will return the balance of {{ trust.balance }} {{ currency }} to the issuer. This action can't be undone."
                               action-button-text="Return balance and remove"
@@ -412,7 +448,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                               cancel-button-text="cancel"
                               ng-hide="showPassword==true")
                                 button.btn.btn-block.btn-danger.btn-xs.submit(type="button", ng-click="load_orderbook()", l10n) Remove
-                            .col-xs-12(ng-show='trust.balance === "0"')
+                            .col-xs-12(ng-show='trust.balance === "0" && onlineMode')
                               rp-confirm(
                               action-text="Are you sure you want to remove this trustline? This action can't be undone."
                               action-button-text="Remove"
@@ -422,6 +458,16 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                               cancel-button-text="cancel"
                               ng-hide="showPassword==true")
                                 button.btn.btn-block.btn-danger.btn-xs.submit(type="button", ng-click="load_orderbook()", l10n) Remove
+                            .col-xs-12(ng-show='!onlineMode')
+                              rp-confirm(
+                              action-text="Are you sure you want to remove this trustline? This action can't be undone."
+                              action-button-text="Remove"
+                              action-button-css="btn btn-default btn-danger "
+                              action-function="delete_account()"
+                              cancel-button-css="btn btn-default cancel-btn btn-cancel"
+                              cancel-button-text="cancel"
+                              ng-hide="showPassword==true")
+                                button.btn.btn-block.btn-danger.btn-xs.submit(type="button", ng-click="load_orderbook()", ng-disabled='accountForm.$invalid || trust.loading', l10n) Remove
                         .col-xs-3
                           a.btn.btn-block.btn-cancel(href="", ng-click="cancel()"
                             ng-disabled="trust.loading", l10n) cancel
