@@ -83,12 +83,12 @@ section.col-xs-12.content(ng-controller="HistoryCtrl")
           .desc(l10n) Description
         .visible-sm.col-sm-5
         .col-md-3.col-sm-7.export-btn-wrapper.text-right
-          a#csv.btn.btn-primary.btn-block.btn-sm(href='', ng-click='exportCsv()', rp-download='historyCsv', rp-download-csv='true', rp-download-filename='ripple_historic.csv', l10n) Export to CSV
+          a#csv.btn.btn-primary.btn-block.btn-sm(href='', ng-click="exportToCsv()", l10n) Export to CSV
       .message(ng-hide="historyState=='loading' || historyShow", l10n)
         | Sorry, no transactions match your current filter.
       .head.row.visible-xs
         .col-xs-12.export-btn-wrapper.text-right
-          a#csv.btn.btn-primary.btn-block.btn-sm(href='', ng-click='exportCsv()', rp-download='historyCsv', rp-download-csv='true', rp-download-filename='ripple_historic.csv', l10n) Export to CSV
+          a#csv.btn.btn-primary.btn-block.btn-sm(href='', ng-click="exportToCsv()", l10n) Export to CSV
       ul
         li(class="{{entry.transaction.type}}", ng-repeat="entry in historyShow track by entry.hash"
             ng-click='details[entry.hash] = !details[entry.hash]'

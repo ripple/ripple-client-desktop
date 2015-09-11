@@ -2,6 +2,7 @@ var util = require('util'),
     webUtil = require('../util/web'),
     Tab = require('../client/tab').Tab,
     rewriter = require('../util/jsonrewriter'),
+    fs = require('fs'),
     Amount = ripple.Amount;
 
 var HistoryTab = function ()
@@ -20,8 +21,8 @@ HistoryTab.prototype.generateHtml = function ()
 };
 
 HistoryTab.prototype.angular = function (module) {
-  module.controller('HistoryCtrl', ['$scope', 'rpId', 'rpNetwork',
-                                     function ($scope, $id, $network)
+  module.controller('HistoryCtrl', ['$scope', 'rpId', 'rpNetwork', 'rpFileDialog',
+                                     function ($scope, $id, $network, filedialog)
   {
     if (!$id.loginStatus) $id.goId();
 
@@ -485,7 +486,7 @@ HistoryTab.prototype.angular = function (module) {
       return formatted;
     };
 
-    $scope.exportCsv = function() {
+    $scope.prepareCsv = function() {
 
       // Header (1st line) of CSV with name of each field
       // Ensure that the field values for each row added in addLineToCsvToCsv() correspond in this order
@@ -671,6 +672,15 @@ HistoryTab.prototype.angular = function (module) {
       $scope.historyCsv = $scope.historyShow.length ? csv : '';
     };
 
+    $scope.exportToCsv = function() {
+      var file = 'ripple_historic';
+
+      $scope.prepareCsv();
+
+      filedialog.saveAs(function(file) {
+        fs.writeFile(file, $scope.historyCsv);
+      }, file);
+    }
   }]);
 };
 
