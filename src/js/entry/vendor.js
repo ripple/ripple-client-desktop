@@ -1,9 +1,12 @@
+'use strict';
+
 window.jQuery = window.$ = require('jquery');
 window.moment = require('moment');
 window.store = require('store');
 window.Spinner = require('spin');
-window.ripple = require('ripple-lib');
-window.sjcl = window.ripple.sjcl;
+window.newRipple = require('ripple-lib');
+window.ripple = window.newRipple._DEPRECATED;
+window.sjcl = require('sjcl');
 window._ = require('lodash');
 
 require('angular');
