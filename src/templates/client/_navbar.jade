@@ -16,7 +16,7 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
           li#nav-exchange(ng-class="{active: $route.current.mainMenu == 'exchange' || $route.current.mainMenu == 'trade'}", ng-show="ripple_exchange_selection_trade || readOnly")
             a(href="#/trade", l10n) Trade
           li#nav-fund(ng-class="{active: $route.current.mainMenu == 'fund'}")
-            a(href="#/trust", l10n) Trustlines
+            a(href="#/trust", l10n) Trust Lines
           li#nav-coldwallet(ng-class="{active: $route.current.mainMenu == 'coldwallet'}", ng-hide="readOnly")
             a(href="#/coldwallet", l10n) Cold Wallet
         ul.nav.navbar-nav.navbar-right
