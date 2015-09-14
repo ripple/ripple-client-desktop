@@ -273,7 +273,30 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
             group.actions
               div(class="actionLink")
                 a(href="", ng-click="toggle_form()", l10n) Back to trustlines
-              hr
+            hr
+            .text-success(ng-show='addressSaved', class="actionLink", l10n) Contact saved!
+            .save-address-form(class="actionLink")
+              a(href="", ng-click='show_save_address_form = true', l10n)
+                | Add this address to contacts
+              form(name="saveAddressForm", ng-class="{ show: show_save_address_form }"
+              ng-submit='saveAddress()')
+                .address {{counterparty_address}}
+                label(for='save_address_name', l10n) Name this user
+                input.form-control#contact_name(
+                name='save_address_name', type="text"
+                ng-model='saveAddressName', unique, required
+                rp-autofill='$routeParams.name')
+                .error(ng-show='saveAddressForm.save_address_name.$error.unique', l10n)
+                  | You already have a contact with the same name.
+                div.row.add-contact-btns-wrapper
+                  div.col-md-3.col-sm-4.col-xs-8
+                    button.btn.btn-success.btn-block(type='submit'
+                      ng-disabled='addressSaving || saveAddressForm.$invalid')
+                      span(ng-show='addressSaving', l10n) Saving...
+                      span(ng-hide='addressSaving', l10n) Save
+                  div.col-md-1.col-sm-2.col-xs-4
+                    a.btn.btn-block(href="", ng-click='show_save_address_form = false', l10n) cancel
+                hr
 
 
         .row
@@ -313,7 +336,6 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                 group.actions
                   div(class="actionLink")
                     a(href="", ng-click="close_sign_form()", l10n) Close
-                  hr
               .row(ng-class="{ 'frozen-account': component.freeze_peer }")
                 div.gateway(
                   ng-class="{ 'col-sm-3 col-xs-2': advanced_feature_switch, 'col-md-5 col-sm-4 col-xs-4': !advanced_feature_switch }",
