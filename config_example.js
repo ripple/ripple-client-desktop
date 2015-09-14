@@ -16,6 +16,10 @@ var Options = {
     ]
   },
 
+  api: {
+    servers: ['wss://s-west.ripple.com:443', 'wss://s-east.ripple.com:443']
+  },
+
   // Number of transactions each page has in balance tab notifications
   transactions_per_page: 50,
 

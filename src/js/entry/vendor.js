@@ -4,8 +4,8 @@ window.jQuery = window.$ = require('jquery');
 window.moment = require('moment');
 window.store = require('store');
 window.Spinner = require('spin');
-window.newRipple = require('ripple-lib');
-window.ripple = window.newRipple._DEPRECATED;
+window.RippleAPI = require('ripple-lib').RippleAPI;
+window.ripple = require('ripple-lib')._DEPRECATED;
 window.sjcl = require('sjcl');
 window._ = require('lodash');
 

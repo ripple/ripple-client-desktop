@@ -10,9 +10,9 @@ var rewriter = require('../util/jsonrewriter'),
 
 var module = angular.module('app', []);
 
-module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
+module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork', 'rpApi',
                               'rpKeychain', '$location', '$timeout',
-                              function ($scope, $compile, $id, $net,
+                              function ($scope, $compile, $id, $net, api,
                                         keychain, $location, $timeout)
 {
   reset();
@@ -577,7 +577,12 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
   $net.listenId($id);
   $id.init();
 
-  $scope.onlineMode ? $net.connect() : $net.disconnect();
+  if ($scope.onlineMode) {
+    api.connect();
+    $net.connect();
+  } else {
+    $net.disconnect();
+  }
 
   $scope.logout = function () {
     $id.logout();

@@ -97,7 +97,6 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
 
     // Initializing sjcl.random doesn't really belong here, but there is no other
     // good place for it yet.
-
     for (var i = 0; i < 8; i++) {
       sjcl.random.addEntropy(Math.random(), 32, "Math.random()");
     }

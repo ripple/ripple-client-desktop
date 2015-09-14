@@ -24,6 +24,7 @@ require('../services/blob');
 require('../services/authflow');
 require('../services/keychain');
 require('../services/network');
+require('../services/api');
 require('../services/books');
 require('../services/transactions');
 require('../services/ledger');
