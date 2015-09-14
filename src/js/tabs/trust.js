@@ -28,6 +28,11 @@ TrustTab.prototype.angular = function (module) {
         id.goId();
       }
 
+      // Used in offline mode
+      if (!$scope.fee) {
+        $scope.fee = Number(Options.max_tx_network_fee);
+      }
+
       var RemoteFlagDefaultRipple = 0x00800000;
       var AuthEnabled = 0x00040000;
       $scope.advanced_feature_switch = Options.advanced_feature_switch;
@@ -60,8 +65,6 @@ TrustTab.prototype.angular = function (module) {
         $scope.counterparty_view = '';
         $scope.counterparty_address = '';
         $scope.saveAddressName = '';
-        $scope.sequence = '';
-        $scope.fee = '';
         $scope.error_account_reserve = false;
       };
 
@@ -263,7 +266,8 @@ TrustTab.prototype.angular = function (module) {
             $scope.toggle_form();
           } else {
             tx.tx_json.Sequence = Number($scope.sequence);
-            tx.tx_json.Fee = $scope.fee;
+            $scope.incrementSequence();
+            tx.tx_json.Fee = Number($scope.fee);
             tx.complete();
             try {
               $scope.signedTransaction = tx.sign().serialize().to_hex();
@@ -466,7 +470,8 @@ TrustTab.prototype.angular = function (module) {
               });
             } else {
               tx.tx_json.Sequence = Number($scope.sequence);
-              tx.tx_json.Fee = $scope.fee;
+              $scope.incrementSequence();
+              tx.tx_json.Fee = Number($scope.fee);
               tx.complete();
               try {
                 $scope.signedTransaction = tx.sign().serialize().to_hex();
@@ -481,8 +486,6 @@ TrustTab.prototype.angular = function (module) {
               $scope.trust.loading = false;
               $scope.load_notification('success');
               $scope.editing = false;
-              $scope.fee = '';
-              $scope.sequence = '';
             }
           });
         };
@@ -694,7 +697,8 @@ TrustTab.prototype.angular = function (module) {
             tx.submit();
           } else {
             tx.tx_json.Sequence = Number($scope.sequence);
-            tx.tx_json.Fee = $scope.fee;
+            $scope.incrementSequence();
+            tx.tx_json.Fee = Number($scope.fee);
             tx.complete();
             try {
               $scope.signedTransaction = tx.sign().serialize().to_hex();
@@ -714,8 +718,6 @@ TrustTab.prototype.angular = function (module) {
 
       $scope.close_sign_form = function () {
         $scope.mode = 'main';
-        $scope.fee = '';
-        $scope.sequence = '';
       };
     }]);
 };

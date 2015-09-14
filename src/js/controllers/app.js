@@ -19,6 +19,21 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
 
   var account;
 
+  // Global sequence variable to be incremented after every transaction
+  $scope.$watch('userBlob', function() {
+    if ($scope.userBlob.data && $scope.userCredentials.username) {
+      if (!$scope.userBlob.data.sequence) {
+        $scope.userBlob.set('/sequence', 1);
+      }
+      $scope.sequence = $scope.userBlob.data.sequence;
+    }
+  });
+
+  $scope.incrementSequence = function() {
+    $scope.sequence++;
+    $scope.userBlob.set('/sequence', $scope.sequence);
+  }
+
   // TODO make this wallet specific
   $scope.onlineMode = !!store.get('onlineMode');
 
