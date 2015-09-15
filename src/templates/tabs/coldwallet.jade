@@ -1,1 +1,46 @@
 section.single.ddpage.content(ng-controller="ColdWalletCtrl")
+  h
+    a(href='https://ripple.com/build/gateway-guide/', target=_blank) Best practices
+  hr
+  h  Account Information
+    li Sequence: {{account.Sequence}}
+    li Network fee: {{networkFee}}
+    li Require Authorization: {{requireAuth}}
+    li Default Ripple: {{defaultRipple}}
+    li Global Freeze: {{globalFreeze}}
+  // Balances and currencies
+  hr
+  h Balances
+    col-md-12.data
+      .table-responsive
+        table.table.table-hover
+          thead
+            tr
+              th Currency
+              th Counterparty
+              th Value
+          tbody
+            tr(ng-repeat="balance in balances")
+              td {{balance.currency}}
+              td {{balance.counterparty}}
+              td {{balance.value}}
+  hr
+  // Trustlines
+  h Trust Lines with warnings
+    col-md-12.data
+      .table-responsive
+        table.table.table-hover
+          thead
+            tr
+              th Counterparty
+              th Currency
+              th No Ripple
+              th Authorized
+              th Warning
+          tbody
+            tr(ng-repeat="line in warningLines")
+              td {{line.specification.counterparty}}
+              td {{line.specification.currency}}
+              td {{line.specification.ripplingDisabled}}
+              td {{line.specification.authorized}}
+              td {{line.warning}}
