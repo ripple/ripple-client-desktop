@@ -148,11 +148,6 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
           a(href="#/coldwallet", l10n) Overview
         li(ng-class="{active: $route.current.tabName == 'submit'}")
           a(href="#/submit", l10n) Submit Transactions
-      ul(ng-hide="readOnly")
-        li#offlineModeSwitch
-          input(type="checkbox", bs-switch, ng-model="onlineMode", ng-change="switchOnlineMode()"
-            switch-size="small", switch-on-text="Online", switch-off-text="Offline"
-            switch-on-color="success", switch-animate="off")
 
   //- .subnav(ng-show="$route.current.mainMenu == 'fund'")
     .container

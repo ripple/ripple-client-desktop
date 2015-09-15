@@ -56,8 +56,7 @@ var appDependencies = [
   // Filters
   'filters',
   'ui.bootstrap',
-  'as.sortable',
-  'frapontillo.bootstrap-switch'
+  'as.sortable'
 ];
 
 // Load tabs
