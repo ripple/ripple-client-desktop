@@ -29,6 +29,7 @@ require('../services/books');
 require('../services/transactions');
 require('../services/ledger');
 require('../services/popup');
+require('../services/nwhelpers');
 require('../services/filedialog');
 
 // Angular module dependencies
@@ -41,6 +42,7 @@ var appDependencies = [
   // Services
   'id',
   'filedialog',
+  'nwhelpers',
   // Directives
   'charts',
   'effects',
@@ -172,8 +174,8 @@ app.config(['$routeProvider', function ($routeProvider) {
   $routeProvider.otherwise({redirectTo: '/404'});
 }]);
 
-app.run(['$rootScope', '$route', '$routeParams',
-  function ($rootScope, $route, $routeParams)
+app.run(['$rootScope', '$route', '$routeParams', 'rpNW',
+  function ($rootScope, $route, $routeParams, rpNW)
   {
     // This is the desktop client
     $rootScope.productName = 'Ripple Client';
@@ -219,6 +221,9 @@ app.run(['$rootScope', '$route', '$routeParams',
         }
       });
     });
+
+    rpNW.initCtxMenu();
+    rpNW.initTray();
   }]);
 
 if ("function" === typeof angular.resumeBootstrap) {

@@ -20,10 +20,10 @@ LoginTab.prototype.generateHtml = function ()
 LoginTab.prototype.angular = function (module) {
   module.controller('LoginCtrl', ['$scope', '$element', '$routeParams',
                                   '$location', 'rpId', '$rootScope',
-                                  'rpPopup', '$timeout', 'rpFileDialog',
+                                  'rpPopup', '$timeout', 'rpFileDialog','rpNW',
                                   function ($scope, $element, $routeParams,
                                             $location, $id, $rootScope,
-                                            popup, $timeout, filedialog)
+                                            popup, $timeout, filedialog, rpNW)
   {
     if ($id.loginStatus) {
       $location.path('/balance');
@@ -48,39 +48,15 @@ LoginTab.prototype.angular = function (module) {
     $scope.mode = 'open';
 
     // wallet file drang & drop
-    // prevent default behavior from changing page on dropped file
-    window.ondragover = function(e) {
-      e.preventDefault();
-      return false;
-    };
-
-    window.ondrop = function(e) {
-      e.preventDefault();
-      return false;
-    };
-
-    var holder = document.getElementById('walletfile');
-    holder.ondragover = function() {
-      this.className += this.className.indexOf(' dragover') == -1 ? ' dragover' : '';
-      return false;
-    };
-
-    holder.ondragleave = function() {
-      this.className = this.className.replace(" dragover", "");
-      return false;
-    };
-
-    holder.ondrop = function(e) {
-      e.preventDefault();
-
-      $scope.$apply(function() {
-        store.set('walletfile', e.dataTransfer.files[0].path);
-        $scope.walletfile = e.dataTransfer.files[0].path;
-        angular.element("#login_password").focus();
-      });
-
-      return false;
-    };
+    rpNW.dnd("walletfile", {
+      onDrop: function(e) {
+        $scope.$apply(function() {
+          store.set('walletfile', e.dataTransfer.files[0].path);
+          $scope.walletfile = e.dataTransfer.files[0].path;
+          angular.element("#login_password").focus();
+        });
+      }
+    });
 
     $scope.error = '';
     $scope.username = '';

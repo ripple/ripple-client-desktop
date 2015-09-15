@@ -19,10 +19,23 @@ SubmitTab.prototype.generateHtml = function ()
 
 SubmitTab.prototype.angular = function (module)
 {
-  module.controller('SubmitCtrl', ['$scope', 'rpFileDialog',
-    function ($scope, fileDialog)
+  module.controller('SubmitCtrl', ['$scope', 'rpFileDialog', 'rpNW',
+    function ($scope, fileDialog, rpNW)
     {
       $scope.txFiles = [];
+
+      // User drops files on transaction files dropzone
+      $scope.initDropzone = function() {
+        rpNW.dnd("txDropZone", {
+          onDrop: function(e) {
+            $scope.$apply(function() {
+              for (var i = 0; i < e.dataTransfer.files.length; ++i) {
+                $scope.txFiles[i] = e.dataTransfer.files[i].path;
+              }
+            });
+          }
+        });
+      };
 
       // User clicks on "Add transaction files"
       $scope.fileInputClick = function(){
