@@ -391,6 +391,28 @@ TrustTab.prototype.angular = function (module) {
       });
 
       updateAccountLines();
+
+
+      $scope.saveAddress = function() {
+        $scope.addressSaving = true;
+
+        var contact = {
+          name: $scope.saveAddressName,
+          view: $scope.counterparty_address,
+          address: $scope.counterparty_address
+        };
+
+        $scope.userBlob.unshift('/contacts', contact, function(err, data) {
+          $scope.addressSaving = false;
+          if (err) {
+            console.log('Can\'t save the contact. ', err);
+            return;
+          }
+
+          $scope.contact = data;
+          $scope.addressSaved = true;
+        });
+      };
     }]);
 
   module.controller('AccountRowCtrl', ['$scope', 'rpBooks', 'rpNetwork', 'rpId', 'rpKeychain', '$timeout',
