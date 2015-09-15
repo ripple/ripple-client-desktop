@@ -50,8 +50,11 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
               span(ng-switch-when='connected'
                   rp-popover, rp-popover-placement="bottom", rp-popover-trigger="hover", rp-popover-delay
                   l10n-rp-popover-content="Connected to the Ripple network.")
-          li
-            p.navbar-text {{userCredentials.account}}
+
+          li.account(rp-popover, rp-popover-placement="left", rp-popover-trigger="hover", rp-popover-delay
+              l10n-rp-popover-content="{{copyTooltip}}")
+            p.navbar-text(ng-click="copy()") {{copyFeedback || userCredentials.accountShort}}
+              input.text-copy-helper(value="{{userCredentials.account}}")
           li.dropdown.notifications-dropdown
             a.dropdown-toggle.fa.fa-bell(ng-click="read()", data-toggle="dropdown")
               .number(ng-show="unseenNotifications.count") {{unseenNotifications.count}}

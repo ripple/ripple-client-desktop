@@ -24,6 +24,7 @@ module.controller('NavbarCtrl', ['$scope', '$element', '$compile', 'rpId',
   };
 
   function serverStatusUpdate() {
+    $scope.userCredentials.accountShort = $scope.userCredentials.account && $scope.userCredentials.account.slice(0, 5);
     $scope.fee = network.remote.createTransaction()._computeFee();
 
     if (!$scope.connected && $scope.userCredentials.username) {
@@ -44,6 +45,26 @@ module.controller('NavbarCtrl', ['$scope', '$element', '$compile', 'rpId',
     else {
       $scope.serverStatus = 'connected';
     }
+  }
+
+  $scope.copyTooltip = "Click to copy your ripple address";
+  $scope.copyFeedback = null;
+  $scope.copy = function() {
+    angular.element("ul.nav .text-copy-helper").select();
+    document.execCommand('copy');
+    $("li.account").popover('hide');
+    $("li p.navbar-text").fadeOut(100, function() {
+      $scope.copyFeedback = "Copied!";
+      if(!$scope.$$phase) $scope.$apply();
+    }).fadeIn(300, function() {
+      setTimeout(function() {
+        $("li p.navbar-text").fadeOut(300, function() {
+          $scope.copyFeedback = null;
+          if(!$scope.$$phase) $scope.$apply();
+          $(this).fadeIn(0);
+        });
+      }, 500);
+    });
   }
 
   $scope.$watch('connected', serverStatusUpdate, true);
