@@ -152,6 +152,8 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     .error(rp-error-on='required', l10n)
                       | Currency field is required
               .row(ng-show='advanced_feature_switch' && '!onlineMode')
+                .col-xs-12
+                  label(for='send_sequence', l10n) Account sequence and network fee
                 .col-md-3.col-sm-4.col-xs-3
                   input.form-control#send_sequence(
                     name='send_sequence', type='number'
@@ -431,6 +433,8 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                         label(l10n) Freeze&#32;
                           input(name='freeze', type='checkbox', ng-model='trust.freeze')
                     .row(ng-show='advanced_feature_switch' && '!onlineMode')
+                      .col-xs-12
+                        label(for='send_sequence', l10n) Account sequence and network fee
                       .col-sm-1.col-md-2
                         input.form-control#send_sequence(
                           name='send_sequence', type='number'

@@ -104,7 +104,8 @@ SettingsGatewayTab.prototype.angular = function(module)
 
       var tx = network.remote.transaction();
       tx.accountSet(id.account, Transaction.set_clear_flags.AccountSet['asf' + type.charAt(0).toUpperCase() + type.slice(1, -4)]);
-      tx.tx_json.Sequence = Number($scope.settings.sequence);
+      tx.tx_json.Sequence = Number($scope.sequence);
+      $scope.incrementSequence();
       tx.tx_json.Fee = $scope.fee;
       keychain.requestSecret(id.account, id.username, function(err, secret) {
         if (err) {
@@ -127,7 +128,8 @@ SettingsGatewayTab.prototype.angular = function(module)
 
       var tx = network.remote.transaction();
       tx.accountSet(id.account, undefined, Transaction.set_clear_flags.AccountSet['asf' + type.charAt(0).toUpperCase() + type.slice(1, -4)]);
-      tx.tx_json.Sequence = Number($scope.settings.sequence);
+      tx.tx_json.Sequence = Number($scope.sequence);
+      $scope.incrementSequence();
       tx.tx_json.Fee = $scope.fee;
       keychain.requestSecret(id.account, id.username, function(err, secret) {
         if (err) {
