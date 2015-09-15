@@ -232,7 +232,7 @@ var JsonRewriter = module.exports = {
    * Side effects
    *  - balance_change
    *  - Trust (trust_create_local, trust_create_remote, trust_change_local,
-   *          trust_change_remote, trust_change_balance, trust_change_no_ripple)
+   *          trust_change_remote, trust_change_balance, trust_change_flags)
    *  - Offer (offer_created, offer_funded, offer_partially_funded,
    *          offer_cancelled, offer_bought)
    */
@@ -385,7 +385,8 @@ var JsonRewriter = module.exports = {
           var high = node.fields.HighLimit;
           var low = node.fields.LowLimit;
 
-          var which = high.issuer === account ? 'HighNoRipple' : 'LowNoRipple';
+          var noRippleFlag = high.issuer === account ? 'HighNoRipple' : 'LowNoRipple';
+          var freezeFlag = high.issuer === account ? 'HighFreeze' : 'LowFreeze';
 
           // New trust line
           if (node.diffType === "CreatedNode") {
@@ -448,18 +449,26 @@ var JsonRewriter = module.exports = {
 
             // Trust flag change (effect gets this type only if nothing else but flags has been changed)
             else if (node.fieldsPrev.Flags) {
-              // Account set a noRipple flag
-              if (node.fields.Flags & ripple.Remote.flags.state[which] &&
-                  !(node.fieldsPrev.Flags & ripple.Remote.flags.state[which])) {
-                effect.type = "trust_change_no_ripple";
+              if (
+                // Account set a noRipple flag
+                (node.fields.Flags & ripple.Remote.flags.state[noRippleFlag] &&
+                  !(node.fieldsPrev.Flags & ripple.Remote.flags.state[noRippleFlag]))
+                ||
+                // Account removed the noRipple flag
+                (node.fieldsPrev.Flags & ripple.Remote.flags.state[noRippleFlag] &&
+                  !(node.fields.Flags & ripple.Remote.flags.state[noRippleFlag]))
+                ||
+                // Account set a freeze flag
+                (node.fields.Flags & ripple.Remote.flags.state[freezeFlag] &&
+                  !(node.fieldsPrev.Flags & ripple.Remote.flags.state[freezeFlag]))
+                ||
+                // Account removed the freeze flag
+                (node.fieldsPrev.Flags & ripple.Remote.flags.state[freezeFlag] &&
+                  !(node.fields.Flags & ripple.Remote.flags.state[freezeFlag]))
+              )
+              {
+                effect.type = "trust_change_flags";
               }
-
-              // Account removed the noRipple flag
-              else if (node.fieldsPrev.Flags & ripple.Remote.flags.state[which] &&
-                  !(node.fields.Flags & ripple.Remote.flags.state[which])) {
-                effect.type = "trust_change_no_ripple";
-              }
-
               if (effect.type)
                 effect.flags = node.fields.Flags;
             }
@@ -477,8 +486,13 @@ var JsonRewriter = module.exports = {
             }
 
             // noRipple flag
-            if (node.fields.Flags & ripple.Remote.flags.state[which]) {
+            if (node.fields.Flags & ripple.Remote.flags.state[noRippleFlag]) {
               effect.noRipple = true;
+            }
+
+            // freeze flag
+            if (node.fields.Flags & ripple.Remote.flags.state[freezeFlag]) {
+              effect.freeze = true;
             }
           }
         }

@@ -417,7 +417,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork', 'rp
         'trust_change_local',
         'trust_change_remote',
         'trust_change_balance',
-        'trust_change_no_ripple'], this.type))
+        'trust_change_flags'], this.type))
       {
         var effect = this,
             line = {},
@@ -427,6 +427,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork', 'rp
         line.account = effect.counterparty;
         line.flags = effect.flags;
         line.no_ripple = !!effect.noRipple; // Force Boolean
+        line.freeze = !!effect.freeze; // Force Boolean
 
         if (effect.balance) {
           line.balance = effect.balance;
