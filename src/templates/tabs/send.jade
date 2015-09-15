@@ -131,7 +131,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
         .col-xs-3.col-sm-2.col-md-2
           input.form-control#send_sequence(
             name='send_sequence', type='text'
-            ng-model='sequence'
+            ng-model='$root.sequence'
             required, placeholder="sequence")
         .col-xs-3.col-sm-2.col-md-2
           input.form-control#send_fee(
@@ -337,7 +337,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
 
   //- Offline Sending
   group.mode-status(ng-show='mode=="offlineSending"')
-    signed-transaction(data="{{signedTransaction}}", sequence="{{sequence}}")
+    signed-transaction(data="{{signedTransaction}}", sequence="{{$root.sequence}}")
     group.actions
       hr
       .text-success(ng-show='addressSaved', class="actionLink", l10n) Contact saved!

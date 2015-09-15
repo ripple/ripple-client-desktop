@@ -19,8 +19,9 @@ module.directive('signedTransaction', ['rpFileDialog', function(fileDialog) {
           $scope.txFile = filename;
 
           // Write to file
+          // Sequence number gets incremented before you write to file so need to subtract 1 everytime
           fs.writeFile(filename, attrs.data);
-        }, 'tx-' + attrs.sequence + '.txt');
+        }, 'tx-' + (Number(attrs.sequence) - 1) + '.txt');
       };
     }
   };

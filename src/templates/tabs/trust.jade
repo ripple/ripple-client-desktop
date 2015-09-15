@@ -157,7 +157,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                 .col-md-3.col-sm-4.col-xs-3
                   input.form-control#send_sequence(
                     name='send_sequence', type='number'
-                    ng-model='sequence'
+                    ng-model='$root.sequence'
                     ng-required='!onlineMode', placeholder="sequence")
                 .col-md-3.col-sm-4.col-xs-3
                   input.form-control#send_fee(
@@ -271,7 +271,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
               a(href="https://ripple.com/wiki/Reserves", target="_blank") More information
           //- Offline Sending
           group.mode-status(ng-show='mode=="offlineSending"')
-            signed-transaction(data="{{signedTransaction}}", sequence="{{sequence}}")
+            signed-transaction(data="{{signedTransaction}}", sequence="{{$root.sequence}}")
             group.actions
               div(class="actionLink")
                 a(href="", ng-click="toggle_form()", l10n) Back to trust lines
@@ -334,7 +334,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
             .line(ng-controller="AccountRowCtrl", ng-repeat="component in entry.components")
               //- Offline Sending
               group.mode-status(ng-show='mode=="offlineEdit"')
-                signed-transaction(data="{{signedTransaction}}", sequence="{{txSequence}}")
+                signed-transaction(data="{{signedTransaction}}", sequence="{{$root.sequence}}")
                 group.actions
                   div(class="actionLink")
                     a(href="", ng-click="close_sign_form()", l10n) Close
@@ -438,7 +438,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                       .col-sm-1.col-md-2
                         input.form-control#send_sequence(
                           name='send_sequence', type='number'
-                          ng-model='sequence'
+                          ng-model='$root.sequence'
                           ng-required='!onlineMode', placeholder="sequence")
                       .col-sm-1.col-md-2
                         input.form-control#send_fee(
