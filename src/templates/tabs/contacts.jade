@@ -8,9 +8,6 @@ section.col-xs-12.content(ng-controller="ContactsCtrl")
     .col-xs-12.col-sm-4.col-md-2.text-right
       a.btn.btn-block.btn-success.btn-sm.sign(ng-click='toggle_form()', ng-disabled='addform_visible', l10n) Add contact
   hr
-  .row.head.visible-xs
-    .col-xs-12.col-sm-2
-      a.btn.btn-success.btn-block.btn-sm.sign.custom-btn(ng-click='toggle_form()', ng-disabled='addform_visible', l10n) Add contact
   .row.row-padding-small.addForm(ng-show='addform_visible')
     .col-xs-12.col-md-6.col-sm-8
       form#addForm(name="addForm", ng-submit="create()", rp-unique-scope)
@@ -73,7 +70,7 @@ section.col-xs-12.content(ng-controller="ContactsCtrl")
       span.name(ng-hide='editing') {{entry.name}}
     .col-xs-12.col-sm-6.col-md-6(ng-hide='editing')
       div
-        b.hidden-xs {{entry.address | rpaddressorigin}}: {{entry.address}}
+        b {{entry.address | rpaddressorigin}}: {{entry.address}}
     .col-xs-6.col-sm-3.col-md-3.text-right.pull-right(ng-hide='editing')
       .row
         .col-xs-4.col-md-4.col-sm-4(ng-hide='editing')
