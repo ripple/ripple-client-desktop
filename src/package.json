@@ -3,6 +3,7 @@
   "name": "RippleClient",
   "version": "1.2.1",
   "description": "Ripple Client",
+  "single-instance": false,
   "window": {
     "frame": true,
     "toolbar": false,
