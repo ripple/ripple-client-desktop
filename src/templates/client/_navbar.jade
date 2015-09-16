@@ -4,7 +4,7 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
       .navbar-header
         .navbar-toggle.snapper-toggle
           a(href="").fa.fa-bars
-        a.navbar-brand.hidden-xs#logo(href="#/", title="Ripple")
+        a.navbar-brand#logo(href="#/", title="Ripple")
       .collapse.navbar-collapse
         ul.nav.navbar-nav.topMenu
           li#nav-wallet(ng-class="{active: $route.current.mainMenu == 'wallet'}")

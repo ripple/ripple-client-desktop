@@ -11,7 +11,11 @@
   "main": "http://localhost:3000",
   "window": {
     "frame": true,
-    "toolbar": true
+    "toolbar": true,
+    "width": 1024,
+    "height": 650,
+    "min_width": 768,
+    "min_height": 100
   },
   "dependencies": {
     "angular": "^1.3.12",

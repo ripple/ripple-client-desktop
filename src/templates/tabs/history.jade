@@ -75,7 +75,7 @@ section.col-xs-12.content(ng-controller="HistoryCtrl")
             //-       button.btn.btn-block.btn-primary.submit(type='submit', l10n) Filter
 
     .transactions.col-md-9.col-sm-7.col-xs-12
-      .head.row.hidden-xs
+      .head.row
         .col-md-9.hidden-sm
           .type
           .i
@@ -86,9 +86,6 @@ section.col-xs-12.content(ng-controller="HistoryCtrl")
           a#csv.btn.btn-primary.btn-block.btn-sm(href='', ng-click="exportToCsv()", l10n) Export to CSV
       .message(ng-hide="historyState=='loading' || historyShow", l10n)
         | Sorry, no transactions match your current filter.
-      .head.row.visible-xs
-        .col-xs-12.export-btn-wrapper.text-right
-          a#csv.btn.btn-primary.btn-block.btn-sm(href='', ng-click="exportToCsv()", l10n) Export to CSV
       ul
         li(class="{{entry.transaction.type}}", ng-repeat="entry in historyShow track by entry.hash"
             ng-click='details[entry.hash] = !details[entry.hash]'
