@@ -43,11 +43,12 @@ gulp.task('webpack:vendor:dev', function() {
   return gulp.src('src/js/entry/vendor.js')
     .pipe($.webpack({
       output: {
-        filename: "vendor.js"
+        filename: 'vendor.js'
       },
       module: {
         loaders: [
-          { test: /\.json$/, loader: "json-loader" }
+          {test: /\.json$/, loader: 'json-loader'},
+          {test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader?optional=runtime'}
         ]
       },
       target: 'node-webkit',
@@ -66,7 +67,8 @@ gulp.task('webpack:vendor:dist', function() {
       },
       module: {
         loaders: [
-          { test: /\.json$/, loader: "json-loader" }
+          {test: /\.json$/, loader: 'json-loader'},
+          {test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader?optional=runtime'}
         ]
       },
       target: 'node-webkit',
