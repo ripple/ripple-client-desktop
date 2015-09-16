@@ -9,6 +9,7 @@
   },
   "node-remote": "http://localhost:3000",
   "main": "http://localhost:3000",
+  "single-instance": false,
   "window": {
     "frame": true,
     "toolbar": true,
