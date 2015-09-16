@@ -29,7 +29,7 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
         signed-transaction(data="{{signedTransaction}}", sequence="{{$root.sequence}}")
       section.content#gateways
         h4(l10n) Settings
-        form.trust-line-form(name="accountsAdvForm", ng-submit='save("advanced_feature_switch")')
+        form.trust-line-form(name="accountsAdvForm", ng-submit='saveSetting("advanced_feature_switch")')
           .descriptor(l10n) Trust line
           .row.advanced-form-row(ng-hide="edit.advanced_feature_switch")
             .col-xs-6.col-sm-5.col-md-3
