@@ -27,7 +27,10 @@ module.factory('rpKeychain', ['$rootScope', '$timeout', 'rpPopup', 'rpId',
       if ($scope.userBlob.data && $scope.userBlob.data.account_id) {
         keychain.secrets[$scope.userBlob.data.account_id] = {
           masterkey: $scope.userBlob.data.masterkey
+            ? $scope.userBlob.data.masterkey
+            : $scope.userBlob.data.regularKey
         };
+
         watcher();
       }
     }, true);

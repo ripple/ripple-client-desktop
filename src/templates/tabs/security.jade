@@ -8,12 +8,11 @@ section.col-xs-12.content(ng-controller="SecurityCtrl")
       .showSecurity(ng-show="settingsPage == 'security'")
         div
           h4(l10n) Security settings
-          .section
+          .section(ng-show="userBlob.data.masterkey")
             .descriptor(l10n) Secret key
-            .row
             label(l10n) Your secret key unlocks access to your account funds. Please write it down and store it
-                |  somewhere private and safe. In the event you lose your password, you can use this secret
-                |  key to recover your funds.
+              |  somewhere private and safe. In the event you lose your password, you can use this secret
+              |  key to recover your funds.
             .row
               .col-xs-9.col-sm-8.col-md-6
                 span.value(ng-show="security.master_seed") {{security.master_seed}}
@@ -21,3 +20,23 @@ section.col-xs-12.content(ng-controller="SecurityCtrl")
               .col-xs-3.col-sm-4.col-md-3
                 a(href="", ng-click="unmaskSecret()", ng-hide="security.master_seed", l10n) Show
                 a(href="", ng-click="security.master_seed = null", ng-show="security.master_seed", l10n) Hide
+          .section
+            .descriptor(l10n) Regular Key
+            div(ng-hide="userBlob.data.regularKey")
+              label(l10n) Account doesn't have a regular key
+              .row
+                .col-md-6
+                  //- TODO Loading
+                  a(href="", ng-click="generateRegularKey()") Generate Regular Key
+            .row(ng-show="userBlob.data.regularKey")
+              .col-md-6
+                span.value(ng-show="showRegularKey") {{userBlob.data.regularKey}}
+                span.value(ng-hide="showRegularKey") ••••••••••••••••••••••••••••••••••••••••••••
+              .col-md-1
+                a(href="", ng-click="showRegularKey = true", ng-hide="showRegularKey", l10n) Show
+                a(href="", ng-click="showRegularKey = false", ng-show="showRegularKey", l10n) Hide
+              .col-md-3(ng-show="userBlob.data.masterkey")
+                //- TODO some help here, informing that the regular wallet file doesn't contain the master key
+                a(href="", ng-click="saveRegularKey()", l10n) Save Wallet File
+              .col-md-1(ng-show="userBlob.data.masterkey")
+                a(href="", ng-click="removeRegularKey()", l10n) Remove

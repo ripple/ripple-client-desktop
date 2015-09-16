@@ -126,6 +126,24 @@ module.factory('rpBlob', ['$rootScope', function ($scope)
     });
   };
 
+  // Store regular key wallet in a file
+  BlobObj.prototype.persistRegular = function(walletfile)
+  {
+    var blob = $.extend(this, {});
+
+    // New wallet file
+    blob.walletfile = walletfile;
+
+    // Empty contact list
+    blob.set('/contacts', [], function() {
+      // Remove the secret key
+      blob.unset('/masterkey', function() {
+        // Create date
+        blob.set('/created', (new Date()).toJSON());
+      });
+    });
+  };
+
   BlobObj.prototype.encrypt = function()
   {
     // Filter Angular metadata before encryption
@@ -291,16 +309,16 @@ module.factory('rpBlob', ['$rootScope', function ($scope)
   };
 
   BlobObj.prototype.set = function (pointer, value, callback) {
-    this.applyUpdate('set', pointer, [value]);
-    };
+    this.applyUpdate('set', pointer, [value], callback);
+  };
 
   BlobObj.prototype.unset = function (pointer, callback) {
-    this.applyUpdate('unset', pointer, []);
-    };
+    this.applyUpdate('unset', pointer, [], callback);
+  };
 
   BlobObj.prototype.extend = function (pointer, value, callback) {
-    this.applyUpdate('extend', pointer, [value]);
-    };
+    this.applyUpdate('extend', pointer, [value], callback);
+  };
 
   /**
    * Prepend an entry to an array.
