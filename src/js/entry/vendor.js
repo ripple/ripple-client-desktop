@@ -18,5 +18,3 @@ require('bootstrap/js/modal');
 require('bootstrap/js/dropdown');
 require('bootstrap/js/tooltip');
 require('bootstrap/js/popover');
-require('bootstrap-switch/dist/js/bootstrap-switch.js');
-require('angular-bootstrap-switch/dist/angular-bootstrap-switch.js');

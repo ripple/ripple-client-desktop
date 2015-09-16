@@ -7,6 +7,15 @@ section.col-xs-12.content(ng-controller="AdvancedCtrl")
     .col-sm-9.list
       section.content#servers
         h4#networkSettings(l10n) Network settings
+        form(ng-hide="readOnly")
+          // TODO: Add tooltip to explain this
+          .descriptor(l10n) Online mode
+          .row.advanced-form-row
+            .col-xs-7
+              .description(ng-show="onlineMode", l10n) Disable if you want the client to be offline
+              .description(ng-show="!onlineMode", l10n) Enable if you want the client to be online
+            .col-xs-2.onlineCheckbox
+              input(type="checkbox", bs-switch, ng-model="onlineMode", ng-change="switchOnlineMode()")
         form(name="maxnetworkfeeForm", ng-submit="saveMaxNetworkFee()")
           .descriptor(l10n) Maximum network fee
           .row.advanced-form-row(ng-hide="editMaxNetworkFee")
@@ -31,8 +40,8 @@ section.col-xs-12.content(ng-controller="AdvancedCtrl")
             .col-xs-3.col-sm-3.col-md-3.text-center#cancel
               a.btn.btn-cancel.btn-block(href="", ng-click="cancelEditMaxNetworkFee()", l10n) cancel
 
-        h4#serverSettings(l10n) Server settings
-        form.server-row-form(ng-controller="ServerRowCtrl", ng-repeat="(index, server) in options.server.servers", ng-submit="save()")
+        h4#serverSettings(ng-show="onlineMode", l10n) Server settings
+        form.server-row-form(ng-show="onlineMode", ng-controller="ServerRowCtrl", ng-repeat="(index, server) in options.server.servers", ng-submit="save()")
           ng-form(name="serverForm")
             .row
               .col-xs-6.col-sm-5.col-md-3
@@ -74,5 +83,5 @@ section.col-xs-12.content(ng-controller="AdvancedCtrl")
 
         .row
           .col-xs-12.col-sm-6.col-md-3
-            button.btn.btn-block.btn-primary#newServer(type="button", ng-click="addServer()", l10n) Add new server
+            button.btn.btn-block.btn-primary#newServer(ng-show="onlineMode", type="button", ng-click="addServer()", l10n) Add new server
 
