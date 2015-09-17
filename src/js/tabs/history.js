@@ -71,7 +71,7 @@ HistoryTab.prototype.angular = function (module) {
         'checked': true
       },
       other: {
-        'types': ['accountset','failed','rippling'],
+        'types': ['accountset','failed','rippling','setregularkey'],
         'checked': true
       }
     };
@@ -91,7 +91,7 @@ HistoryTab.prototype.angular = function (module) {
       $scope.filters = {
         'currencies_is_active': false, // we do the currency filter only if this is true, which happens when at least one currency is off
         'currencies': {},
-        'types': ['sent','received','exchange','trusting','trusted','offernew','offercancel','rippling'],
+        'types': ['sent','received','exchange','trusting','trusted','offernew','offercancel','rippling','setregularkey'],
         'minimumAmount': 0.000001
       };
     }
@@ -240,7 +240,6 @@ HistoryTab.prototype.angular = function (module) {
         var currencies = _.map($scope.filters.currencies,function(obj,key){return obj.checked ? key : false});
         history.forEach(function(event)
         {
-
           // Calculate dateMin/dateMax. Used in date filter view
           if (!$scope.dateMinView) {
             if (!dateMin || dateMin > event.date)
@@ -294,6 +293,9 @@ HistoryTab.prototype.angular = function (module) {
                     if (event.transaction && event.transaction.type === 'offercancel')
                       return;
                   }
+                case 'regular_key_added':
+                case 'regular_key_changed':
+                case 'regular_key_removed':
                   effects.push(effect);
                   break;
               }

@@ -109,6 +109,8 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
                     include ../tabs/history/_effects.jade
                   .transaction(ng-switch-when="accountset", l10n)
                     | Account details have been changed
+                  .transaction(ng-switch-when="setregularkey", l10n)
+                    | Account regular key has been changed
                   .transaction(ng-switch-when="rippling")
                     span(l10n) Rippling
                     include ../tabs/history/_effects.jade
