@@ -235,6 +235,7 @@ var JsonRewriter = module.exports = {
    *          trust_change_remote, trust_change_balance, trust_change_flags)
    *  - Offer (offer_created, offer_funded, offer_partially_funded,
    *          offer_cancelled, offer_bought)
+   *  - Other (regular_key_added, regular_key_changed, regular_key_removed)
    */
   processTxn: function (tx, meta, account) {
     try {
@@ -315,6 +316,10 @@ var JsonRewriter = module.exports = {
             transaction.type = 'offercancel';
             break;
 
+          case 'SetRegularKey':
+            transaction.type = 'setregularkey';
+            break;
+
           case 'AccountSet':
             // Ignore empty accountset transactions. (Used to sync sequence numbers)
             if (meta.AffectedNodes.length === 1 && _.size(meta.AffectedNodes[0].ModifiedNode.PreviousFields) === 2)
@@ -324,7 +329,7 @@ var JsonRewriter = module.exports = {
             break;
 
           default:
-            console.log('Unknown transaction type: "'+tx.TransactionType+'"', tx);
+            console.log('Unknown transaction type: "' + tx.TransactionType + '"', tx);
         }
 
         if (tx.Flags) {
@@ -374,6 +379,28 @@ var JsonRewriter = module.exports = {
               // balance_changer is set to true if the transaction / effect has changed one of the account balances
               obj.balance_changer = effect.balance_changer = true;
               affected_currencies.push('XRP');
+            }
+
+            // Updated the regular key
+            if (transaction.type == 'setregularkey') {
+              // Added a regular key
+              if (!node.fieldsPrev.RegularKey && node.fieldsFinal.RegularKey) {
+                effect.type = 'regular_key_added';
+                effect.address = node.fields.RegularKey
+              }
+
+              // Removed the regular key
+              else if (node.fieldsPrev.RegularKey && !node.fieldsFinal.RegularKey) {
+                effect.type = 'regular_key_removed';
+                effect.address = node.fieldsPrev.RegularKey;
+              }
+
+              // Changed the regular key
+              else if (node.fieldsPrev.RegularKey != node.fieldsFinal.RegularKey) {
+                effect.type = 'regular_key_changed';
+                effect.newAddress = node.fields.RegularKey;
+                effect.oldAddress = node.fieldsPrev.RegularKey;
+              }
             }
           }
         }

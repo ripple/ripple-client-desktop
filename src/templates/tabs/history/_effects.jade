@@ -99,3 +99,14 @@ ul.effects(ng-show="entry.effects")
     span(ng-switch-when="balance_change", l10n, rp-span-spacing) Your balance has been changed by
       span(rp-pretty-amount="effect.amount")
       | .
+
+    span(ng-switch-when="regular_key_added", l10n, rp-span-spacing) You've added a regular key
+      |  {{effect.address}}
+
+    span(ng-switch-when="regular_key_changed", l10n, rp-span-spacing)
+      | You've changed the regular key
+      div Old: {{effect.oldAddress}}
+      div New: {{effect.newAddress}}
+
+    span(ng-switch-when="regular_key_removed", l10n, rp-span-spacing) You've removed the regular key
+      |  {{effect.address}}
