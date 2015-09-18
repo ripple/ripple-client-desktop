@@ -1,13 +1,26 @@
 section.single.ddpage.content(ng-controller="ColdWalletCtrl")
-  h
-    a(href='https://ripple.com/build/gateway-guide/', target=_blank) Best practices
+  h4 You are viewing the cold wallet information for account {{address}}.
+    p Always store the secret key for the cold wallet on a machine that is entirely offline. 
   hr
-  h  Account Information
-    li Sequence: {{account.Sequence}}
-    li Network fee: {{networkFee}}
-    li Require Authorization: {{requireAuth}}
-    li Default Ripple: {{defaultRipple}}
-    li Global Freeze: {{globalFreeze}}
+  p The most recent transaction from this account was a {{transaction.outcome}} {{transaction.type}} from {{transaction.origin}} to 
+    | {{transaction.destination}}. This account balance changed by {{transaction.balanceChange}} {{transaction.currency}}.  The fee was {{transaction.fee}} XRP.
+  hr
+  // Account information
+  h Account Information 
+    col-md-12.data
+      .table-responsive
+        table.table.table-hover
+          thead
+            tr
+              th Setting
+              th Enabled
+              th Description
+          tbody
+            tr(ng-repeat="line in accountInfo")
+              td {{line.setting}}
+              td {{line.enabled}}
+              td {{line.description}}
+    a(href='https://ripple.com/build/gateway-guide/', target=_blank) Best practices
   // Balances and currencies
   hr
   h Balances
@@ -44,3 +57,5 @@ section.single.ddpage.content(ng-controller="ColdWalletCtrl")
               td {{line.specification.ripplingDisabled}}
               td {{line.specification.authorized}}
               td {{line.warning}}
+  hr
+  a(ng-click='gotoLogin()') Back to login

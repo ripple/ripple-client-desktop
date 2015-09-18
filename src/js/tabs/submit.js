@@ -19,8 +19,8 @@ SubmitTab.prototype.generateHtml = function ()
 
 SubmitTab.prototype.angular = function (module)
 {
-  module.controller('SubmitCtrl', ['$scope', 'rpFileDialog', 'rpNW',
-    function ($scope, fileDialog, rpNW)
+  module.controller('SubmitCtrl', ['$scope', '$location', 'rpFileDialog', 'rpNW',
+    function ($scope, $location, fileDialog, rpNW)
     {
       $scope.txFiles = [];
 
@@ -66,6 +66,10 @@ SubmitTab.prototype.angular = function (module)
           $scope.loading = false;
         }
       })
+
+      $scope.gotoLogin = function() {
+        $location.path('/login');
+      };
     }
   ]);
 
