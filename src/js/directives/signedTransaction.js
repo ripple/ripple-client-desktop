@@ -17,8 +17,11 @@ module.directive('signedTransaction', ['rpFileDialog', function(fileDialog) {
       // TODO Save in the format specified by DAVE
       $scope.save = function() {
         // Save with default name
+        var sequenceNumber = (Number(attrs.sequence) - 1);
+        var sequenceLength = sequenceNumber.toString().length;
+        var txnName = $scope.userBlob.data.account_id + '-' + new Array(10 - sequenceLength + 1).join('0') + sequenceNumber + '.txt';
         if ($scope.userBlob.data.defaultDirectory) {
-          var fileName = $scope.userBlob.data.defaultDirectory + '/' + 'tx-' + (Number(attrs.sequence) - 1) + '.txt';
+          var fileName = $scope.userBlob.data.defaultDirectory + '/' + txnName;
           fs.writeFile(fileName, attrs.data, function(err) {
             $scope.$apply(function() {
               $scope.fileName = fileName;
@@ -39,7 +42,7 @@ module.directive('signedTransaction', ['rpFileDialog', function(fileDialog) {
             // Write to file
             // Sequence number gets incremented before you write to file so need to subtract 1 everytime
             fs.writeFile(filename, attrs.data);
-          }, 'tx-' + (Number(attrs.sequence) - 1) + '.txt');
+          }, txnName);
         }
       };
     }
