@@ -17,10 +17,10 @@ ColdWalletTab.prototype.generateHtml = function () {
 };
 
 ColdWalletTab.prototype.angular = function (module) {
-  module.controller('ColdWalletCtrl', ['$scope', 'rpApi',
-  function ($scope, api) {
+  module.controller('ColdWalletCtrl', ['$rootScope', '$location', 'rpApi',
+  function ($scope, $location, api) {
 
-    var address = $scope.account.Account;
+    var address = $scope.address;
 
     $scope.networkFee = api.getFee();
 
@@ -37,9 +37,27 @@ ColdWalletTab.prototype.angular = function (module) {
       api.getTrustlines(address)
       .then(function(lines) {
         $scope.$apply(function() {
-          $scope.requireAuth = requireAuth;
-          $scope.defaultRipple = defaultRipple;
-          $scope.globalFreeze = globalFreeze;
+          // There are three flags the user is concerned with
+          var accountInfo = [];
+          accountInfo.push({
+            setting: 'Require authorization',
+            enabled: requireAuth,
+            description: 'Prevent issuances  being held without authorization'
+          });
+          accountInfo.push({
+            setting: 'Default Ripple',
+            enabled: defaultRipple,
+            description: 'Allow balances in trust lines to Ripple by default'
+          });
+          accountInfo.push({
+            setting: 'Global Freeze',
+            enabled: globalFreeze,
+            description: 'Freeze all issuances'
+          });
+          $scope.accountInfo = accountInfo;
+
+          // Display any trustlines where the flag does not match the
+          // corresponding flag on the account root
           $scope.warningLines = _.reduce(lines, function(result, line) {
             var warning = '';
             if (!!line.specification.ripplingDisabled === defaultRipple) {
@@ -52,7 +70,9 @@ ColdWalletTab.prototype.angular = function (module) {
             // Force boolean so undefined displays as false
             line.specification.ripplingDisabled = !!line.specification.ripplingDisabled;
             line.specification.authorized = !!line.specification.authorized;
-            result.push(line);
+            if (warning) {
+              result.push(line);
+            }
             return result;
           }, []);
         });
@@ -60,6 +80,30 @@ ColdWalletTab.prototype.angular = function (module) {
     })
     .catch(function(err) {
       console.log('Error fetching account informtion: ', JSON.stringify(err));
+    });
+
+    // Fetch the last transaction for this account
+    api.getTransactions(address, {
+      limit: 1
+    })
+    .then(function(transactions) {
+      if (transactions && transactions.length) {
+        $scope.$apply(function() {
+          var txn = {
+            type: transactions[0].type,
+            outcome: transactions[0].outcome.result === 'tesSUCCESS' ? 'successful' : 'failed',
+            origin: transactions[0].specification.source.address,
+            destination: transactions[0].specification.destination.address,
+            balanceChange: transactions[0].outcome.balanceChanges[address][0].value,
+            currency: transactions[0].outcome.balanceChanges[address][0].currency,
+            fee: transactions[0].outcome.fee
+          };
+          $scope.transaction = txn;
+        });
+      }
+    })
+    .catch(function(e) {
+      console.log('error fetching transactions: ', JSON.stringify(e));
     });
 
     // Fetch account balances
@@ -72,6 +116,11 @@ ColdWalletTab.prototype.angular = function (module) {
     .catch(function(err) {
       console.log('Error fetching account balance: ', JSON.stringify(err));
     });
+
+    // Return to login page
+    $scope.gotoLogin = function() {
+      $location.path('/login');
+    };
   }]);
 };
 

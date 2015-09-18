@@ -1,5 +1,5 @@
 //- TODO sometimes doesn't add the file at first time
-section.single.content(ng-controller="SubmitCtrl")
+section.col-xs-12.content(ng-controller="SubmitCtrl")
 
   group.disconnected(ng-hide="connected")
     p.literal(l10n) You have to be online to see this screen
@@ -40,3 +40,4 @@ section.single.content(ng-controller="SubmitCtrl")
             button.btn.btn-submit.btn-block.btn-success(type="submit"
               ng-disabled="submitForm.$invalid || loading", rp-spinner="{{loading ? 4 : null}}")
               span(l10n) Submit
+  a(ng-click='gotoLogin()') Back to login.

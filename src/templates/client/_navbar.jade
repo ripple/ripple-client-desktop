@@ -17,11 +17,9 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
             a(href="#/trade", l10n) Trade
           li#nav-fund(ng-class="{active: $route.current.mainMenu == 'fund'}")
             a(href="#/trust", l10n) Trust Lines
-          li#nav-coldwallet(ng-class="{active: $route.current.mainMenu == 'coldwallet'}", ng-hide="readOnly")
-            a(href="#/coldwallet", l10n) Cold Wallet
         ul.nav.navbar-nav.navbar-right
           //- li.dropdown.balances-dropdown
-          //-   p.navbar-text(ng-show="!loadState.account", l10n) Loading your balance...
+          //-   p.navbar-text(ng-show="!loadState.account", l10n) Loading your baclance...
           //-   a.dropdown-toggle(ng-show="loadState.account")
           //-     span.balance.primary(ng-show="!account.Account", l10n) Unfunded account
           //-     span.balance.primary(ng-show="account.Account")
@@ -145,11 +143,6 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
           a(href="#/exchange", l10n) Simple
         li(ng-class="{active: $route.current.tabName == 'trade'}")
           a(href="#/trade", l10n) Advanced
-      ul(ng-show="$route.current.mainMenu == 'coldwallet'")
-        li(ng-class="{active: $route.current.tabName == 'coldwallet'}")
-          a(href="#/coldwallet", l10n) Overview
-        li(ng-class="{active: $route.current.tabName == 'submit'}")
-          a(href="#/submit", l10n) Submit Transactions
 
   //- .subnav(ng-show="$route.current.mainMenu == 'fund'")
     .container

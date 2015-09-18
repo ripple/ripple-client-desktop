@@ -2,7 +2,7 @@
 div#wrapper
   // Header
   header
-    h1(ng-show="['t-login','t-register'].indexOf($route.current.tabClass) !== -1", l10n) Welcome to {{productName}}, a global value exchange
+    h1(ng-show="['t-login','t-register', 't-submit', 't-coldwallet'].indexOf($route.current.tabClass) !== -1", l10n) Welcome to {{productName}}, a global value exchange
     include ./_navbar.jade
   .container
 

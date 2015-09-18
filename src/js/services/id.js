@@ -402,6 +402,10 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
     }
   };
 
+  Id.prototype.enterColdWalletView = function (address) {
+    $scope.address = address;
+  };
+
   /**
    * Go to an identity page.
    *

@@ -155,6 +155,16 @@ LoginTab.prototype.angular = function (module) {
 
       $location.path('/balance');
     }
+
+    $scope.submitColdWalletForm = function() {
+      $id.enterColdWalletView($scope.coldWallet);
+
+      $location.path('/coldwallet');
+    };
+
+    $scope.submitTxnForm = function() {
+      $location.path('/submit');
+    };
   }]);
 
   /**
