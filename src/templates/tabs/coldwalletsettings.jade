@@ -1,0 +1,17 @@
+section.col-xs-12.content(ng-controller="ColdwalletSettingsCtrl")
+  .row
+    .col-sm-3
+      include settings/_navbar
+    .col-sm-8.col-md-9.col-xs-12.list
+      div
+        h4(l10n) Default transaction folder
+        .section
+          .descriptor(l10n)
+          label(l10n) The folder you select here is the default location in which your signed transactions will be saved.
+          |  When you save a transaction, the file dialog will open with the folder below pre-selected for you.
+    .form-group
+      .col-sm-8.col-md-9.col-xs-12.list
+        a.btn.btn-primary(ng-click='fileInputClick()', l10n) Change folders
+        .section
+          hr
+          .p(l10n) Current default folder: {{defaultDirectory || 'not specified'}}.
