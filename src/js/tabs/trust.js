@@ -272,6 +272,7 @@ TrustTab.prototype.angular = function (module) {
             try {
               $scope.signedTransaction = tx.sign().serialize().to_hex();
               $scope.txJSON = JSON.stringify(tx.tx_json);
+              $scope.hash = tx.hash('HASH_TX_ID', false, undefined);
             } catch (e) {
               console.log('Caught error');
               $scope.trust.loading = false;
@@ -499,6 +500,7 @@ TrustTab.prototype.angular = function (module) {
               try {
                 $scope.signedTransaction = tx.sign().serialize().to_hex();
                 $scope.txJSON = JSON.stringify(tx.tx_json);
+                $scope.hash = tx.hash('HASH_TX_ID', false, undefined);
               } catch (e) {
                 console.log('Caught error');
                 $scope.trust.loading = false;
@@ -727,6 +729,7 @@ TrustTab.prototype.angular = function (module) {
             try {
               $scope.signedTransaction = tx.sign().serialize().to_hex();
               $scope.txJSON = JSON.stringify(tx.tx_json);
+              $scope.hash = tx.hash('HASH_TX_ID', false, undefined);
             } catch (e) {
               $scope.trust.loading = false;
               $scope.load_notification('error');

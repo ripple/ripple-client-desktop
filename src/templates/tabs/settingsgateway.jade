@@ -26,7 +26,7 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
     .col-sm-9.list(ng-show='((connected && account.Balance) || !onlineMode)')
       //- Offline Flag Change
       div(ng-show='offlineSettingsChange')
-        signed-transaction(data="{{signedTransaction}}", txJSON="{{txJSON}}")
+        signed-transaction(data="{{signedTransaction}}", txJSON="{{txJSON}}", hash="{{hash}}")
       section.content#gateways
         h4(l10n) Settings
         form.trust-line-form(name="accountsAdvForm", ng-submit='saveSetting("advanced_feature_switch")')

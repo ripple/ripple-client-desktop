@@ -23,6 +23,7 @@ module.directive('signedTransaction', ['rpFileDialog', function(fileDialog) {
         var txnName = $scope.userBlob.data.account_id + '-' + new Array(10 - sequenceLength + 1).join('0') + sequenceNumber + '.txt';
         var txData = JSON.stringify({
           tx_json: txJSON,
+          hash: attrs.hash,
           tx_blob: attrs.data
         });
         if ($scope.userBlob.data.defaultDirectory) {
