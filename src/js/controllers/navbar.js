@@ -24,7 +24,6 @@ module.controller('NavbarCtrl', ['$scope', '$element', '$compile', 'rpId',
   };
 
   function serverStatusUpdate() {
-    $scope.userCredentials.accountShort = $scope.userCredentials.account && $scope.userCredentials.account.slice(0, 5);
     $scope.fee = network.remote.createTransaction()._computeFee();
 
     if (!$scope.connected && $scope.userCredentials.username) {
