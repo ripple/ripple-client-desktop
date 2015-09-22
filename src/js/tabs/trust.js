@@ -20,9 +20,9 @@ TrustTab.prototype.generateHtml = function () {
 
 TrustTab.prototype.angular = function (module) {
   module.controller('TrustCtrl', ['$scope', 'rpBooks', '$timeout',
-    '$routeParams', 'rpId', '$filter', 'rpNetwork', 'rpKeychain',
+    '$routeParams', 'rpId', '$filter', 'rpNetwork', 'rpKeychain', 'rpApi',
     function ($scope, books, $timeout, $routeParams, id, $filter,
-      $network, keychain) {
+      $network, keychain, api) {
 
       if (!id.loginStatus) {
         id.goId();
@@ -166,21 +166,17 @@ TrustTab.prototype.angular = function (module) {
         // If we are online, verify the counterparty address
         // It is possible that the address is valid, but not on the ledger
         if ($scope.onlineMode) {
-          $network.remote.requestAccountInfo({
-            account: $scope.counterparty_address
-          })
-          .on('success', function() {
+          api.getAccountInfo($scope.counterparty_address)
+          .then(function() {
             confirmGrant();
-          })
-          .on('error', function() {
+          }).catch(function() {
             setImmediate(function () {
               $scope.$apply(function() {
                 $scope.verifying = false;
                 $scope.error_account_reserve = true;
               });
             });
-          })
-          .request();
+          });
         } else {
           confirmGrant();
         }
