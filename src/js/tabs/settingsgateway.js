@@ -116,6 +116,8 @@ SettingsGatewayTab.prototype.angular = function(module)
         tx.secret(secret);
         tx.complete();
         $scope.signedTransaction = tx.sign().serialize().to_hex();
+        $scope.txJSON = JSON.stringify(tx.tx_json);
+        $scope.hash = tx.hash('HASH_TX_ID', false, undefined);
         $scope.offlineSettingsChange = true;
         $scope.edit[type] = false;
       });
@@ -140,6 +142,8 @@ SettingsGatewayTab.prototype.angular = function(module)
         tx.secret(secret);
         tx.complete();
         $scope.signedTransaction = tx.sign().serialize().to_hex();
+        $scope.txJSON = JSON.stringify(tx.tx_json);
+        $scope.hash = tx.hash('HASH_TX_ID', false, undefined);
         $scope.offlineSettingsChange = true;
         $scope.edit[type] = false;
       });

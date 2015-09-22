@@ -99,10 +99,12 @@ SubmitTab.prototype.angular = function (module)
             return;
           }
 
+          var transaction = JSON.parse(data);
+
           // TODO validate blob
           // Submit the transaction to the network
           var request = new ripple.Request(network.remote, 'submit');
-          request.message.tx_blob = data;
+          request.message.tx_blob = transaction.tx_blob;
           request.callback(function(err, response){
             $scope.$apply(function(){
               if (err) {

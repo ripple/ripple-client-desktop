@@ -271,7 +271,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
               a(href="https://ripple.com/wiki/Reserves", target="_blank") More information
           //- Offline Sending
           group.mode-status(ng-show='mode=="offlineSending"')
-            signed-transaction(data="{{signedTransaction}}", sequence="{{$root.sequence}}")
+            signed-transaction(data="{{signedTransaction}}", txJSON="{{txJSON}}", hash="{{hash}}")
             group.actions
               div(class="actionLink")
                 a(href="", ng-click="toggle_form()", l10n) Back to trust lines
@@ -334,7 +334,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
             .line(ng-controller="AccountRowCtrl", ng-repeat="component in entry.components")
               //- Offline Sending
               group.mode-status(ng-show='mode=="offlineEdit"')
-                signed-transaction(data="{{signedTransaction}}", sequence="{{$root.sequence}}")
+                signed-transaction(data="{{signedTransaction}}", txJSON="{{txJSON}}", hash="{{hash}}")
                 group.actions
                   div(class="actionLink")
                     a(href="", ng-click="close_sign_form()", l10n) Close

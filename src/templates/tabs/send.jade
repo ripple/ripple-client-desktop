@@ -337,7 +337,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
 
   //- Offline Sending
   group.mode-status(ng-show='mode=="offlineSending"')
-    signed-transaction(data="{{signedTransaction}}", sequence="{{$root.sequence}}")
+    signed-transaction(data="{{signedTransaction}}", txJSON="{{txJSON}}", hash="{{hash}}")
     group.actions
       hr
       .text-success(ng-show='addressSaved', class="actionLink", l10n) Contact saved!
