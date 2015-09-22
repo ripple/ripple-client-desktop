@@ -51,7 +51,7 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
 
           li.account(rp-popover, rp-popover-placement="left", rp-popover-trigger="hover", rp-popover-delay
               l10n-rp-popover-content="{{copyTooltip}}")
-            p.navbar-text(ng-click="copy()") {{copyFeedback || userCredentials.accountShort}}
+            p.navbar-text(ng-click="copy()") {{copyFeedback || userCredentials.account}}
               input.text-copy-helper(value="{{userCredentials.account}}")
           li.dropdown.notifications-dropdown
             a.dropdown-toggle.fa.fa-bell(ng-click="read()", data-toggle="dropdown")
