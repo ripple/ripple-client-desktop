@@ -188,23 +188,7 @@ TrustTab.prototype.angular = function (module) {
           });
         }
 
-        // If we are online, verify the counterparty address
-        // It is possible that the address is valid, but not on the ledger
-        if ($scope.onlineMode) {
-          api.getAccountInfo($scope.counterparty_address)
-          .then(function() {
-            confirmGrant();
-          }).catch(function() {
-            setImmediate(function () {
-              $scope.$apply(function() {
-                $scope.verifying = false;
-                $scope.error_account_reserve = true;
-              });
-            });
-          });
-        } else {
-          confirmGrant();
-        }
+        confirmGrant();
       };
 
       /**
