@@ -413,30 +413,6 @@ module.directive('rpSpinner', [function() {
   };
 }]);
 
-
-// Version 0.2.0
-// AngularJS simple file upload directive
-// this directive uses an iframe as a target
-// to enable the uploading of files without
-// losing focus in the ng-app.
-//
-// <div ng-app="app">
-//   <div ng-controller="mainCtrl">
-//    <form action="/uploads" ng-upload="results()">
-//      <input type="file" name="avatar"></input>
-//      <input type="submit" value="Upload"></input>
-//    </form>
-//  </div>
-// </div>
-//
-//  angular.module('app', ['ngUpload'])
-//    .controller('mainCtrl', function($scope) {
-//      $scope.results = function(content) {
-//        console.log(content);
-//      }
-//  });
-//
-//
 module.directive('ngUpload', function() {
   return {
     restrict: 'A',

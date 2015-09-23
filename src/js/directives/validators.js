@@ -53,7 +53,7 @@ module.directive('rpMasterKey', function () {
  * If the input can be validly interpreted as one of these types, the validation
  * will succeed.
  */
-module.directive('rpDest', function ($timeout, $parse) {
+module.directive('rpDest', ['$timeout', '$parse', function ($timeout, $parse) {
   var emailRegex = /^\S+@\S+\.[^\s.]+$/;
   return {
     restrict: 'A',
@@ -110,7 +110,7 @@ module.directive('rpDest', function ($timeout, $parse) {
       });
     }
   };
-});
+}]);
 
 /**
  * Source and destination tags validator
