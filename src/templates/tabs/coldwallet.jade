@@ -1,61 +1,64 @@
 section.single.ddpage.content(ng-controller="ColdWalletCtrl")
-  h4 You are viewing the cold wallet information for account {{address}}.
-    p Always store the secret key for the cold wallet on a machine that is entirely offline. 
-  hr
-  p The most recent transaction from this account was a {{transaction.outcome}} {{transaction.type}} from {{transaction.origin}} to 
-    | {{transaction.destination}}. This account balance changed by {{transaction.balanceChange}} {{transaction.currency}}.  The fee was {{transaction.fee}} XRP.
-  hr
-  // Account information
-  h Account Information 
-    col-md-12.data
-      .table-responsive
-        table.table.table-hover
-          thead
-            tr
-              th Setting
-              th Enabled
-              th Description
-          tbody
-            tr(ng-repeat="line in accountInfo")
-              td {{line.setting}}
-              td {{line.enabled}}
-              td {{line.description}}
-    a(href='https://ripple.com/build/gateway-guide/', target=_blank) Best practices
-  // Balances and currencies
-  hr
-  h Balances
-    col-md-12.data
-      .table-responsive
-        table.table.table-hover
-          thead
-            tr
-              th Currency
-              th Counterparty
-              th Value
-          tbody
-            tr(ng-repeat="balance in balances")
-              td {{balance.currency}}
-              td {{balance.counterparty}}
-              td {{balance.value}}
-  hr
-  // Trustlines
-  h Trust Lines with warnings
-    col-md-12.data
-      .table-responsive
-        table.table.table-hover
-          thead
-            tr
-              th Counterparty
-              th Currency
-              th No Ripple
-              th Authorized
-              th Warning
-          tbody
-            tr(ng-repeat="line in warningLines")
-              td {{line.specification.counterparty}}
-              td {{line.specification.currency}}
-              td {{line.specification.ripplingDisabled}}
-              td {{line.specification.authorized}}
-              td {{line.warning}}
-  hr
-  a(ng-click='gotoLogin()') Back to login
+  group.disconnected(ng-hide="connected")
+    p.literal(l10n) You have to be online to see this screen
+
+  group(ng-if="connected")
+    h4 You are viewing the cold wallet information for account {{address}}.
+      p Always store the secret key for the cold wallet on a machine that is entirely offline.
+    hr
+    p {{lastTxn}}
+    hr
+    // Account information
+    h Account Information
+      col-md-12.data
+        .table-responsive
+          table.table.table-hover
+            thead
+              tr
+                th Setting
+                th Enabled
+                th Description
+            tbody
+              tr(ng-repeat="line in accountInfo")
+                td {{line.setting}}
+                td {{line.enabled}}
+                td {{line.description}}
+      a(href='https://ripple.com/build/gateway-guide/', target=_blank) Best practices
+    // Balances and currencies
+    hr
+    h Balances
+      col-md-12.data
+        .table-responsive
+          table.table.table-hover
+            thead
+              tr
+                th Currency
+                th Counterparty
+                th Value
+            tbody
+              tr(ng-repeat="balance in balances")
+                td {{balance.currency}}
+                td {{balance.counterparty}}
+                td {{balance.value}}
+    hr
+    // Trustlines
+    h Trust Lines with warnings
+      col-md-12.data
+        .table-responsive
+          table.table.table-hover
+            thead
+              tr
+                th Counterparty
+                th Currency
+                th No Ripple
+                th Authorized
+                th Warning
+            tbody
+              tr(ng-repeat="line in warningLines")
+                td {{line.specification.counterparty}}
+                td {{line.specification.currency}}
+                td {{line.specification.ripplingDisabled}}
+                td {{line.specification.authorized}}
+                td {{line.warning}}
+    hr
+  button.btn.btn-success(ng-click='gotoLogin()') Back to login
