@@ -4,7 +4,8 @@ var util = require('util'),
     Amount = ripple.Amount,
     Currency = ripple.Currency,
     Base = ripple.Base,
-    RippleError = ripple.RippleError;
+    RippleError = ripple.RippleError,
+    fs = require('fs');    
 
 var SendTab = function ()
 {
@@ -26,7 +27,7 @@ SendTab.prototype.generateHtml = function ()
 SendTab.prototype.angular = function (module)
 {
   module.controller('SendCtrl', ['$scope', '$timeout', '$routeParams', 'rpId',
-                                 'rpNetwork', 'rpKeychain',
+                                 'rpNetwork', 'rpKeychain', 
                                  function ($scope, $timeout, $routeParams, $id,
                                            $network, keychain)
   {
@@ -805,6 +806,29 @@ SendTab.prototype.angular = function (module)
         $scope.txJSON = JSON.stringify(tx.tx_json);
         $scope.hash = tx.hash('HASH_TX_ID', false, undefined);
         $scope.mode = "offlineSending";
+        if($scope.userBlob.data.defaultDirectory) {
+          var sequenceNumber = (Number(tx.tx_json.Sequence));
+          var sequenceLength = sequenceNumber.toString().length;
+          var txnName = $scope.userBlob.data.account_id + '-' + new Array(10 - sequenceLength + 1).join('0') + sequenceNumber + '.txt';
+          var txData = JSON.stringify({
+            tx_json: tx.tx_json,
+            hash: $scope.hash,
+            tx_blob: $scope.signedTransaction
+          });
+          var fileName = $scope.userBlob.data.defaultDirectory + '/' + txnName;
+          fs.writeFile(fileName, txData, function(err) {
+            $scope.$apply(function() {
+              $scope.fileName = fileName;
+              console.log('saved file');
+              if (err) {
+                console.log('Error saving transaction: ', JSON.stringify(err));
+                $scope.error = true;
+              } else {
+                $scope.saved = true;
+              }
+            });
+          });
+        }
       }
 
       $scope.confirmedTime = new Date();

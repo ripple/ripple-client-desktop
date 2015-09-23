@@ -1,4 +1,11 @@
 .signedTransaction
+  .row
+    .col-sm-12.notification-wrapper
+      .alert.alert-success(ng-show="saved", l10n) Transaction saved: {{fileName}}.
+      .alert.alert-danger(ng-show="error", l10n) Error saving transaction. Please copy and save manually.
+      .alert.alert-warning(ng-show="!userBlob.data.defaultDirectory") Please select default directory to save transaction to on the 
+        a(href="", ng-click="reset_goto('coldwalletsettings')", l10n) Cold Wallet Settings page
+        | .
   h2 Signed transaction
   .row
     .col-md-8
@@ -8,8 +15,5 @@
       .row
         .col-md-6
           button.btn.btn-small.btn-primary.btn-block(ng-click="copy()") Copy
-        .col-md-6
+        .col-md-6(ng-show="!userBlob.data.defaultDirectory")
           button.btn.btn-small.btn-primary.btn-block(ng-click="save()") Save to disk
-      .row
-        h(ng-show="saved") Transaction saved: {{fileName}}.
-        h(ng-show="error") Error saving transaction. Please copy and save manually.
