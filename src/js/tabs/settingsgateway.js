@@ -1,6 +1,7 @@
 var util = require('util'),
     webutil = require('../util/web'),
-    Tab = require('../client/tab').Tab;
+    Tab = require('../client/tab').Tab,
+    fs = require('fs');
 
 var SettingsGatewayTab = function() {
   Tab.call(this);
@@ -97,6 +98,30 @@ SettingsGatewayTab.prototype.angular = function(module)
       $scope.editBlob = false;
     };
 
+    $scope.saveTransaction = function(tx) {
+      var sequenceNumber = (Number(tx.tx_json.Sequence));
+      var sequenceLength = sequenceNumber.toString().length;
+      var txnName = $scope.userBlob.data.account_id + '-' + new Array(10 - sequenceLength + 1).join('0') + sequenceNumber + '.txt';
+      var txData = JSON.stringify({
+        tx_json: tx.tx_json,
+        hash: $scope.hash,
+        tx_blob: $scope.signedTransaction
+      });
+      var fileName = $scope.userBlob.data.defaultDirectory + '/' + txnName;
+      fs.writeFile(fileName, txData, function(err) {
+        $scope.$apply(function() {
+          $scope.fileName = fileName;
+          console.log('saved file');
+          if (err) {
+            console.log('Error saving transaction: ', JSON.stringify(err));
+            $scope.error = true;
+          } else {
+            $scope.saved = true;
+          }
+        });
+      });
+    };
+
     $scope.addFlag = function(type) {
       if (!_.includes(['defaultRippleFlag', 'requireAuthFlag', 'globalFreezeFlag'], type)) {
         return;
@@ -120,6 +145,9 @@ SettingsGatewayTab.prototype.angular = function(module)
         $scope.hash = tx.hash('HASH_TX_ID', false, undefined);
         $scope.offlineSettingsChange = true;
         $scope.edit[type] = false;
+        if ($scope.userBlob.data.defaultDirectory) {
+          $scope.saveTransaction(tx);
+        }
       });
     };
 
@@ -146,6 +174,9 @@ SettingsGatewayTab.prototype.angular = function(module)
         $scope.hash = tx.hash('HASH_TX_ID', false, undefined);
         $scope.offlineSettingsChange = true;
         $scope.edit[type] = false;
+        if ($scope.userBlob.data.defaultDirectory) {
+          $scope.saveTransaction(tx);
+        }
       });
     };
 
