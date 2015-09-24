@@ -30,6 +30,8 @@ ColdWalletTab.prototype.angular = function (module) {
       ' ' + txn.type + ' with ID ' + txn.id + ' and sequence ' + txn.sequence +
       '. The fee was ' + txn.outcome.fee + '. ';
 
+      $scope.sequenceNumber = txn.type === 'orderCancellation' ? Number(txn.specification.orderSequence) + 1 : Number(txn.sequence) + 1;
+
       if (txn.type === 'payment') {
         var changed = txn.outcome.balanceChanges[address][0]
         .value.charAt(0) === '-' ? 'decreased' : 'increased';
