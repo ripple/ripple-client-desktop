@@ -12,6 +12,8 @@ section.col-xs-12.content(ng-controller="RegisterCtrl")
 
       .form-group
         a.btn.btn-block.btn-default(ng-click='mode="register_with_secret"', l10n) Create a new account with a secret key
+    .row
+      button.btn.btn-block.btn-cancel(ng-click='goTo("/login")', l10n) Back to home
 
   .row.auth-form-container.col-sm-offset-2.col-sm-8.col-md-offset-3.col-md-6(ng-show='mode=="register_empty_wallet"')
     .auth-form-wrapper
