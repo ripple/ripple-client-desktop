@@ -333,42 +333,6 @@ TrustTab.prototype.angular = function (module) {
         }
       }
 
-      $scope.edit_line = function ()
-      {
-        var line = this.component;
-        var filterAddress = $filter('rpcontactnamefull');
-        var contact = filterAddress(line.issuer);
-        $scope.line = this.component;
-        $scope.edituser = (contact) ? contact : 'User';
-        $scope.validation_pattern = contact ? /^[0-9.]+$/ : /^0*(([1-9][0-9]*.?[0-9]*)|(.0*[1-9][0-9]*))$/;
-
-        var lineCurrency = Currency.from_json(line.currency);
-        var formatOpts;
-        if ($scope.currencies_all_keyed[lineCurrency.get_iso()]) {
-          formatOpts = {
-            full_name:$scope.currencies_all_keyed[lineCurrency.get_iso()].name
-          }
-        }
-
-        $scope.lineCurrencyObj = lineCurrency;
-        $scope.currency = lineCurrency.to_human(formatOpts);
-        $scope.balance = line.balance.to_human();
-        $scope.balanceAmount = line.balance;
-        $scope.counterparty = line.issuer;
-        $scope.counterparty_view = contact;
-
-        $scope.amount = line.max.currency().has_interest()
-          ? +Math.round(line.max.applyInterest(new Date()).to_text())
-          : +line.max.to_text()
-
-        $scope.allowrippling = line.rippling;
-
-        // Close/open form. Triggers focus on input.
-        $scope.addform_visible = false;
-
-        $scope.load_orderbook();
-      };
-
       $scope.$watch('userBlob.data.contacts', function (contacts) {
         $scope.counterparty_query = webutil.queryFromContacts(contacts);
       }, true);
