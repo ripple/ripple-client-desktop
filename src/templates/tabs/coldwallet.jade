@@ -15,6 +15,16 @@ section.single.ddpage.content(ng-controller="ColdWalletCtrl")
           table.table.table-hover
             thead
               tr
+                th Current Sequence Number
+                th Current Network Fee
+            tbody
+              tr
+                td {{sequenceNumber}}
+                td {{networkFee}}
+        .table-responsive
+          table.table.table-hover
+            thead
+              tr
                 th Setting
                 th Enabled
                 th Description
