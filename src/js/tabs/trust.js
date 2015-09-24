@@ -73,9 +73,6 @@ TrustTab.prototype.angular = function (module) {
       });
     };
 
-      //Don't allow zero for new trust lines.
-      $scope.validation_pattern = /^0*(([1-9][0-9]*.?[0-9]*)|(.0*[1-9][0-9]*))$/;
-
       $scope.reset = function () {
         $scope.mode = 'main';
         var usdCurrency = Currency.from_human('USD');
