@@ -121,8 +121,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                   .row(ng-show="advanced_feature_switch")
                     .col-md-3.col-sm-4.col-xs-3(ng-init="amount = $routeParams.amount ? '' : 1000000000")
                       input.form-control.value#trust_amount(name='trust_amount'
-                        type='number', step='any', ng-model='amount'
-                        ng-pattern='validation_pattern'
+                        type='number', min='0', step='any', ng-model='amount'
                         rp-autofill='$routeParams.amount'
                         rp-autofill-amount
                         rp-autofill-on='addform_visible = true')
@@ -421,7 +420,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                   ng-form(name="accountForm")
                     .col-sm-1.col-md-1.inputPadding(l10n) Limit
                     .col-sm-2.col-md-3
-                      input.form-control(name='limit', type='text'
+                      input.form-control(name='limit', type='number'
                         ng-model='trust.limit', ng-pattern='validation_pattern'
                         ng-disabled='trust.loading', required)
                     .col-sm-2.col-md-2.inputPadding
