@@ -175,7 +175,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     rp-popover-placement="bottom"
                     l10n-rp-popover-title="Allow Rippling"
                     rp-popover-trigger="click"
-                    l10n-data-content="Allow this trust line's balances to be transferred to another issuer you connect to. <a href=https://ripple.com/wiki/No_Ripple target=_blank>More information</a>")
+                    l10n-data-content="Allow this trust line's balances to be transferred to another issuer you connect to. <a href=https://ripple.com/knowledge_center/understanding-the-noripple-flag target=_blank>More information</a>")
                 .col-xs-4.allow-rippling
                   label.checkbox(for="trust_tfSetfAuth")
                     input#trust_tfSetfAuth(
@@ -187,7 +187,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     rp-popover-placement="bottom"
                     l10n-rp-popover-title="Set Authentication"
                     rp-popover-trigger="click"
-                    l10n-data-content="{{setAuthMessage}} <a href=https://ripple.com/build/transactions/#trustset-flags>More information</a>")
+                    l10n-data-content="{{setAuthMessage}} <a href=https://ripple.com/build/transactions/#trustset-flags target=_blank>More information</a>")
                 .col-xs-4.allow-rippling
                   label.checkbox(for="trust_tfSetFreeze")
                     input#trust_tfSetFreeze(
@@ -199,7 +199,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     rp-popover-placement="bottom"
                     l10n-rp-popover-title="Set Freeze"
                     rp-popover-trigger="click"
-                    l10n-data-content="Freeze the trust line <a href=https://ripple.com/build/transactions/#trustset-flags>More information</a>")
+                    l10n-data-content="Freeze the trust line <a href=https://ripple.com/build/transactions/#trustset-flags target=_blank>More information</a>")
               .row
                 .col-xs-8.col-sm-7.col-md-6
                   rp-popup(rp-popup-on-open="grant()") 
