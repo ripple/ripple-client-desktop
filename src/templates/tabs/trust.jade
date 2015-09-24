@@ -175,19 +175,19 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     rp-popover-placement="bottom"
                     l10n-rp-popover-title="Allow Rippling"
                     rp-popover-trigger="click"
-                    l10n-data-content="Allow this trust line's balances to be transferred to another issuer you connect to. <a href=https://ripple.com/wiki/No_Ripple target=_blank>More information</a>")
+                    l10n-data-content="Allow this trust line's balances to be transferred to another issuer you connect to. <a href=https://ripple.com/knowledge_center/understanding-the-noripple-flag target=_blank>More information</a>")
                 .col-xs-4.allow-rippling
                   label.checkbox(for="trust_tfSetfAuth")
                     input#trust_tfSetfAuth(
                       name='trust_tfSetfAuth', type='checkbox'
-                      ng-model='tfSetfAuth', ng-disabled='disallowAuth')
-                    span(l10n) Set Authentication
+                      ng-model='tfSetfAuth', ng-disabled='onlineMode && disallowAuth')
+                    span(l10n) Set Authorization
                   i.fa.fa-question-circle.help-icon(
                     rp-popover
                     rp-popover-placement="bottom"
-                    l10n-rp-popover-title="Set Authentication"
+                    l10n-rp-popover-title="Set Authorization"
                     rp-popover-trigger="click"
-                    l10n-data-content="{{setAuthMessage}} <a href=https://ripple.com/build/transactions/#trustset-flags>More information</a>")
+                    l10n-data-content="{{setAuthMessage}} <a href=https://ripple.com/build/transactions/#trustset-flags target=_blank>More information</a>")
                 .col-xs-4.allow-rippling
                   label.checkbox(for="trust_tfSetFreeze")
                     input#trust_tfSetFreeze(
@@ -199,7 +199,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     rp-popover-placement="bottom"
                     l10n-rp-popover-title="Set Freeze"
                     rp-popover-trigger="click"
-                    l10n-data-content="Freeze the trust line <a href=https://ripple.com/build/transactions/#trustset-flags>More information</a>")
+                    l10n-data-content="Freeze the trust line <a href=https://ripple.com/build/transactions/#trustset-flags target=_blank>More information</a>")
               .row
                 .col-xs-8.col-sm-7.col-md-6
                   rp-popup(rp-popup-on-open="grant()") 
@@ -317,7 +317,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
               span.currency(rp-currency="entry.components[0].limit", rp-currency-full)
           .row.head
             div(
-              ng-class="{ 'col-sm-3 col-xs-2': advanced_feature_switch, 'col-sm-4 col-xs-4 col-md-5': !advanced_feature_switch }"
+              ng-class="{ 'col-sm-2 col-xs-2': advanced_feature_switch, 'col-sm-4 col-xs-4 col-md-5': !advanced_feature_switch }"
               l10n) Counterparty
             div(
               ng-class="{ 'col-xs-2 col-sm-2': advanced_feature_switch, 'col-xs-4': !advanced_feature_switch }"
@@ -326,6 +326,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
             div.col-xs-2.col-sm-1(ng-show="advanced_feature_switch", l10n) Min
             div.col-xs-1(ng-show="advanced_feature_switch", l10n) Rippling
             div.col-xs-1(ng-show="advanced_feature_switch", l10n) Frozen
+            div.col-xs-1(ng-show="advanced_feature_switch", l10n) Auth
             div(ng-class="{'col-xs-2' : advanced_feature_switch, 'col-xs-4 col-md-3': !advanced_feature_switch }", ng-hide="readOnly"
               l10n) Edit
           hr#divider
@@ -339,7 +340,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     a(href="", ng-click="close_sign_form()", l10n) Close
               .row(ng-class="{ 'frozen-account': component.freeze_peer }")
                 div.gateway(
-                  ng-class="{ 'col-sm-3 col-xs-2': advanced_feature_switch, 'col-md-5 col-sm-4 col-xs-4': !advanced_feature_switch }",
+                  ng-class="{ 'col-sm-2 col-xs-2': advanced_feature_switch, 'col-md-5 col-sm-4 col-xs-4': !advanced_feature_switch }",
                   rp-pretty-identity="component.account", rp-pretty-identity-filters="rpcontactnamefull"
                   )
                 div(
@@ -355,6 +356,9 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                 .col-sm-1.col-xs-1(ng-show="advanced_feature_switch")
                   div(ng-show="component.freeze", l10n) Yes
                   div(ng-hide="component.freeze", l10n) No
+                .col-sm-1.col-xs-1(ng-show="advanced_feature_switch")
+                  div(ng-show="component.authorized", l10n) Yes
+                  div(ng-hide="component.authorized", l10n) No
                 div(ng-hide="component.freeze_peer", ng-class="{ 'col-xs-2': advanced_feature_switch, 'col-xs-4 col-md-3': !advanced_feature_switch }")
                   a(href="", ng-hide="editing || readOnly", ng-click="edit_account()"
                     l10n) edit
@@ -431,6 +435,10 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                       div.rippling-checkbox
                         label(l10n) Freeze&#32;
                           input(name='freeze', type='checkbox', ng-model='trust.freeze')
+                    .col-sm-2.col-md-2.inputPadding
+                      div.rippling-checkbox
+                        label(l10n) Authorize&#32;
+                          input(name='authorize', type='checkbox', ng-model='trust.auth', ng-disabled='component.authorized || (onlineMode && disallowAuth)')
                     .row(ng-show='advanced_feature_switch' && '!onlineMode')
                       .col-xs-12
                         label(for='send_sequence', l10n) Account sequence and network fee

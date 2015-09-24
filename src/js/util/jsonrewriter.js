@@ -414,6 +414,7 @@ var JsonRewriter = module.exports = {
 
           var noRippleFlag = high.issuer === account ? 'HighNoRipple' : 'LowNoRipple';
           var freezeFlag = high.issuer === account ? 'HighFreeze' : 'LowFreeze';
+          var authFlag = high.issuer === account ? 'HighAuth' : 'LowAuth';
 
           // New trust line
           if (node.diffType === "CreatedNode") {
@@ -492,6 +493,10 @@ var JsonRewriter = module.exports = {
                 // Account removed the freeze flag
                 (node.fieldsPrev.Flags & ripple.Remote.flags.state[freezeFlag] &&
                   !(node.fields.Flags & ripple.Remote.flags.state[freezeFlag]))
+                ||
+                // Account set an auth flag
+                (node.fields.Flags & ripple.Remote.flags.state[authFlag] &&
+                  !(node.fieldsPrev.Flags & ripple.Remote.flags.state[authFlag]))
               )
               {
                 effect.type = "trust_change_flags";
@@ -520,6 +525,11 @@ var JsonRewriter = module.exports = {
             // freeze flag
             if (node.fields.Flags & ripple.Remote.flags.state[freezeFlag]) {
               effect.freeze = true;
+            }
+
+            // auth flag
+            if (node.fields.Flags & ripple.Remote.flags.state[authFlag]) {
+              effect.auth = true;
             }
           }
         }

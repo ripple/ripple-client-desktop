@@ -105,12 +105,19 @@ TrustTab.prototype.angular = function (module) {
         $scope.acctDefaultRippleFlag = ($scope.account.Flags & RemoteFlagDefaultRipple);
         // Allow user to set auth on a trustline only if their account has auth enabled
         $scope.disallowAuth = !($scope.account.Flags & AuthEnabled);
-        if ($scope.disallowAuth) {
+        // Client is online and RequireAuth is not set on account root
+        if ($scope.onlineMode && $scope.disallowAuth) {
           $scope.setAuthMessage = 'This account has not enabled authorization, '
           + 'so there is no need to set authorization on a trustline.';
-        } else {
+        } else if ($scope.onlineMode) {
+          // Client is online and ReqireAuth is set on account root
           $scope.setAuthMessage = 'Authorize the other party to hold '
           + 'issuances from this account.';
+        } else {
+          // Client is not online, don't know if RequireAuth is set
+          // so allow user to set flag
+          $scope.setAuthMessage = 'Authorize the other party to hold '
+          + 'issuances from this account. You must have the RequireAuth flag enabled in Gateways and trust lines.';
         }
 
         $scope.can_add_trust = false;
@@ -333,42 +340,6 @@ TrustTab.prototype.angular = function (module) {
         }
       }
 
-      $scope.edit_line = function ()
-      {
-        var line = this.component;
-        var filterAddress = $filter('rpcontactnamefull');
-        var contact = filterAddress(line.issuer);
-        $scope.line = this.component;
-        $scope.edituser = (contact) ? contact : 'User';
-        $scope.validation_pattern = contact ? /^[0-9.]+$/ : /^0*(([1-9][0-9]*.?[0-9]*)|(.0*[1-9][0-9]*))$/;
-
-        var lineCurrency = Currency.from_json(line.currency);
-        var formatOpts;
-        if ($scope.currencies_all_keyed[lineCurrency.get_iso()]) {
-          formatOpts = {
-            full_name:$scope.currencies_all_keyed[lineCurrency.get_iso()].name
-          }
-        }
-
-        $scope.lineCurrencyObj = lineCurrency;
-        $scope.currency = lineCurrency.to_human(formatOpts);
-        $scope.balance = line.balance.to_human();
-        $scope.balanceAmount = line.balance;
-        $scope.counterparty = line.issuer;
-        $scope.counterparty_view = contact;
-
-        $scope.amount = line.max.currency().has_interest()
-          ? +Math.round(line.max.applyInterest(new Date()).to_text())
-          : +line.max.to_text()
-
-        $scope.allowrippling = line.rippling;
-
-        // Close/open form. Triggers focus on input.
-        $scope.addform_visible = false;
-
-        $scope.load_orderbook();
-      };
-
       $scope.$watch('userBlob.data.contacts', function (contacts) {
         $scope.counterparty_query = webutil.queryFromContacts(contacts);
       }, true);
@@ -428,7 +399,11 @@ TrustTab.prototype.angular = function (module) {
     function ($scope, books, $network, id, keychain, $timeout) {
 
       $scope.validation_pattern = /^0*(([0-9]*.?[0-9]*)|(.0*[1-9][0-9]*))$/;
+      var AuthEnabled = 0x00040000;
 
+      $scope.$watch('account', function() {
+        $scope.disallowAuth = !($scope.account.Flags & AuthEnabled);
+      }, true);
       $scope.cancel = function () {
         $scope.editing = false;
       };
@@ -436,10 +411,12 @@ TrustTab.prototype.angular = function (module) {
       $scope.edit_account = function() {
         $scope.editing = true;
 
+
         $scope.trust = {};
         $scope.trust.limit = Number($scope.component.limit.to_json().value);
         $scope.trust.rippling = !$scope.component.no_ripple;
         $scope.trust.freeze = $scope.component.freeze;
+        $scope.trust.auth = !!$scope.component.authorized;
         $scope.trust.limit_peer = Number($scope.component.limit_peer.to_json().value);
         $scope.trust.balance = String($scope.component.balance.to_json().value);
         $scope.trust.balanceAmount = $scope.component.balance;
@@ -660,6 +637,10 @@ TrustTab.prototype.angular = function (module) {
           flags.push('SetFreeze');
         } else {
           flags.push('ClearFreeze');
+        }
+        // Set auth flag (this cannot be unset)
+        if ($scope.trust.auth) {
+          flags.push('SetAuth');
         }
 
         tx

@@ -428,6 +428,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork', 'rp
         line.flags = effect.flags;
         line.no_ripple = !!effect.noRipple; // Force Boolean
         line.freeze = !!effect.freeze; // Force Boolean
+        line.authorized = !!effect.auth;
 
         if (effect.balance) {
           line.balance = effect.balance;
