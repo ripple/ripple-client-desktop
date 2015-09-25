@@ -178,6 +178,7 @@ SendTab.prototype.angular = function (module)
       if (!ripple.UInt160.is_valid(recipient)) return;
 
       if (!$scope.onlineMode) {
+        $scope.send.currency = 'XRP';
         $scope.send.path_status  = "none";
         $scope.send.currency_choices = ['XRP'];
         $scope.send.recipient_resolved = true;
@@ -351,7 +352,7 @@ SendTab.prototype.angular = function (module)
       $scope.reset_currency_deps();
 
       // We should have a valid recipient
-      if (!ripple.UInt160.is_valid(recipient)) {
+      if (!ripple.UInt160.is_valid(recipient) && !send.quote_url) {
         return;
       }
 
@@ -382,7 +383,6 @@ SendTab.prototype.angular = function (module)
       }
 
       var currency = ripple.Currency.from_human(send.currency);
-
       var matchedCurrency = currency.has_interest() ? currency.to_hex() : currency.get_iso();
       var match = /^([a-zA-Z0-9]{3}|[A-Fa-f0-9]{40})\b/.exec(matchedCurrency);
 
@@ -416,42 +416,50 @@ SendTab.prototype.angular = function (module)
       // in calculating paths.
       if ($scope.sendForm.$invalid) return;
 
-      if (!ripple.UInt160.is_valid(recipient) || !ripple.Amount.is_valid(amount)) {
-        // XXX Error?
-        return;
+      if (send.quote_url) {
+        if (!send.amount_feedback.is_valid())
+          return;
+
+        // Dummy issuer
+        send.amount_feedback.set_issuer(1);
+        pathUpdateTimeout = $timeout($scope.update_quote, 500);
+      } else {
+        if (!ripple.UInt160.is_valid(recipient) || !ripple.Amount.is_valid(amount)) {
+          // XXX Error?
+          return;
+        }
+
+        // Create Amount object
+        if (!send.amount_feedback.is_native()) {
+          send.amount_feedback.set_issuer(recipient);
+        }
+
+        // If we don't have recipient info yet, then don't search for paths
+        if (!send.recipient_info) {
+          return;
+        }
+
+        // Cannot make XRP payment if the sender does not have enough XRP
+        send.sender_insufficient_xrp = send.amount_feedback.is_native()
+          && $scope.account.max_spend
+          && $scope.account.max_spend.to_number() > 1
+          && $scope.account.max_spend.compareTo(send.amount_feedback) < 0;
+
+        var total = send.amount_feedback.add(send.recipient_info.Balance);
+        var reserve_base = $scope.account.reserve_base;
+
+        if ($scope.onlineMode && total.compareTo(reserve_base) < 0) {
+          send.fund_status = "insufficient-xrp";
+          send.xrp_deficiency = reserve_base.subtract(send.recipient_info.Balance);
+          send.insufficient = true;
+          return;
+        }
+        send.insufficient = false;
+        send.fund_status = 'none';
+
+        send.path_status = 'pending';
+        pathUpdateTimeout = $timeout($scope.update_paths, 500);
       }
-
-      // Create Amount object
-      if (!send.amount_feedback.is_native()) {
-        send.amount_feedback.set_issuer(recipient);
-      }
-
-      // If we don't have recipient info yet, then don't search for paths
-      if (!send.recipient_info) {
-        return;
-      }
-
-      // Cannot make XRP payment if the sender does not have enough XRP
-      send.sender_insufficient_xrp = send.amount_feedback.is_native()
-        && $scope.account.max_spend
-        && $scope.account.max_spend.to_number() > 1
-        && $scope.account.max_spend.compareTo(send.amount_feedback) < 0;
-
-      var total = send.amount_feedback.add(send.recipient_info.Balance);
-      var reserve_base = $scope.account.reserve_base;
-      if (total.compareTo(reserve_base) < 0) {
-        send.fund_status = "insufficient-xrp";
-        send.xrp_deficiency = reserve_base.subtract(send.recipient_info.Balance);
-      }
-
-      // If the destination doesn't exist, then don't search for paths.
-      if (!send.recipient_info.exists) {
-        send.path_status = 'none';
-        return;
-      }
-
-      send.path_status = 'pending';
-      pathUpdateTimeout = $timeout($scope.update_paths, 500);
     };
 
     $scope.reset_paths = function () {
