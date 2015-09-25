@@ -89,7 +89,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
           rp-amount-positive
           rp-amount-xrp-limit
           rp-amount-xrp-limit-currency='{{send.currency}}')
-        .col-xs-9.col-sm-6.col-md-4
+        .col-xs-9.col-sm-6.col-md-4(ng-show="onlineMode")
           input.form-control.currency#send_amount_currency(
           name='send_amount_currency', type='text'
           rp-combobox="{{send.currency_choices}}", rp-combobox-select
@@ -98,6 +98,10 @@ section.col-xs-12.content(ng-controller='SendCtrl')
           rp-autofill-currency
           rp-autofill-currency-fullname
           rp-restrict-currencies='{{send.restrict_currencies}}')
+        .col-xs-9.col-sm-6.col-md-4(ng-show="!onlineMode")  
+          input.form-control.currency#send_amount_currency(
+            name='send_amount_currency', type='text'
+            ng-model='send.currency')
       .row(ng-if="send.currency_force")
         .col-xs-12.col-sm-6.col-md-3.input-group.currency_force
           input.form-control#send_amount(
