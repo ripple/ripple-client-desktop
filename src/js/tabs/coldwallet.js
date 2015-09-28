@@ -28,10 +28,11 @@ ColdWalletTab.prototype.angular = function (module) {
       'successful' : 'failed';
 
       var txnMessage = 'The most recent transaction was a ' + outcome +
-      ' ' + txn.type + ' with ID ' + txn.id + ' and sequence ' + txn.sequence +
-      '. The fee was ' + txn.outcome.fee + '. ';
+      ' ' + txn.type + ' with ID ' + txn.id + ' and sequence ' +
+      txn.sequence + '. ';
 
-      $scope.sequenceNumber = txn.type === 'orderCancellation' ? Number(txn.specification.orderSequence) + 1 : Number(txn.sequence) + 1;
+      $scope.sequenceNumber = txn.type === 'orderCancellation' ?
+      Number(txn.specification.orderSequence) + 1 : Number(txn.sequence) + 1;
 
       if (txn.type === 'payment') {
         var changed = txn.outcome.balanceChanges[address][0]
@@ -45,21 +46,33 @@ ColdWalletTab.prototype.angular = function (module) {
         txnMessage += 'The origin was ' + txn.specification.source.address +
         ' and the destination was ' + txn.specification.destination.address +
         '. This acount\'s balance ' + changed + ' by ' + amount + ' ' +
-        txn.outcome.balanceChanges[address][0].currency + '.';
+        txn.outcome.balanceChanges[address][0].currency + '. The fee was ' +
+        txn.outcome.fee + ' XRP.';
       } else if (txn.type === 'order') {
         txnMessage += 'This was a ' + txn.specification.direction +
         ' order for ' + txn.specification.quantity.amount.value +
         ' of ' + txn.specification.quantity.amount.currency +
         ' at a price of ' + txn.specification.quantity.amount
         .value + ' ' + txn.specification.quantity.amount.currency +
-        '.';
+        '.  The fee was ' + txn.outcome.fee + ' XRP.';
       } else if (txn.type === 'trustline') {
-        txnMessage += 'The counterparty was ' + txn.specification.counterparty +
-        ' and the limit was ' + txn.specification.limit + ' ' +
-        txn.specification.currency + '.';
+        // Two cases here
+        if (txn.specification.counterparty === address) {
+          // 1. Another account extended trust to this account
+          txnMessage += 'Account ' + txn.address +
+          ' paid a fee of ' + txn.outcome.fee +
+          ' XRP to extend trust to this account ';
+        } else {
+          // 2. This account extended trust to another account
+          txnMessage += 'This account paid a fee of ' + txn.outcome.fee +
+          ' XRP to extend trust to ' + txn.specification.counterparty + ' ';
+        }
+        txnMessage += 'with a limit of ' + txn.specification.limit + ' ' +
+          txn.specification.currency + '.';
       } else if (txn.type === 'orderCancellation') {
         txnMessage += ' The order sequence was ' +
-        txn.specification.orderSequence + '.';
+        txn.specification.orderSequence + '.  The fee was ' +
+        txn.outcome.fee + ' XRP.';
       }
       return txnMessage;
     }
