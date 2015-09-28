@@ -458,7 +458,9 @@ SendTab.prototype.angular = function (module)
         send.fund_status = 'none';
 
         send.path_status = 'pending';
-        pathUpdateTimeout = $timeout($scope.update_paths, 500);
+        if ($scope.onlineMode){
+          pathUpdateTimeout = $timeout($scope.update_paths, 500);
+        }
       }
     };
 
@@ -781,7 +783,7 @@ SendTab.prototype.angular = function (module)
         tx.send_max($scope.send.alt.send_max);
         tx.paths($scope.send.alt.paths);
       } else {
-        if (!amount.is_native()) {
+        if ($scope.onlineMode && !amount.is_native()) {
           tx.build_path(true);
         }
       }

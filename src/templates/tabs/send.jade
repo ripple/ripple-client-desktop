@@ -143,10 +143,15 @@ section.col-xs-12.content(ng-controller='SendCtrl')
           ng-model='send.fee'
           required, placeholder="fee")
     .row
-      .col-xs-12.col-sm-6.col-md-4(ng-show="send.currency_code == 'XRP'")
+      .col-xs-12.col-sm-6.col-md-4(ng-show="onlineMode && send.currency_code == 'XRP'")
         button#sendXrpButton.btn.btn-block.btn-success.submit(type='submit'
         ng-disabled='sendForm.$invalid || send.self || !send.recipient_resolved || account.max_spend.to_number() < send.amount * 1000000', l10n)
           | Send XRP
+    .row
+      .col-xs-12.col-sm-6.col-md-4(ng-show="!onlineMode")
+        button#sendXrpButton.btn.btn-block.btn-success.submit(type='submit'
+        ng-disabled='sendForm.$invalid || send.self || !send.recipient_resolved || account.max_spend.to_number() < send.amount * 1000000', l10n)
+          | Send   
     .remote
       //- Messages
       p.literal(ng-show="send.fund_status == 'insufficient-xrp'", l10n)
@@ -160,9 +165,9 @@ section.col-xs-12.content(ng-controller='SendCtrl')
         | Analyzing address
       p.literal(ng-show="send.path_status == 'account-currencies'", rp-spinner="4", l10n)
         | Scanning accepted currencies
-      p.literal(ng-show="send.path_status == 'pending' && send.currency_code != 'XRP'", rp-spinner="4", l10n)
+      p.literal(ng-show="send.path_status == 'pending' && send.currency_code != 'XRP' && onlineMode", rp-spinner="4", l10n)
         | Calculating paths
-      p.literal(ng-show="send.path_status == 'pending' && send.currency_code == 'XRP'", rp-spinner="4", l10n)
+      p.literal(ng-show="send.path_status == 'pending' && send.currency_code == 'XRP' && onlineMode", rp-spinner="4", l10n)
         | Calculating alternatives
       p.literal(ng-show="send.path_status == 'no-path' && send.currency_code != 'XRP'", l10n)
         | You cannot send {{send.amount}} {{send.currency}} to
