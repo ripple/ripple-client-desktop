@@ -98,13 +98,20 @@ SubmitTab.prototype.angular = function (module)
             console.log('err',err);
             return;
           }
-
-          var transaction = JSON.parse(data);
+          // Transaction will either be a JSON transaction or the signed
+          // blob only, in which case there will not be a tx_blob value
+          var txBlob;
+          try {
+            var transaction = JSON.parse(data);
+            txBlob = transaction.tx_blob;
+          } catch(e) {
+            txBlob = data;
+          }
 
           // TODO validate blob
           // Submit the transaction to the network
           var request = new ripple.Request(network.remote, 'submit');
-          request.message.tx_blob = transaction.tx_blob;
+          request.message.tx_blob = txBlob;
           request.callback(function(err, response){
             $scope.$apply(function(){
               if (err) {
