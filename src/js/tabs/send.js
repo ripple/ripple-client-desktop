@@ -482,10 +482,11 @@ SendTab.prototype.angular = function (module)
 
       // Determine if we need to update the paths.
       if (send.pathfind &&
-          send.pathfind.src_account === $id.account &&
-          send.pathfind.dst_account === recipient &&
-          send.pathfind.dst_amount.equals(amount))
+      send.pathfind.src_account === $id.account &&
+      send.pathfind.dst_account === recipient &&
+      send.pathfind.dst_amount.equals(amount)) {
         return;
+      }
 
       var isIssuer = $scope.generate_issuer_currencies();
 
@@ -508,32 +509,36 @@ SendTab.prototype.angular = function (module)
               lastUpdate = new Date();
 
               clearInterval(timer);
-              timer = setInterval(function(){
-                $scope.$apply(function(){
-                  var seconds = Math.round((new Date() - lastUpdate)/1000);
+              timer = setInterval(function() {
+                $scope.$apply(function() {
+                  var seconds = Math.round((new Date() - lastUpdate) / 1000);
                   $scope.lastUpdate = seconds ? seconds : 0;
-                })
+                });
               }, 1000);
 
               // Check if this request is still current, exit if not
               var now_recipient = send.recipient_actual || send.recipient_address;
-              if (recipient !== now_recipient) return;
+              if (recipient !== now_recipient) {
+                return;
+              }
 
               var now_amount = send.amount_actual || send.amount_feedback;
-              if (!now_amount.equals(amount)) return;
+              if (!now_amount.equals(amount)) {
+                return;
+              }
 
               if (!upd.alternatives || !upd.alternatives.length) {
-                $scope.send.path_status  = "no-path";
+                $scope.send.path_status === 'no-path';
                 $scope.send.alternatives = [];
               } else {
                 var currencies = {};
                 var currentAlternatives = [];
 
-                $scope.send.path_status  = "done";
-                $scope.send.alternatives = _.map(upd.alternatives, function (raw,key) {
+                $scope.send.path_status = 'done';
+                $scope.send.alternatives = _.map(upd.alternatives, function (raw, key) {
                   var alt = {};
 
-                  alt.amount   = Amount.from_json(raw.source_amount);
+                  alt.amount = Amount.from_json(raw.source_amount);
 
                   // Compensate for demurrage
                   //
@@ -544,14 +549,15 @@ SendTab.prototype.angular = function (module)
 
                   //alt.rate     = alt.amount.ratio_human(amount, {reference_date: slightlyInFuture});
                   alt.send_max = alt.amount;
-                  alt.paths    = raw.paths_computed
+                  alt.paths = raw.paths_computed
                     ? raw.paths_computed
                     : raw.paths_canonical;
 
                   // Selected currency should be the first option
                   if (raw.source_amount.currency) {
-                    if (raw.source_amount.currency === $scope.send.currency_code)
+                    if (raw.source_amount.currency === $scope.send.currency_code) {
                       currentAlternatives.push(alt);
+                    }
                   } else if ($scope.send.currency_code === 'XRP') {
                     currentAlternatives.push(alt);
                   }
@@ -561,7 +567,9 @@ SendTab.prototype.angular = function (module)
                   }
 
                   return alt;
-                }).filter(function(alt) { return currentAlternatives.indexOf(alt) == -1; });
+                }).filter(function(alt) {
+                  return currentAlternatives.indexOf(alt) === -1;
+                });
                 Array.prototype.unshift.apply($scope.send.alternatives, currentAlternatives);
 
                 $scope.send.alternatives = $scope.send.alternatives.filter(function(alt) {
