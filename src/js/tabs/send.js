@@ -489,9 +489,10 @@ SendTab.prototype.angular = function (module)
         return;
 
       // Start path find
-      var pf = $network.remote.pathFind($id.account,
-                                         recipient,
-                                         amount);
+      var pf = $network.remote.createPathFind({
+        src_account: $id.account,
+        dst_account: recipient,
+        dst_amount: amount});
                                          //$scope.generate_src_currencies());
                                          // XXX: Roll back pathfinding changes temporarily
       var isIssuer = $scope.generate_issuer_currencies();
@@ -537,10 +538,10 @@ SendTab.prototype.angular = function (module)
               // In the case of demurrage, the amount would immediately drop
               // below where it is and because we currently always round down it
               // would immediately show up as something like 0.99999.
-              var slightlyInFuture = new Date(+new Date() + 5 * 60000);
+              //var slightlyInFuture = new Date(+new Date() + 5 * 60000);
 
-              alt.rate     = alt.amount.ratio_human(amount, {reference_date: slightlyInFuture});
-              alt.send_max = alt.amount.scale(1.01);
+              //alt.rate     = alt.amount.ratio_human(amount, {reference_date: slightlyInFuture});
+              alt.send_max = alt.amount;
               alt.paths    = raw.paths_computed
                 ? raw.paths_computed
                 : raw.paths_canonical;
@@ -739,7 +740,7 @@ SendTab.prototype.angular = function (module)
       var tx = $network.remote.transaction();
       // Source tag
       if ($scope.send.st) {
-        tx.source_tag($scope.send.st);
+        tx.sourceTag($scope.send.st);
       }
 
       // Add memo to tx
@@ -774,17 +775,17 @@ SendTab.prototype.angular = function (module)
       }
 
       if (dt) {
-        tx.destination_tag(+dt);
+        tx.destinationTag(+dt);
       }
 
       tx.payment($id.account, address, amount.to_json());
 
       if ($scope.send.alt) {
-        tx.send_max($scope.send.alt.send_max);
+        tx.sendMax($scope.send.alt.send_max);
         tx.paths($scope.send.alt.paths);
       } else {
         if ($scope.onlineMode && !amount.is_native()) {
-          tx.build_path(true);
+          tx.buildPath(true);
         }
       }
 
