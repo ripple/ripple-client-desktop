@@ -19,6 +19,7 @@ ColdWalletTab.prototype.generateHtml = function () {
 ColdWalletTab.prototype.angular = function (module) {
   module.controller('ColdWalletCtrl', ['$rootScope', '$location', 'rpApi',
   function ($scope, $location, api) {
+    $scope.sequenceNumber = 1;
 
     // Parse the transaction returned by ripple-lib
     // Return a human-readable message for the UI.
@@ -67,7 +68,7 @@ ColdWalletTab.prototype.angular = function (module) {
 
     // If we are online, fetch account info
     if ($scope.onlineMode) {
-      $scope.networkFee = api.getFee();
+      $scope.networkFee = api.getFee() * 1000000;
 
       // Get account trust flags
       api.getSettings(address)
