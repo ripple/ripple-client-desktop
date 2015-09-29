@@ -1,5 +1,4 @@
 section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
-
   div(ng-show="!loadingAccount && !account.Balance && loadState.account && connected && !debug")
     include ../tabs/banner/_unfunded
   .row
@@ -13,22 +12,21 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
       .alert.alert-danger(ng-show="notif == 'requireAuthFailed && onlineMode'", l10n) RequireAuth flag update failed. {{engine_result}}: {{engine_result_message}}
       .alert.alert-info(ng-show="edit.globalFreezeFlagSaving && onlineMode", l10n) Updating GlobalFreeze flag...
       .alert.alert-success(ng-show="notif == 'globalFreezeUpdated && onlineMode'", l10n) GlobalFreeze flag updated
-      .alert.alert-danger(ng-show="notif == 'globalFreezeFailed && onlineMode'", l10n) GlobalFreeze flag update failed. {{engine_result}}: {{engine_result_message}}
+      .alert.alert-danger(ng-show="notif == 'globalFreezeFailed && onlineMode'", l10n) GlobalFreeze flag update failed. {{engine_result}}: {{engine_result_message}}    
     .col-sm-3
       include settings/_navbar
-
     .col-sm-9.list(ng-show="!loadingAccount && !account.Balance && loadState.account && connected")
       .unfunded.literal(l10n)
         | Your account has to be&#32;
         a(href="https://ripple.com/knowledge_center/activating-your-wallet/", target="_blank", l10n-inc) activated
         | &#32;before you can see this page.
-
     .col-sm-9.list(ng-show='((connected && account.Balance) || !onlineMode)')
+
       //- Offline Flag Change
       div(ng-show='offlineSettingsChange')
         signed-transaction(data="{{signedTransaction}}", txJSON="{{txJSON}}", hash="{{hash}}")
       section.content#gateways
-        h4(l10n) Settings
+        h4(l10n) Gateway and trust line settings
         form.trust-line-form(name="accountsAdvForm", ng-submit='saveSetting("advanced_feature_switch")')
           .descriptor(l10n) Trust line
           .row.advanced-form-row(ng-hide="edit.advanced_feature_switch")
