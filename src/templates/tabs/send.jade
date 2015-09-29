@@ -150,7 +150,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
     .row
       .col-xs-12.col-sm-6.col-md-4(ng-show="!onlineMode")
         button#sendXrpButton.btn.btn-block.btn-success.submit(type='submit'
-        ng-disabled='sendForm.$invalid || send.self || !send.recipient_resolved || account.max_spend.to_number() < send.amount * 1000000', l10n)
+        ng-disabled='sendForm.$invalid || send.self || !send.recipient_resolved', l10n)
           | Send   
     .remote
       //- Messages
