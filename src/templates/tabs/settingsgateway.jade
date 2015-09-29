@@ -2,7 +2,7 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
   div(ng-show="!loadingAccount && !account.Balance && loadState.account && connected && !debug")
     include ../tabs/banner/_unfunded
   .row
-    col-sm-12.notification-wrapper
+    .col-sm-12.notification-wrapper
       .alert.alert-success(ng-show="success.bridge", l10n) Your bitcoin bridge has been changed successfully.
       .alert.alert-success(ng-show="success.advanced_feature_switch", l10n) Trustline advanced settings have been changed successfully.
       .alert.alert-info(ng-show="edit.defaultRippleFlagSaving && onlineMode", l10n) Updating DefaultRipple flag...
