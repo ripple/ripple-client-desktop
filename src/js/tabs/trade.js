@@ -347,11 +347,13 @@ TradeTab.prototype.angular = function(module)
       var order = $scope.order[type];
       var tx = $network.remote.transaction();
 
-      tx.offer_create(
-        id.account,
-        order.buy_amount,
-        order.sell_amount
-      );
+      var options = {
+        src: id.account,
+        buy: order.buy_amount,
+        sell: order.sell_amount
+      };
+
+      tx.offerCreate(options);
 
       // Add memo to tx
       tx.addMemo('client', 'rt' + $rootScope.version);
@@ -359,7 +361,7 @@ TradeTab.prototype.angular = function(module)
       // Sets a tfSell flag. This is the only way to distinguish
       // sell offers from buys.
       if (type === 'sell')
-        tx.set_flags('Sell');
+        tx.setFlags('Sell');
 
       tx.on('proposed', function (res) {
 
