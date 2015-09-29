@@ -12,8 +12,8 @@ section.col-xs-12.content(ng-controller="AdvancedCtrl")
           .descriptor(l10n) Online mode
           .row.advanced-form-row
             .col-xs-7
-              .description(ng-show="onlineMode", l10n) Disable if you want the client to be offline
-              .description(ng-show="!onlineMode", l10n) Enable if you want the client to be online
+              .description(ng-show="onlineMode", l10n) Uncheck if you want this software application to be offline
+              .description(ng-show="!onlineMode", l10n) Check if you want this software application to be online
             .col-xs-2.onlineCheckbox
               input(type="checkbox", bs-switch, ng-model="onlineMode", ng-change="switchOnlineMode()")
         form(name="maxnetworkfeeForm", ng-submit="saveMaxNetworkFee()")
