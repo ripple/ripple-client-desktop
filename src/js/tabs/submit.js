@@ -19,9 +19,11 @@ SubmitTab.prototype.generateHtml = function ()
 
 SubmitTab.prototype.angular = function (module)
 {
-  module.controller('SubmitCtrl', ['$scope', '$location', 'rpFileDialog', 'rpNW',
-    function ($scope, $location, fileDialog, rpNW)
+  module.controller('SubmitCtrl', ['$scope', '$location', 'rpFileDialog', 'rpNW', 'rpNetwork',
+    function ($scope, $location, fileDialog, rpNW, $net)
     {
+      $net.connect();
+
       $scope.txFiles = [];
 
       // User drops files on transaction files dropzone
