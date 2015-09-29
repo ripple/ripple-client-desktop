@@ -113,7 +113,7 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
               a.btn.btn-cancel.btn-block(href="", ng-click='edit.defaultRippleFlag = false', l10n) cancel
         // UI for online mode      
         form.trust-line-form(name="accountsAdvForm", ng-submit='saveSetting("requireAuthFlag")', ng-show="onlineMode")
-          .descriptor(l10n) Gateways: Enable if you require authorization for users to hold balances by this account
+          .descriptor(l10n) Gateways: Enable if you require authorization for other users to extend a trust line to you
           .row.advanced-form-row(ng-hide="edit.requireAuthFlag")
             .col-xs-6.col-sm-5.col-md-3
               .description(l10n) RequireAuth flag
