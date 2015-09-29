@@ -14,9 +14,12 @@ function(net, $q, $scope, $filter, $id) {
   var rowCount;
 
   function loadBook(gets, pays, taker) {
-    return net.remote.book(gets.currency, gets.issuer,
-    pays.currency, pays.issuer,
-    taker);
+    return net.remote.book({
+      currency_gets: gets.currency,
+      issuer_gets: gets.issuer,
+      currency_pays: pays.currency,
+      issuer_pays: taker
+    });
   }
 
   function filterRedundantPrices(data, action, combine) {
