@@ -186,25 +186,25 @@ section.col-xs-12.content(ng-controller='SendCtrl')
           .col-xs-12
             p.literal(ng-show="send.currency_code != 'XRP'", l10n)
               | You can send
-            p.literal(ng-show="send.currency_code == 'XRP'", l10n)
+            p.literal(ng-show="send.currency_code == 'XRP' && !path_status=='no-path'", l10n)
               | Or you can send
         .row.row-padding-small.alternatives(ng-show="send.alternatives.length")
           .col-xs-12.col-sm-6.col-md-4.col-lg-4(ng-repeat="alt in send.alternatives")
             .margin
               .am
                 span.amnt {{alt.amount | rpamount:{rel_precision: 4, rel_min_precision: 2} }}
-                span(ng-hide="alt.amount.is_native() || alt.amount.issuer().to_json() == account.Account")
+                span(ng-hide="alt.amount.is_native() || alt.amount.issuer() == account.Account")
                   span.issuer(
-                  rp-pretty-issuer="alt.amount.issuer().to_json()"
+                  rp-pretty-issuer="alt.amount.issuer()"
                   rp-pretty-issuer-contacts="userBlob.data.contacts"
                   rp-pretty-issuer-or-short)
                 span.currency  {{alt.amount | rpcurrency }}
               button.btn.btn-block.btn-success(type="submit"
               ng-disabled='sendForm.$invalid', ng-click="send.alt = alt", l10n)
                 | Send {{ alt.amount | rpcurrency }}
-                span(ng-hide="alt.amount.is_native() || alt.amount.issuer().to_json() == account.Account")  (
+                span(ng-hide="alt.amount.is_native() || alt.amount.issuer() == account.Account")  (
                   span.issuer(
-                  rp-pretty-issuer="alt.amount.issuer().to_json()"
+                  rp-pretty-issuer="alt.amount.issuer()"
                   rp-pretty-issuer-contacts="userBlob.data.contacts"
                   rp-pretty-issuer-or-short)
                   | )

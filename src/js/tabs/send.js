@@ -561,11 +561,9 @@ SendTab.prototype.angular = function (module)
                   } else if ($scope.send.currency_code === 'XRP') {
                     currentAlternatives.push(alt);
                   }
-
-                  if (alt.amount.issuer().to_json() != $scope.address && !isIssuer[alt.amount.currency().to_hex()]) {
+                  if (alt.amount.issuer() != $scope.address && !isIssuer[alt.amount.currency().to_hex()]) {
                     currencies[alt.amount.currency().to_hex()] = true
                   }
-
                   return alt;
                 }).filter(function(alt) {
                   return currentAlternatives.indexOf(alt) === -1;
