@@ -507,7 +507,6 @@ SendTab.prototype.angular = function (module)
           }
           $scope.$apply(function () {
               lastUpdate = new Date();
-
               clearInterval(timer);
               timer = setInterval(function() {
                 $scope.$apply(function() {
@@ -530,6 +529,7 @@ SendTab.prototype.angular = function (module)
               if (!upd.alternatives || !upd.alternatives.length) {
                 $scope.send.path_status === 'no-path';
                 $scope.send.alternatives = [];
+                $scope.send.path_status = 'done';
               } else {
                 var currencies = {};
                 var currentAlternatives = [];
