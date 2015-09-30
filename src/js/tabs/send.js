@@ -496,7 +496,6 @@ SendTab.prototype.angular = function (module)
         src_account: $id.account,
         dst_account: recipient,
         dst_amount: amount}, function(err, upd) {
-          send.pathfind = pf;
           if (err) {
             setImmediate(function () {
               $scope.$apply(function () {
@@ -773,6 +772,10 @@ SendTab.prototype.angular = function (module)
 
       if (dt) {
         tx.destinationTag(+dt);
+      }
+
+      if ($scope.send.invoiceId) {
+        tx.setInvoiceID($scope.send.invoiceId);
       }
 
       tx.payment($id.account, address, amount.to_json());
