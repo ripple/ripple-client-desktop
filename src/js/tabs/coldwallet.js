@@ -23,57 +23,44 @@ ColdWalletTab.prototype.angular = function (module) {
 
     // Parse the transaction returned by ripple-lib
     // Return a human-readable message for the UI.
+    // We only consider transactions that originate from this account.
     function formatTxnMessage(txn, address) {
       var outcome = txn.outcome.result === 'tesSUCCESS' ?
       'successful' : 'failed';
 
       var txnMessage = 'The most recent transaction was a ' + outcome +
-      ' ' + txn.type + ' with ID ' + txn.id + ' and sequence ' +
-      txn.sequence + '. ';
+      ' ' + txn.type;
 
       $scope.sequenceNumber = txn.type === 'orderCancellation' ?
       Number(txn.specification.orderSequence) + 1 : Number(txn.sequence) + 1;
 
       if (txn.type === 'payment') {
-        var changed = txn.outcome.balanceChanges[address][0]
-        .value.charAt(0) === '-' ? 'decreased' : 'increased';
-        var amount;
-        if (changed === 'decreased') {
-          amount = txn.outcome.balanceChanges[address][0].value.slice(1);
-        } else {
-          amount = txn.outcome.balanceChanges[address][0].value;
-        }
-        txnMessage += 'The origin was ' + txn.specification.source.address +
-        ' and the destination was ' + txn.specification.destination.address +
-        '. This acount\'s balance ' + changed + ' by ' + amount + ' ' +
-        txn.outcome.balanceChanges[address][0].currency + '. The fee was ' +
-        txn.outcome.fee + ' XRP.';
+        txnMessage += ' to ' + txn.specification.destination.address + '. ' +
+        ' You paid: ';
+        var payments =  _.map(txn.outcome.balanceChanges[address],
+          function(amount) {
+            // Remove leading minus sign from amount
+            // Truncate to 6 chars
+            return amount.value.slice(1, 6) + ' ' + amount.currency;
+          }).join(', ');
+        txnMessage += payments + '. ';
       } else if (txn.type === 'order') {
-        txnMessage += 'This was a ' + txn.specification.direction +
+        txnMessage += '. This was a ' + txn.specification.direction +
         ' order for ' + txn.specification.quantity.amount.value +
         ' of ' + txn.specification.quantity.amount.currency +
         ' at a price of ' + txn.specification.quantity.amount
-        .value + ' ' + txn.specification.quantity.amount.currency +
-        '.  The fee was ' + txn.outcome.fee + ' XRP.';
+        .value + ' ' + txn.specification.quantity.amount.currency + '. ';
       } else if (txn.type === 'trustline') {
-        // Two cases here
-        if (txn.specification.counterparty === address) {
-          // 1. Another account extended trust to this account
-          txnMessage += 'Account ' + txn.address +
-          ' paid a fee of ' + txn.outcome.fee +
-          ' XRP to extend trust to this account ';
-        } else {
-          // 2. This account extended trust to another account
-          txnMessage += 'This account paid a fee of ' + txn.outcome.fee +
-          ' XRP to extend trust to ' + txn.specification.counterparty + ' ';
-        }
-        txnMessage += 'with a limit of ' + txn.specification.limit + ' ' +
-          txn.specification.currency + '.';
+        txnMessage += ' to ' + txn.specification.counterparty +
+        ' with a limit of ' + txn.specification.limit + ' ' +
+        txn.specification.currency + '.';
       } else if (txn.type === 'orderCancellation') {
-        txnMessage += ' The order sequence was ' +
-        txn.specification.orderSequence + '.  The fee was ' +
-        txn.outcome.fee + ' XRP.';
+        txnMessage += '. The order sequence was ' +
+        txn.specification.orderSequence + '. ';
       }
+      txnMessage += ' The fee was ' + txn.outcome.fee + ' XRP. ' +
+      'The ID and sequence number of the transaction are ' + txn.id +
+      ' and  ' + txn.sequence + '.';
       return txnMessage;
     }
 
@@ -143,11 +130,14 @@ ColdWalletTab.prototype.angular = function (module) {
 
       // Fetch the most recent transaction for this account (if exists)
       api.getTransactions(address, {
-        limit: 1
+        limit: 1,
+        initiated: true,
+        binary: false
       })
       .then(function(transactions) {
         if (transactions && transactions.length) {
           $scope.$apply(function() {
+            $scope.txnTime = transactions[0].outcome.timestamp;
             $scope.lastTxn = formatTxnMessage(transactions[0], address);
           });
         }
