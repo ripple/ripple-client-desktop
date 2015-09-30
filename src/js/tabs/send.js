@@ -448,7 +448,7 @@ SendTab.prototype.angular = function (module)
         var total = send.amount_feedback.add(send.recipient_info.Balance);
         var reserve_base = $scope.account.reserve_base;
 
-        if ($scope.onlineMode && total.compareTo(reserve_base) < 0) {
+        if ($scope.onlineMode && total.is_comparable(reserve_base) && total.compareTo(reserve_base) < 0) {
           send.fund_status = "insufficient-xrp";
           send.xrp_deficiency = reserve_base.subtract(send.recipient_info.Balance);
           send.insufficient = true;
