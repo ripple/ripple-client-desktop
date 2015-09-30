@@ -17,8 +17,8 @@ ColdWalletTab.prototype.generateHtml = function () {
 };
 
 ColdWalletTab.prototype.angular = function (module) {
-  module.controller('ColdWalletCtrl', ['$rootScope', '$location', 'rpApi',
-  function ($scope, $location, api) {
+  module.controller('ColdWalletCtrl', ['$rootScope', '$location', 'rpId', 'rpApi',
+  function ($scope, $location, id, api) {
     $scope.sequenceNumber = 1;
 
     // Parse the transaction returned by ripple-lib
@@ -160,6 +160,7 @@ ColdWalletTab.prototype.angular = function (module) {
 
     // Return to login page
     $scope.gotoLogin = function() {
+      id.exitColdWallet();
       $location.path('/login');
     };
   }]);

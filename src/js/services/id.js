@@ -107,17 +107,6 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
     $scope.$watch('userBlob',function(){
       // XXX Maybe the blob service should handle this stuff?
       $scope.$broadcast('$blobUpdate');
-
-      // XXX What's the equivalent in the new login API?
-      /*
-      if (self.username && self.password) {
-        $oldblob.set(...,
-                  self.username.toLowerCase(), self.password,
-                  $scope.userBlob,function(){
-                    $scope.$broadcast('$blobSave');
-                  });
-      }
-      */
     },true);
 
     $scope.$on('$blobUpdate', function(){
@@ -404,6 +393,11 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
 
   Id.prototype.enterColdWalletView = function (address) {
     $scope.address = address;
+  };
+
+  Id.prototype.exitColdWallet = function ()
+  {
+    $scope.address = '';
   };
 
   /**
