@@ -507,7 +507,6 @@ SendTab.prototype.angular = function (module)
           }
           $scope.$apply(function () {
               lastUpdate = new Date();
-
               clearInterval(timer);
               timer = setInterval(function() {
                 $scope.$apply(function() {
@@ -530,6 +529,7 @@ SendTab.prototype.angular = function (module)
               if (!upd.alternatives || !upd.alternatives.length) {
                 $scope.send.path_status === 'no-path';
                 $scope.send.alternatives = [];
+                $scope.send.path_status = 'done';
               } else {
                 var currencies = {};
                 var currentAlternatives = [];
@@ -561,11 +561,9 @@ SendTab.prototype.angular = function (module)
                   } else if ($scope.send.currency_code === 'XRP') {
                     currentAlternatives.push(alt);
                   }
-
-                  if (alt.amount.issuer().to_json() != $scope.address && !isIssuer[alt.amount.currency().to_hex()]) {
+                  if (alt.amount.issuer() != $scope.address && !isIssuer[alt.amount.currency().to_hex()]) {
                     currencies[alt.amount.currency().to_hex()] = true
                   }
-
                   return alt;
                 }).filter(function(alt) {
                   return currentAlternatives.indexOf(alt) === -1;
