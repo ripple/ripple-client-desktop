@@ -4,7 +4,7 @@
       .alert.alert-success(ng-show="saved", l10n) Transaction saved: {{fileName}}.
       .alert.alert-danger(ng-show="error", l10n) Error saving transaction. Please copy and save manually.
       .alert.alert-warning(ng-show="!userBlob.data.defaultDirectory") Please select default directory to save transaction to on the 
-        a(href="", ng-click="reset_goto('coldwalletsettings')", l10n) Cold Wallet Settings page
+        a(href="#/coldwalletsettings", l10n) Cold Wallet Settings page
         | .
   h2 Signed transaction
   .row
