@@ -75,14 +75,8 @@ TrustTab.prototype.angular = function (module) {
 
       $scope.reset = function () {
         $scope.mode = 'main';
-        var usdCurrency = Currency.from_human('USD');
-        $scope.currency = usdCurrency.to_human({
-          full_name: $scope.currencies_all_keyed[usdCurrency.get_iso()].name
-        });
         $scope.addform_visible = false;
         $scope.edituser = '';
-        $scope.amount = '';
-        $scope.allowrippling = false;
         $scope.counterparty = '';
         $scope.counterparty_view = '';
         $scope.counterparty_address = '';

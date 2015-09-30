@@ -119,7 +119,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                   label(for='trust_amount', ng-show="advanced_feature_switch", l10n) Amount
                   label(for='trust_amount', ng-hide="advanced_feature_switch", l10n) Currency
                   .row(ng-show="advanced_feature_switch")
-                    .col-md-3.col-sm-4.col-xs-3(ng-init="amount = $routeParams.amount ? '' : 1000000000")
+                    .col-md-3.col-sm-4.col-xs-3
                       input.form-control.value#trust_amount(name='trust_amount'
                         type='number', min='0', step='any', ng-model='amount'
                         rp-autofill='$routeParams.amount'
