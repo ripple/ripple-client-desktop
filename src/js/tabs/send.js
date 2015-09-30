@@ -775,6 +775,10 @@ SendTab.prototype.angular = function (module)
         tx.destinationTag(+dt);
       }
 
+      if ($scope.send.invoiceId) {
+        tx.setInvoiceID($scope.send.invoiceId);
+      }
+
       tx.payment($id.account, address, amount.to_json());
 
       if ($scope.send.alt) {

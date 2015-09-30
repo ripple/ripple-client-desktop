@@ -75,6 +75,19 @@ section.col-xs-12.content(ng-controller='SendCtrl')
         ng-model='field.value'
         ng-required='{{field.required}}')
           option(ng-repeat='option in field.options', ng-bind='option.label', value='{{option.value}}', ng-selected='option.selected', ng-disabled='option.disabled')
+    ul.invoiceId
+      li
+        a(href="", ng-click="send.show_invoice_id = true", ng-hide="send.show_invoice_id", l10n) Show Invoice ID
+    .row.form-group(name="invoice_form", ng-show="send.show_invoice_id")
+      .col-xs-12.col-sm-8.col-md-6
+        label(for="invoice_id", l10n) Invoice ID
+        a(href="", ng-click="send.show_invoice_id = false", l10n) hide
+        input.form-control#invoice_id(
+        name='invoice_id', type='text'
+        ng-model='send.invoiceId'
+        ng-pattern='/^[0-9A-Fa-f]{64}$/')
+        .errorGroup.error(ng-show="sendForm.invoice_id.$error.pattern") Invoice ID must be 256-bit hash.
+
     .form-group(ng-show="send.currency_choices.length")
       label(for='send_amount', l10n) Recipient will receive
       .row.amount(ng-if="!send.currency_force")
