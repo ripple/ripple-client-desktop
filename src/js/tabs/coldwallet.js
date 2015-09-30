@@ -131,11 +131,13 @@ ColdWalletTab.prototype.angular = function (module) {
       // Fetch the most recent transaction for this account (if exists)
       api.getTransactions(address, {
         limit: 1,
-        initiated: true
+        initiated: true,
+        binary: false
       })
       .then(function(transactions) {
         if (transactions && transactions.length) {
           $scope.$apply(function() {
+            $scope.txnTime = transactions[0].outcome.timestamp;
             $scope.lastTxn = formatTxnMessage(transactions[0], address);
           });
         }
