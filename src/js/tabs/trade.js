@@ -499,6 +499,10 @@ TradeTab.prototype.angular = function(module)
     };
 
     $scope.fatFingerCheck = function(type) {
+      // Skip the fat finger check if there's no book
+      if (type === 'buy' && !$scope.book.bids[0]) return;
+      else if (type === 'sell' && !$scope.book.asks[0]) return;
+
       var order = $scope.order[type];
       var fatFingerMarginMultiplier = 1.1;
 
