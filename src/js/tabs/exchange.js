@@ -124,57 +124,63 @@ ExchangeTab.prototype.angular = function (module)
           if (amount.is_zero()) return;
 
           // Start path find
-          pf = $network.remote.pathFind($id.account,
-              $id.account,
-              amount);
-              // $scope.generate_src_currencies());
-              // XXX: Roll back pathfinding changes temporarily
-          var isIssuer = $scope.generate_issuer_currencies();
-
-          var lastUpdate;
-
-          pf.on('update', function (upd) {
-            $scope.$apply(function () {
-              lastUpdate = new Date();
-
-              clearInterval(timer);
-              timer = setInterval(function(){
-                $scope.$apply(function(){
-                  var seconds = Math.round((new Date() - lastUpdate)/1000);
-                  $scope.lastUpdate = seconds ? seconds : 0;
-                })
-              }, 1000);
-
-              if (!upd.alternatives || !upd.alternatives.length) {
-                $scope.exchange.path_status  = "no-path";
-                $scope.exchange.alternatives = [];
-              } else {
-                var currencies = {};
-                $scope.exchange.path_status  = "done";
-                $scope.exchange.alternatives = _.filter(_.map(upd.alternatives, function (raw) {
-                  var alt = {};
-                  alt.amount   = Amount.from_json(raw.source_amount);
-                  alt.rate     = alt.amount.ratio_human(amount);
-                  alt.send_max = alt.amount.scale(1.01);
-                  alt.paths    = raw.paths_computed
-                      ? raw.paths_computed
-                      : raw.paths_canonical;
-
-                  if (alt.amount.issuer().to_json() != $scope.address && !isIssuer[alt.amount.currency().to_hex()]) {
-                    currencies[alt.amount.currency().to_hex()] = true
-                  }
-
-                  return alt;
-                }), function(alt) {
-                  // XXX: Roll back pathfinding changes temporarily
-                  /* if (currencies[alt.amount.currency().to_hex()]) {
-                    return alt.amount.issuer().to_json() != $scope.address;
-                  } */
-                  return true;
+          $network.remote.createPathFind({
+            src_account: $id.account,
+            dst_account: $id.account,
+            dst_amount: amount}, function(err, upd) {
+              if (err) {
+                setImmediate(function () {
+                  $scope.$apply(function () {
+                    $scope.exchange.path_status = 'error';
+                  });
                 });
+                return;
               }
+              var isIssuer = $scope.generate_issuer_currencies();
+
+              var lastUpdate;
+              $scope.$apply(function () {
+                lastUpdate = new Date();
+
+                clearInterval(timer);
+                timer = setInterval(function(){
+                  $scope.$apply(function(){
+                    var seconds = Math.round((new Date() - lastUpdate)/1000);
+                    $scope.lastUpdate = seconds ? seconds : 0;
+                  })
+                }, 1000);
+
+                if (!upd.alternatives || !upd.alternatives.length) {
+                  $scope.exchange.path_status  = "no-path";
+                  $scope.exchange.alternatives = [];
+                } else {
+                  var currencies = {};
+                  $scope.exchange.path_status  = "done";
+                  $scope.exchange.alternatives = _.filter(_.map(upd.alternatives, function (raw) {
+                    var alt = {};
+
+                    alt.amount   = Amount.from_json(raw.source_amount);
+
+                    // Waiting on response from ripple-lib team to fix rate
+                    //alt.rate     = alt.amount.ratio_human(amount);
+
+                    // Send max is 1.01 * amount (scaling amount is in integer drops)
+                    alt.send_max = alt.amount.scale(101000000000000);
+                    alt.paths    = raw.paths_computed
+                        ? raw.paths_computed
+                        : raw.paths_canonical;
+
+                    if (alt.amount.issuer().to_json() != $scope.address && !isIssuer[alt.amount.currency().to_hex()]) {
+                      currencies[alt.amount.currency().to_hex()] = true
+                    }
+
+                    return alt;
+                  }), function(alt) {
+                    return true;
+                  });
+                }
+              });
             });
-          });
         });
       };
 
@@ -268,13 +274,16 @@ ExchangeTab.prototype.angular = function (module)
         tx.addMemo('client', 'rt' + $rootScope.version);
 
         // Destination tag
-        tx.destination_tag(webutil.getDestTagFromAddress($id.account));
+        var destinationTag = webutil.getDestTagFromAddress($id.account);
+        if (destinationTag) {
+          tx.setDestinationTag(webutil.getDestTagFromAddress($id.account));
+        }
         tx.payment($id.account, $id.account, amount.to_json());
-        tx.send_max($scope.exchange.alt.send_max);
-        tx.paths($scope.exchange.alt.paths);
+        tx.setSendMax($scope.exchange.alt.send_max);
+        tx.setPaths($scope.exchange.alt.paths);
 
         if ($scope.exchange.secret) {
-          tx.secret($scope.exchange.secret);
+          tx.setSecret($scope.exchange.secret);
         } else {
           // Get secret asynchronously
           keychain.requestSecret($id.account, $id.username,
@@ -309,15 +318,6 @@ ExchangeTab.prototype.angular = function (module)
                 break;
               }
             }
-
-            // // Removed feature until a permanent fix
-            // if (!found) {
-            //   $scope.currencies_all.push({
-            //     "name": $scope.exchange.amount_feedback.currency().to_human().toUpperCase(),
-            //     "value": $scope.exchange.amount_feedback.currency().to_human().toUpperCase(),
-            //     "order": 1
-            //   });
-            // }
           });
         });
         tx.on('success',function(res){
