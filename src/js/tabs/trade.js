@@ -300,10 +300,14 @@ TradeTab.prototype.angular = function(module)
       var seq   = this.entry ? this.entry.seq : this.order.Sequence;
       var order = this;
       var tx    = $network.remote.transaction();
+      var options = {
+        account: id.account,
+        offer_sequence: seq
+      };
 
       $scope.cancelError = null;
 
-      tx.offer_cancel(id.account, seq);
+      tx.offerCancel(options);
       tx.on('success', function() {
       });
 
