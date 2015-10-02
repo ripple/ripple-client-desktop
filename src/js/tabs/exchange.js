@@ -89,6 +89,9 @@ ExchangeTab.prototype.angular = function (module)
 
 
       $scope.reset_paths = function () {
+        if (pf && typeof pf.close === 'function') {
+          pf.close();
+        }
         var exchange = $scope.exchange;
 
         exchange.alternatives = [];

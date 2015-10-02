@@ -375,6 +375,9 @@ SendTab.prototype.angular = function (module)
 
     $scope.update_amount = function () {
       var send = $scope.send;
+      if (send.pathfind && typeof send.pathfind.close === 'function') {
+        send.pathfind.close();
+      }
       var recipient = send.recipient_actual || send.recipient_address;
 
       if (!send.currency_choices ||
