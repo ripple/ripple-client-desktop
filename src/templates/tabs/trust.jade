@@ -165,11 +165,13 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                   ng-required='!onlineMode', placeholder="fee")
               .row(ng-show="advanced_feature_switch")
                 .col-xs-4.allow-rippling
-                  label.checkbox(for="trust_allowrippling")
-                    input#trust_allowrippling(
-                      name='trust_allowrippling', type='checkbox'
-                      ng-model='allowrippling')
-                    span(l10n) Allow Rippling
+                  label(for="trust_allowrippling")
+                    select#trust_allowrippling(
+                      name='trust_allowrippling',
+                      ng-model='ripplingFlag')
+                      option(value='') No change to Rippling
+                      option(value='tfClearNoRipple') Allow Rippling
+                      option(value='tfSetNoRipple') Disallow Rippling
                   i.fa.fa-question-circle.help-icon(
                     rp-popover
                     rp-popover-placement="bottom"
@@ -177,11 +179,12 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     rp-popover-trigger="click"
                     l10n-data-content="Allow this trust line's balances to be transferred to another issuer you connect to. <a href=https://ripple.com/knowledge_center/understanding-the-noripple-flag target=_blank>More information</a>")
                 .col-xs-4.allow-rippling
-                  label.checkbox(for="trust_tfSetfAuth")
-                    input#trust_tfSetfAuth(
-                      name='trust_tfSetfAuth', type='checkbox'
-                      ng-model='tfSetfAuth', ng-disabled='onlineMode && disallowAuth')
-                    span(l10n) Set Authorization
+                  label(for="trust_tfSetfAuth")
+                    select#trust_tfSetfAuth(
+                      name='trust_tfSetfAuth',
+                      ng-model='authFlag', ng-disabled='onlineMode && disallowAuth')
+                      option(value='') No change to auth
+                      option(value='tfSetfAuth') Authorize trust line
                   i.fa.fa-question-circle.help-icon(
                     rp-popover
                     rp-popover-placement="bottom"
@@ -189,11 +192,13 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     rp-popover-trigger="click"
                     l10n-data-content="{{setAuthMessage}} <a href=https://ripple.com/build/transactions/#trustset-flags target=_blank>More information</a>")
                 .col-xs-4.allow-rippling
-                  label.checkbox(for="trust_tfSetFreeze")
-                    input#trust_tfSetFreeze(
-                      name='trust_tfSetFreeze', type='checkbox'
-                      ng-model='tfSetFreeze')
-                    span(l10n) Freeze trust line
+                  label(for="trust_tfSetFreeze")
+                    select#trust_tfSetFreeze(
+                      name='trust_tfSetFreeze'
+                      ng-model='freezeFlag')
+                      option(value='') No change to freeze flag
+                      option(value='tfSetFreeze') Freeze trust line
+                      option(value='tfClearFreeze') Unfreeze trust line
                   i.fa.fa-question-circle.help-icon(
                     rp-popover
                     rp-popover-placement="bottom"
@@ -428,17 +433,23 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                         ng-model='trust.limit', ng-pattern='validation_pattern'
                         ng-disabled='trust.loading', required)
                     .col-sm-2.col-md-2.inputPadding
-                      div.rippling-checkbox
-                        label(l10n) Rippling&#32;
-                          input(name='rippling', type='checkbox', ng-model='trust.rippling')
+                      label(for='edit_rippling', l10n)
+                        select(name='edit_rippling', ng-model='trust.ripplingFlag')
+                          option(value='') No change to Rippling
+                          option(value='tfClearNoRipple') Allow Rippling
+                          option(value='tfSetNoRipple') Disallow Rippling
                     .col-sm-2.col-md-2.inputPadding
-                      div.rippling-checkbox
-                        label(l10n) Freeze&#32;
-                          input(name='freeze', type='checkbox', ng-model='trust.freeze')
+                      label(for='edit_auth', l10n)
+                        select(name='edit_auth', ng-model='trust.authFlag'
+                          ng-disabled='(onlineMode && disallowAuth)')
+                          option(value='') No change to auth
+                          option(value='tfSetfAuth') Authorize trust line
                     .col-sm-2.col-md-2.inputPadding
-                      div.rippling-checkbox
-                        label(l10n) Authorize&#32;
-                          input(name='authorize', type='checkbox', ng-model='trust.auth', ng-disabled='component.authorized || (onlineMode && disallowAuth)')
+                      label(for='edit_freeze', 10n)
+                        select(name='edit_freeze', ng-model='trust.freezeFlag')
+                          option(value='') No change to freeze flag
+                          option(value='tfSetFreeze') Freeze trust line
+                          option(value='tfClearFreeze') Unfreeze trust line
                     .row(ng-show='advanced_feature_switch' && '!onlineMode')
                       .col-xs-12
                         label(for='send_sequence', l10n) Account sequence and network fee
