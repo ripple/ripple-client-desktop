@@ -199,20 +199,24 @@ TrustTab.prototype.angular = function (module) {
         tx.addMemo('client', 'rt' + $scope.version);
 
 
+        // Set or clear the trust flags
+        // The user may wish to leave the settings unchanged,
+        // in which case the flag is not set on the transaction
         var flags = [];
-        // Set or clear Rippling flag
-        if ($scope.allowrippling) {
+        // NoRipple flag
+        if ($scope.ripplingFlag === 'tfClearNoRipple') {
           flags.push('ClearNoRipple');
-        } else {
+        } else if ($scope.ripplingFlag === 'tfSetNoRipple') {
           flags.push('SetNoRipple');
         }
-        // Set auth flag (this cannot be unset)
-        if ($scope.tfSetfAuth) {
+        // Auth flag
+        if ($scope.authFlag === 'tfSetfAuth') {
           flags.push('SetAuth');
         }
-        if ($scope.tfSetFreeze) {
+        // Freeze flag
+        if ($scope.freezeFlag === 'tfSetFreeze') {
           flags.push('SetFreeze');
-        } else {
+        } else if ($scope.freezeFlag === 'tfClearFreeze') {
           flags.push('ClearFreeze');
         }
         tx
@@ -408,9 +412,6 @@ TrustTab.prototype.angular = function (module) {
 
         $scope.trust = {};
         $scope.trust.limit = Number($scope.component.limit.to_json().value);
-        $scope.trust.rippling = !$scope.component.no_ripple;
-        $scope.trust.freeze = $scope.component.freeze;
-        $scope.trust.auth = !!$scope.component.authorized;
         $scope.trust.limit_peer = Number($scope.component.limit_peer.to_json().value);
         $scope.trust.balance = String($scope.component.balance.to_json().value);
         $scope.trust.balanceAmount = $scope.component.balance;
@@ -619,22 +620,25 @@ TrustTab.prototype.angular = function (module) {
 
         // Add memo to tx
         tx.addMemo('client', 'rt' + $scope.version);
-        // Flags
+        // Set or clear the trust flags
+        // The user may wish to leave the settings unchanged,
+        // in which case the flag is not set on the transaction
         var flags = [];
-        // Set or clear Rippling flag
-        if ($scope.trust.rippling) {
+        // NoRipple flag
+        if ($scope.trust.ripplingFlag === 'tfClearNoRipple') {
           flags.push('ClearNoRipple');
-        } else {
+        } else if ($scope.trust.ripplingFlag === 'tfSetNoRipple') {
           flags.push('SetNoRipple');
         }
-        if ($scope.trust.freeze) {
-          flags.push('SetFreeze');
-        } else {
-          flags.push('ClearFreeze');
-        }
-        // Set auth flag (this cannot be unset)
-        if ($scope.trust.auth) {
+        // Auth flag
+        if ($scope.trust.authFlag === 'tfSetfAuth') {
           flags.push('SetAuth');
+        }
+        // Freeze flag
+        if ($scope.trust.freezeFlag === 'tfSetFreeze') {
+          flags.push('SetFreeze');
+        } else if ($scope.trust.freezeFlag === 'tfClearFreeze') {
+          flags.push('ClearFreeze');
         }
 
         tx
