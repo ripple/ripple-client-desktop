@@ -375,6 +375,9 @@ SendTab.prototype.angular = function (module)
 
     $scope.update_amount = function () {
       var send = $scope.send;
+      if (send.pathfind && typeof send.pathfind.close === 'function') {
+        send.pathfind.close();
+      }
       var recipient = send.recipient_actual || send.recipient_address;
 
       if (!send.currency_choices ||
@@ -495,89 +498,89 @@ SendTab.prototype.angular = function (module)
       var pf = $network.remote.createPathFind({
         src_account: $id.account,
         dst_account: recipient,
-        dst_amount: amount}, function(err, upd) {
-          if (err) {
-            setImmediate(function () {
-              $scope.$apply(function () {
-                send.path_status = 'error';
-              });
+        dst_amount: amount});
+
+      send.pathfind = pf;
+
+      pf.on('error', function() {
+        setImmediate(function () {
+          $scope.$apply(function () {
+            send.path_status = 'error';
+          });
+        });
+      });
+
+      pf.on('update', function(upd) {
+        $scope.$apply(function () {
+          lastUpdate = new Date();
+          clearInterval(timer);
+          timer = setInterval(function() {
+            $scope.$apply(function() {
+              var seconds = Math.round((new Date() - lastUpdate) / 1000);
+              $scope.lastUpdate = seconds ? seconds : 0;
             });
+          }, 1000);
+
+          // Check if this request is still current, exit if not
+          var now_recipient = send.recipient_actual || send.recipient_address;
+          if (recipient !== now_recipient) {
             return;
           }
-          $scope.$apply(function () {
-              lastUpdate = new Date();
-              clearInterval(timer);
-              timer = setInterval(function() {
-                $scope.$apply(function() {
-                  var seconds = Math.round((new Date() - lastUpdate) / 1000);
-                  $scope.lastUpdate = seconds ? seconds : 0;
-                });
-              }, 1000);
 
-              // Check if this request is still current, exit if not
-              var now_recipient = send.recipient_actual || send.recipient_address;
-              if (recipient !== now_recipient) {
-                return;
+          var now_amount = send.amount_actual || send.amount_feedback;
+          if (!now_amount.equals(amount)) {
+            return;
+          }
+
+          if (!upd.alternatives || !upd.alternatives.length) {
+            $scope.send.path_status = 'no-path';
+            $scope.send.alternatives = [];
+          } else {
+            var currencies = {};
+            var currentAlternatives = [];
+
+            $scope.send.path_status = 'done';
+            $scope.send.alternatives = _.map(upd.alternatives, function (raw, key) {
+              var alt = {};
+
+              alt.amount = Amount.from_json(raw.source_amount);
+
+              // Waiting on response from ripple-lib team to fix rate
+
+              // Compensate for demurrage
+              //
+              // In the case of demurrage, the amount would immediately drop
+              // below where it is and because we currently always round down it
+              // would immediately show up as something like 0.99999.
+              //var slightlyInFuture = new Date(+new Date() + 5 * 60000);
+
+              //alt.rate     = alt.amount.ratio_human(amount, {reference_date: slightlyInFuture});
+
+              // Send max is 1.01 * amount (scaling amount is in integer drops)
+              alt.send_max = alt.amount.scale(101000000000000);
+              alt.paths = raw.paths_computed
+                ? raw.paths_computed
+                : raw.paths_canonical;
+
+              // Selected currency should be the first option
+              if (raw.source_amount.currency) {
+                if (raw.source_amount.currency === $scope.send.currency_code) {
+                  currentAlternatives.push(alt);
+                }
+              } else if ($scope.send.currency_code === 'XRP') {
+                currentAlternatives.push(alt);
               }
-
-              var now_amount = send.amount_actual || send.amount_feedback;
-              if (!now_amount.equals(amount)) {
-                return;
+              if (alt.amount.issuer().to_json() !== $scope.address && !isIssuer[alt.amount.currency().to_hex()]) {
+                currencies[alt.amount.currency().to_hex()] = true;
               }
-
-              if (!upd.alternatives || !upd.alternatives.length) {
-                $scope.send.path_status = 'no-path';
-                $scope.send.alternatives = [];
-              } else {
-                var currencies = {};
-                var currentAlternatives = [];
-
-                $scope.send.path_status = 'done';
-                $scope.send.alternatives = _.map(upd.alternatives, function (raw, key) {
-                  var alt = {};
-
-                  alt.amount = Amount.from_json(raw.source_amount);
-
-                  // Compensate for demurrage
-                  //
-                  // In the case of demurrage, the amount would immediately drop
-                  // below where it is and because we currently always round down it
-                  // would immediately show up as something like 0.99999.
-                  //var slightlyInFuture = new Date(+new Date() + 5 * 60000);
-
-                  //alt.rate     = alt.amount.ratio_human(amount, {reference_date: slightlyInFuture});
-                  alt.send_max = alt.amount;
-                  alt.paths = raw.paths_computed
-                    ? raw.paths_computed
-                    : raw.paths_canonical;
-
-                  // Selected currency should be the first option
-                  if (raw.source_amount.currency) {
-                    if (raw.source_amount.currency === $scope.send.currency_code) {
-                      currentAlternatives.push(alt);
-                    }
-                  } else if ($scope.send.currency_code === 'XRP') {
-                    currentAlternatives.push(alt);
-                  }
-                  if (alt.amount.issuer() != $scope.address && !isIssuer[alt.amount.currency().to_hex()]) {
-                    currencies[alt.amount.currency().to_hex()] = true
-                  }
-                  return alt;
-                }).filter(function(alt) {
-                  return currentAlternatives.indexOf(alt) === -1;
-                });
-                Array.prototype.unshift.apply($scope.send.alternatives, currentAlternatives);
-
-                $scope.send.alternatives = $scope.send.alternatives.filter(function(alt) {
-                  // XXX: Roll back pathfinding changes temporarily
-                  /* if (currencies[alt.amount.currency().to_hex()]) {
-                    return alt.amount.issuer().to_json() != $scope.address;
-                  } */
-                  return true;
-                });
-              }
+              return alt;
+            }).filter(function(alt) {
+              return currentAlternatives.indexOf(alt) === -1;
             });
+            Array.prototype.unshift.apply($scope.send.alternatives, currentAlternatives);
+          }
         });
+      });
     };
 
     $scope.$watch('userBlob.data.contacts', function (contacts) {

@@ -89,6 +89,9 @@ ExchangeTab.prototype.angular = function (module)
 
 
       $scope.reset_paths = function () {
+        if (pf && typeof pf.close === 'function') {
+          pf.close();
+        }
         var exchange = $scope.exchange;
 
         exchange.alternatives = [];
@@ -155,65 +158,64 @@ ExchangeTab.prototype.angular = function (module)
           if (amount.is_zero()) {
             return;
           }
+          var isIssuer = $scope.generate_issuer_currencies();
+          var lastUpdate;
 
           // Start path find
-          $network.remote.createPathFind({
+          pf = $network.remote.createPathFind({
             src_account: $id.account,
             dst_account: $id.account,
-            dst_amount: amount}, function(err, upd) {
-              if (err) {
-                setImmediate(function () {
-                  $scope.$apply(function () {
-                    $scope.exchange.path_status = 'error';
-                  });
-                });
-                return;
-              }
-              var isIssuer = $scope.generate_issuer_currencies();
+            dst_amount: amount});
 
-              var lastUpdate;
-              $scope.$apply(function () {
-                lastUpdate = new Date();
-
-                clearInterval(timer);
-                timer = setInterval(function() {
-                  $scope.$apply(function() {
-                    var seconds = Math.round((new Date() - lastUpdate) / 1000);
-                    $scope.lastUpdate = seconds ? seconds : 0;
-                  })
-                }, 1000);
-
-                if (!upd.alternatives || !upd.alternatives.length) {
-                  $scope.exchange.path_status = 'no-path';
-                  $scope.exchange.alternatives = [];
-                } else {
-                  var currencies = {};
-                  $scope.exchange.path_status = 'done';
-                  $scope.exchange.alternatives = _.filter(_.map(upd.alternatives, function (raw) {
-                    var alt = {};
-
-                    alt.amount = Amount.from_json(raw.source_amount);
-
-                    // Waiting on response from ripple-lib team to fix rate
-                    //alt.rate     = alt.amount.ratio_human(amount);
-
-                    // Send max is 1.01 * amount (scaling amount is in integer drops)
-                    alt.send_max = alt.amount.scale(101000000000000);
-                    alt.paths = raw.paths_computed
-                        ? raw.paths_computed
-                        : raw.paths_canonical;
-
-                    if (alt.amount.issuer().to_json() !== $scope.address && !isIssuer[alt.amount.currency().to_hex()]) {
-                      currencies[alt.amount.currency().to_hex()] = true;
-                    }
-
-                    return alt;
-                  }), function() {
-                    return true;
-                  });
-                }
-              });
+          pf.on('error', function() {
+            $scope.$apply(function () {
+              $scope.exchange.path_status = 'error';
             });
+          });
+
+          pf.on('update', function(upd) {
+            $scope.$apply(function () {
+              lastUpdate = new Date();
+
+              clearInterval(timer);
+              timer = setInterval(function() {
+                $scope.$apply(function() {
+                  var seconds = Math.round((new Date() - lastUpdate) / 1000);
+                  $scope.lastUpdate = seconds ? seconds : 0;
+                });
+              }, 1000);
+
+              if (!upd.alternatives || !upd.alternatives.length) {
+                $scope.exchange.path_status = 'no-path';
+                $scope.exchange.alternatives = [];
+              } else {
+                var currencies = {};
+                $scope.exchange.path_status = 'done';
+                $scope.exchange.alternatives = _.filter(_.map(upd.alternatives, function (raw) {
+                  var alt = {};
+
+                  alt.amount = Amount.from_json(raw.source_amount);
+
+                  // Waiting on response from ripple-lib team to fix rate
+                  //alt.rate     = alt.amount.ratio_human(amount);
+
+                  // Send max is 1.01 * amount (scaling amount is in integer drops)
+                  alt.send_max = alt.amount.scale(101000000000000);
+                  alt.paths = raw.paths_computed
+                      ? raw.paths_computed
+                      : raw.paths_canonical;
+
+                  if (alt.amount.issuer().to_json() !== $scope.address && !isIssuer[alt.amount.currency().to_hex()]) {
+                    currencies[alt.amount.currency().to_hex()] = true;
+                  }
+
+                  return alt;
+                }), function() {
+                  return true;
+                });
+              }
+            });
+          });
         });
       };
 
