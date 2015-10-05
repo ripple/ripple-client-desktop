@@ -28,25 +28,28 @@ SubmitTab.prototype.angular = function (module)
 
       // User drops files on transaction files dropzone
       $scope.initDropzone = function() {
-        rpNW.dnd("txDropZone", {
+        rpNW.dnd('txDropZone', {
           onDrop: function(e) {
             $scope.$apply(function() {
-              for (var i = 0; i < e.dataTransfer.files.length; ++i) {
-                $scope.txFiles[i] = e.dataTransfer.files[i].path;
-              }
+              var newFiles = _.map(e.dataTransfer.files, function(file) {
+                return file.path;
+              });
+              // Unique array, even if user adds same file twice
+              $scope.txFiles = _.union($scope.txFiles, newFiles);
             });
           }
         });
       };
 
       // User clicks on "Add transaction files"
-      $scope.fileInputClick = function(){
+      $scope.fileInputClick = function() {
         // Call the nw.js file dialog
         fileDialog.openFile(function(evt) {
           $scope.$apply(function() {
             // Update the file list
             // TODO list should be sorted by sequence number ASC
-            $scope.txFiles = $scope.txFiles.concat(evt.split(';'));
+            // Unique array, even if user adds same file twice
+            $scope.txFiles = _.union($scope.txFiles, evt.split(';'));
           });
         }, true);
       };
