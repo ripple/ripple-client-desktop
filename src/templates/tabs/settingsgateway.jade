@@ -87,26 +87,12 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
             .col-xs-3.col-sm-4.col-md-4  
             .col-xs-3.col-sm-3.col-md-2
               a.btn.btn-cancel.btn-block(href="", ng-click="edit.defaultRippleFlag = true", ng-hide="edit.defaultRippleFlag", l10n) edit
-            .col-xs-6.col-sm-5.col-md-4(ng-show="edit.defaultRippleFlag")    
-              .description(l10n) Account sequence & network fee  
-          .row.advanced-form-row(ng-show="edit.defaultRippleFlag")    
-            .col-xs-6.col-sm-5.col-md-3
-            .col-xs-3.col-sm-4.col-md-3
-              input.form-control#defaultRipple_sequence(
-                name='defaultRipple_sequence', type='text'
-                ng-model='$root.sequence'
-                placeholder="sequence")  
-            .col-xs-3.col-sm-2.col-md-3
-              input.form-control#defaultRipple_fee(
-                name='defaultRipple_fee', type='text'
-                ng-model='fee'
-                placeholder="fee")
           .row.advanced-form-row(ng-show="edit.defaultRippleFlag")      
             .col-xs-3
             .col-xs-3
-              a.btn.btn-success.btn-block(href="", ng-click='addFlag("defaultRippleFlag")', ng-disabled='!$root.sequence || !fee', l10n) Add Flag
+              a.btn.btn-success.btn-block(href="", ng-click='addFlag("defaultRippleFlag")', ng-disabled='!$root.sequence || !$root.fee', l10n) Add Flag
             .col-xs-3
-              a.btn.btn-danger.btn-block(href="", ng-click='removeFlag("defaultRippleFlag")', ng-disabled='!$root.sequence || !fee', l10n) Remove Flag
+              a.btn.btn-danger.btn-block(href="", ng-click='removeFlag("defaultRippleFlag")', ng-disabled='!$root.sequence || !$root.fee', l10n) Remove Flag
             .col-xs-3  
               a.btn.btn-cancel.btn-block(href="", ng-click='edit.defaultRippleFlag = false', l10n) cancel
         // UI for online mode      
@@ -144,27 +130,13 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
               .description(l10n) RequireAuth flag
             .col-xs-3.col-sm-4.col-md-4  
             .col-xs-3.col-sm-3.col-md-2
-              a.btn.btn-cancel.btn-block(href="", ng-click="edit.requireAuthFlag = true", ng-hide="edit.requireAuthFlag", l10n) edit            
-            .col-xs-6.col-sm-5.col-md-4(ng-show="edit.requireAuthFlag")    
-              .description(l10n) Account sequence & network fee  
-          .row.advanced-form-row(ng-show="edit.requireAuthFlag")    
-            .col-xs-6.col-sm-5.col-md-3
-            .col-xs-3.col-sm-4.col-md-3
-              input.form-control#requireAuth_sequence(
-                name='requireAuth_sequence', type='text'
-                ng-model='$root.sequence'
-                placeholder="sequence")  
-            .col-xs-3.col-sm-2.col-md-3
-              input.form-control#defaultRipple_fee(
-                name='requireAuth_fee', type='text'
-                ng-model='fee'
-                placeholder="fee")
+              a.btn.btn-cancel.btn-block(href="", ng-click="edit.requireAuthFlag = true", ng-hide="edit.requireAuthFlag", l10n) edit
           .row.advanced-form-row(ng-show="edit.requireAuthFlag")      
             .col-xs-3
             .col-xs-3
-              a.btn.btn-success.btn-block(href="", ng-click='addFlag("requireAuthFlag")', ng-disabled='!$root.sequence || !fee', l10n) Add Flag
+              a.btn.btn-success.btn-block(href="", ng-click='addFlag("requireAuthFlag")', ng-disabled='!$root.sequence || !$root.fee', l10n) Add Flag
             .col-xs-3
-              a.btn.btn-danger.btn-block(href="", ng-click='removeFlag("requireAuthFlag")', ng-disabled='!$root.sequence || !fee', l10n) Remove Flag
+              a.btn.btn-danger.btn-block(href="", ng-click='removeFlag("requireAuthFlag")', ng-disabled='!$root.sequence || !$root.fee', l10n) Remove Flag
             .col-xs-3  
               a.btn.btn-cancel.btn-block(href="", ng-click='edit.requireAuthFlag = false', l10n) cancel
         // UI for online mode       
@@ -202,26 +174,12 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
               .description(l10n) GlobalFreeze flag
             .col-xs-3.col-sm-4.col-md-4  
             .col-xs-3.col-sm-3.col-md-2
-              a.btn.btn-cancel.btn-block(href="", ng-click="edit.globalFreezeFlag = true", ng-hide="edit.globalFreezeFlag", l10n) edit            
-            .col-xs-6.col-sm-5.col-md-4(ng-show="edit.globalFreezeFlag")    
-              .description(l10n) Account sequence & network fee  
-          .row.advanced-form-row(ng-show="edit.globalFreezeFlag")    
-            .col-xs-6.col-sm-5.col-md-3
-            .col-xs-3.col-sm-4.col-md-3
-              input.form-control#globalFreeze_sequence(
-                name='globalFreeze_sequence', type='text'
-                ng-model='$root.sequence'
-                placeholder="sequence")  
-            .col-xs-3.col-sm-2.col-md-3
-              input.form-control#globalFreeze_fee(
-                name='globalFreeze_fee', type='text'
-                ng-model='fee'
-                placeholder="fee")
-          .row.advanced-form-row(ng-show="edit.globalFreezeFlag")      
+              a.btn.btn-cancel.btn-block(href="", ng-click="edit.globalFreezeFlag = true", ng-hide="edit.globalFreezeFlag", l10n) edit
+          .row.advanced-form-row(ng-show="edit.globalFreezeFlag")
             .col-xs-3
             .col-xs-3
-              a.btn.btn-success.btn-block(href="", ng-click='addFlag("globalFreezeFlag")', ng-disabled='!$root.sequence || !fee', l10n) Add Flag
+              a.btn.btn-success.btn-block(href="", ng-click='addFlag("globalFreezeFlag")', ng-disabled='!$root.sequence || !$root.fee', l10n) Add Flag
             .col-xs-3
-              a.btn.btn-danger.btn-block(href="", ng-click='removeFlag("globalFreezeFlag")', ng-disabled='!$root.sequence || !fee', l10n) Remove Flag
+              a.btn.btn-danger.btn-block(href="", ng-click='removeFlag("globalFreezeFlag")', ng-disabled='!$root.sequence || !$root.fee', l10n) Remove Flag
             .col-xs-3  
               a.btn.btn-cancel.btn-block(href="", ng-click='edit.globalFreezeFlag = false', l10n) cancel      
