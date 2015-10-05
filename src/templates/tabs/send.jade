@@ -142,19 +142,6 @@ section.col-xs-12.content(ng-controller='SendCtrl')
           | Recipient does not allow XRP payments. Are you sure you want to send XRP anyway?
         .notice(ng-show="send.trust_limit", l10n) {{send.recipient | rpcontactname}}
           | trusts you for {{send.trust_limit | rpamount}} {{send.trust_limit | rpcurrency}}.
-    .form-group(ng-if="!onlineMode && send.recipient")
-      label(for='send_sequence', l10n) Account sequence and network fee
-      .row.amount
-        .col-xs-3.col-sm-2.col-md-2
-          input.form-control#send_sequence(
-            name='send_sequence', type='text'
-            ng-model='$root.sequence'
-            required, placeholder="sequence")
-        .col-xs-3.col-sm-2.col-md-2
-          input.form-control#send_fee(
-          name='send_fee', type='text'
-          ng-model='send.fee'
-          required, placeholder="fee")
     .row
       .col-xs-12.col-sm-6.col-md-4(ng-show="onlineMode && send.currency_code == 'XRP'")
         button#sendXrpButton.btn.btn-block.btn-success.submit(type='submit'

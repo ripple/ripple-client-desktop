@@ -814,7 +814,7 @@ SendTab.prototype.angular = function (module)
       else {
         tx.tx_json.Sequence = Number($scope.sequence);
         $scope.incrementSequence();
-        tx.tx_json.Fee = $scope.send.fee;
+        tx.tx_json.Fee = $scope.fee;
         tx.complete();
         $scope.signedTransaction = tx.sign().serialize().to_hex();
         $scope.txJSON = JSON.stringify(tx.tx_json);

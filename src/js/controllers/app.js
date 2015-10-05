@@ -25,7 +25,11 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork', 'rp
       if (!$scope.userBlob.data.sequence) {
         $scope.userBlob.set('/sequence', 1);
       }
+      if (!$scope.userBlob.data.fee) {
+        $scope.userBlob.set('/fee', 200000);
+      }
       $scope.sequence = $scope.userBlob.data.sequence;
+      $scope.fee = $scope.userBlob.data.fee;
     }
   });
 

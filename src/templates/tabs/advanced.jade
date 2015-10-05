@@ -85,3 +85,29 @@ section.col-xs-12.content(ng-controller="AdvancedCtrl")
           .col-xs-12.col-sm-6.col-md-3
             button.btn.btn-block.btn-primary#newServer(ng-show="onlineMode", type="button", ng-click="addServer()", l10n) Add new server
 
+        h4#serverSettings(ng-hide="onlineMode", l10n) Account Sequence and Network Fee
+        form.server-row-form(ng-hide="onlineMode", ng-controller="AdvancedCtrl", ng-submit="saveSeqFee()")
+          ng-form(name="feeForm")
+            .row
+              .col-md-3.col-sm-4.col-xs-3
+                .descriptor(l10n) Sequence
+                input.form-control#send_sequence(
+                  name='send_sequence', type='number'
+                  ng-model='$root.sequence'
+                  ng-required='!onlineMode', placeholder="sequence")
+              .col-md-3.col-sm-4.col-xs-3
+                .descriptor.portNumber(l10n) Network Fee
+                input.form-control#send_fee(
+                name='send_fee', type='number'
+                ng-model='$root.fee', min="1000"
+                ng-required='!onlineMode', placeholder="fee")
+              .col-xs-3.col-sm-3.col-md-2
+                .descriptor.portNumber(l10n) Update
+                button.btn.btn-block.btn-success.btn-xs.submit#save(type='submit'
+                ng-disabled='feeForm.$invalid', l10n) Save
+          ng-form(name="savedFeeForm")
+            .row
+              .col-sm-12.notification-wrapper
+                .alert.alert-success(ng-show="saved", l10n) Updates saved.
+
+

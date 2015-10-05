@@ -150,19 +150,6 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                       |  to trust in XRP, please use XRR currency code.
                     .error(rp-error-on='required', l10n)
                       | Currency field is required
-              .row(ng-show='advanced_feature_switch' && '!onlineMode')
-                .col-xs-12
-                  label(for='send_sequence', l10n) Account sequence and network fee
-                .col-md-3.col-sm-4.col-xs-3
-                  input.form-control#send_sequence(
-                    name='send_sequence', type='number'
-                    ng-model='$root.sequence'
-                    ng-required='!onlineMode', placeholder="sequence")
-                .col-md-3.col-sm-4.col-xs-3
-                  input.form-control#send_fee(
-                  name='send_fee', type='number'
-                  ng-model='fee'
-                  ng-required='!onlineMode', placeholder="fee")
               .row(ng-show="advanced_feature_switch")
                 .col-xs-4.allow-rippling
                   label(for="trust_allowrippling")
@@ -450,19 +437,6 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                           option(value='') No change to freeze flag
                           option(value='tfSetFreeze') Freeze trust line
                           option(value='tfClearFreeze') Unfreeze trust line
-                    .row(ng-show='advanced_feature_switch' && '!onlineMode')
-                      .col-xs-12
-                        label(for='send_sequence', l10n) Account sequence and network fee
-                      .col-sm-1.col-md-2
-                        input.form-control#send_sequence(
-                          name='send_sequence', type='number'
-                          ng-model='$root.sequence'
-                          ng-required='!onlineMode', placeholder="sequence")
-                      .col-sm-1.col-md-2
-                        input.form-control#send_fee(
-                        name='send_fee', type='number'
-                        ng-model='fee'
-                        ng-required='!onlineMode', placeholder="fee")
                     .col-sm-7.col-md-6
                       .row.row-padding-small
                         .col-xs-6.col-sm-5
