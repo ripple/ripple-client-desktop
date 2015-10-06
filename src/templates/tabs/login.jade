@@ -53,15 +53,15 @@ section.col-xs-12.content(ng-controller="LoginCtrl")
 
           .form-group
             label(for='readOnlyAddress', l10n) Enter Ripple Address
-            //- TODO ripple address validation
             input.form-control(name='readOnly', ng-model='readOnly'
-              rp-focus-on-empty, required)
-          .text-error(ng-show='error')
-            //- TODO error on ripple address validation
-            span {{error}}
+              rp-focus-on-empty, required, rp-dest, rp-dest-address)
+            br
+            .errorGroup(rp-errors='readOnly')
+              .error(rp-error-on='rpDest', l10n)
+                | Input should be a valid Ripple address.
 
           .submit-btn-container
-            button.btn.btn-submit.btn-block.btn-success(type='submit', ng-disabled="submitReadOnlyForm.$invalid || ajax_loading", rp-spinner="{{ajax_loading ? 4 : null}}")
+            button.btn.btn-submit.btn-block.btn-success(type='submit', ng-disabled="readOnlyForm.$invalid || ajax_loading", rp-spinner="{{ajax_loading ? 4 : null}}")
               span(l10n) Open account
 
   .row.auth-form-container(ng-show="mode=='coldwallet'")
@@ -72,13 +72,13 @@ section.col-xs-12.content(ng-controller="LoginCtrl")
 
           .form-group
             label(for='coldWalletAddress', l10n) Enter Ripple Address
-            //- TODO ripple address validation
             input.form-control(name='coldWallet', ng-model='coldWallet'
-              rp-focus-on-empty, required)
-          .text-error(ng-show='error')
-            //- TODO error on ripple address validation
-            span {{error}}
+              rp-focus-on-empty, required, rp-dest, rp-dest-address)
+            br
+            .errorGroup(rp-errors='coldWallet')
+              .error(rp-error-on='rpDest', l10n)
+                | Input should be a valid Ripple address.
 
           .submit-btn-container
-            button.btn.btn-submit.btn-block.btn-success(type='submit', ng-disabled="submitColdWalletForm.$invalid || ajax_loading", rp-spinner="{{ajax_loading ? 4 : null}}")
+            button.btn.btn-submit.btn-block.btn-success(type='submit', ng-disabled="coldWalletForm.$invalid || ajax_loading", rp-spinner="{{ajax_loading ? 4 : null}}")
               span(l10n) Open account
