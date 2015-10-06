@@ -53,7 +53,7 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
               l10n-rp-popover-content="{{copyTooltip}}")
             p.navbar-text(ng-click="copy()") {{copyFeedback || userCredentials.account}}
               input.text-copy-helper(value="{{userCredentials.account}}")
-          li.dropdown.notifications-dropdown
+          li.dropdown.notifications-dropdown(ng-show="onlineMode")
             a.dropdown-toggle.fa.fa-bell(ng-click="read()", data-toggle="dropdown")
               .number(ng-show="unseenNotifications.count") {{unseenNotifications.count}}
             ul#notifications.dropdown-menu
