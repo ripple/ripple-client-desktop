@@ -59,7 +59,7 @@ ExchangeTab.prototype.angular = function (module)
 
       if (!$id.loginStatus) $id.goId();
 
-      var timer, pf;
+      var timer;
 
       // Remember user preference on Convert vs. Trade
       $rootScope.ripple_exchange_selection_trade = false;
@@ -89,9 +89,7 @@ ExchangeTab.prototype.angular = function (module)
 
 
       $scope.reset_paths = function () {
-        if (pf && typeof pf.close === 'function') {
-          pf.close();
-        }
+        $network.remote.closeCurrentPathFind();
         var exchange = $scope.exchange;
 
         exchange.alternatives = [];
@@ -162,10 +160,11 @@ ExchangeTab.prototype.angular = function (module)
           var lastUpdate;
 
           // Start path find
-          pf = $network.remote.createPathFind({
+          var pf = $network.remote.createPathFind({
             src_account: $id.account,
             dst_account: $id.account,
-            dst_amount: amount});
+            dst_amount: amount
+          });
 
           pf.on('error', function() {
             $scope.$apply(function () {
@@ -196,8 +195,7 @@ ExchangeTab.prototype.angular = function (module)
 
                   alt.amount = Amount.from_json(raw.source_amount);
 
-                  // Waiting on response from ripple-lib team to fix rate
-                  //alt.rate     = alt.amount.ratio_human(amount);
+                  alt.rate = alt.amount.ratio_human(amount);
 
                   // Send max is 1.01 * amount (scaling amount is in integer drops)
                   alt.send_max = alt.amount.scale(101000000000000);
@@ -205,7 +203,7 @@ ExchangeTab.prototype.angular = function (module)
                       ? raw.paths_computed
                       : raw.paths_canonical;
 
-                  if (alt.amount.issuer().to_json() !== $scope.address && !isIssuer[alt.amount.currency().to_hex()]) {
+                  if (alt.amount.issuer() !== $scope.address && !isIssuer[alt.amount.currency().to_hex()]) {
                     currencies[alt.amount.currency().to_hex()] = true;
                   }
 
@@ -287,7 +285,10 @@ ExchangeTab.prototype.angular = function (module)
         $timeout(function () {
           $scope.confirm_wait = false;
         }, 1000, true);
-
+        // Stop the pathfind - once we're on the confirmation page, we'll freeze
+        // the last state we had so the user doesn't get surprises when
+        // submitting.
+        $network.remote.closeCurrentPathFind();
         $scope.mode = "confirm";
       };
 
@@ -400,10 +401,8 @@ ExchangeTab.prototype.angular = function (module)
       updateCurrencyOptions();
 
       // Stop the pathfinding when leaving the page
-      $scope.$on('$destroy', function(){
-        if (pf && "function" === typeof pf.close) {
-          pf.close();
-        }
+      $scope.$on('$destroy', function() {
+        $network.remote.closeCurrentPathFind();
       });
     }]);
 
