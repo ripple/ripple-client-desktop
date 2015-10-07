@@ -175,7 +175,7 @@ SendTab.prototype.angular = function (module)
       var send = $scope.send;
       var recipient = send.recipient_actual || send.recipient_address;
 
-      if (!ripple.UInt160.is_valid(recipient)) return;
+      if (!RippleAddressCodec.isValidAddress(recipient)) return;
 
       if (!$scope.onlineMode) {
         $scope.send.currency = 'XRP';
@@ -352,7 +352,7 @@ SendTab.prototype.angular = function (module)
       $scope.reset_currency_deps();
 
       // We should have a valid recipient
-      if (!ripple.UInt160.is_valid(recipient) && !send.quote_url) {
+      if (!RippleAddressCodec.isValidAddress(recipient) && !send.quote_url) {
         return;
       }
 
@@ -425,7 +425,7 @@ SendTab.prototype.angular = function (module)
         send.amount_feedback.set_issuer(1);
         pathUpdateTimeout = $timeout($scope.update_quote, 500);
       } else {
-        if (!ripple.UInt160.is_valid(recipient) || !ripple.Amount.is_valid(amount)) {
+        if (!RippleAddressCodec.isValidAddress(recipient) || !ripple.Amount.is_valid(amount)) {
           // XXX Error?
           return;
         }
