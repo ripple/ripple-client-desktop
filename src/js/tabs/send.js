@@ -175,7 +175,7 @@ SendTab.prototype.angular = function (module)
       var send = $scope.send;
       var recipient = send.recipient_actual || send.recipient_address;
 
-      if (!ripple.UInt160.is_valid(recipient)) return;
+      if (!RippleAddressCodec.isValidAddress(recipient)) return;
 
       if (!$scope.onlineMode) {
         $scope.send.currency = 'XRP';
@@ -352,7 +352,7 @@ SendTab.prototype.angular = function (module)
       $scope.reset_currency_deps();
 
       // We should have a valid recipient
-      if (!ripple.UInt160.is_valid(recipient) && !send.quote_url) {
+      if (!RippleAddressCodec.isValidAddress(recipient) && !send.quote_url) {
         return;
       }
 
@@ -375,9 +375,7 @@ SendTab.prototype.angular = function (module)
 
     $scope.update_amount = function () {
       var send = $scope.send;
-      if (send.pathfind && typeof send.pathfind.close === 'function') {
-        send.pathfind.close();
-      }
+      $network.remote.closeCurrentPathFind();
       var recipient = send.recipient_actual || send.recipient_address;
 
       if (!send.currency_choices ||
@@ -427,7 +425,7 @@ SendTab.prototype.angular = function (module)
         send.amount_feedback.set_issuer(1);
         pathUpdateTimeout = $timeout($scope.update_quote, 500);
       } else {
-        if (!ripple.UInt160.is_valid(recipient) || !ripple.Amount.is_valid(amount)) {
+        if (!RippleAddressCodec.isValidAddress(recipient) || !ripple.Amount.is_valid(amount)) {
           // XXX Error?
           return;
         }
@@ -545,16 +543,14 @@ SendTab.prototype.angular = function (module)
 
               alt.amount = Amount.from_json(raw.source_amount);
 
-              // Waiting on response from ripple-lib team to fix rate
-
               // Compensate for demurrage
               //
               // In the case of demurrage, the amount would immediately drop
               // below where it is and because we currently always round down it
               // would immediately show up as something like 0.99999.
-              //var slightlyInFuture = new Date(+new Date() + 5 * 60000);
+              var slightlyInFuture = new Date(+new Date() + 5 * 60000);
 
-              //alt.rate     = alt.amount.ratio_human(amount, {reference_date: slightlyInFuture});
+              alt.rate = alt.amount.ratio_human(amount, {reference_date: slightlyInFuture});
 
               // Send max is 1.01 * amount (scaling amount is in integer drops)
               alt.send_max = alt.amount.scale(101000000000000);
@@ -570,7 +566,7 @@ SendTab.prototype.angular = function (module)
               } else if ($scope.send.currency_code === 'XRP') {
                 currentAlternatives.push(alt);
               }
-              if (alt.amount.issuer().to_json() !== $scope.address && !isIssuer[alt.amount.currency().to_hex()]) {
+              if (alt.amount.issuer() !== $scope.address && !isIssuer[alt.amount.currency().to_hex()]) {
                 currencies[alt.amount.currency().to_hex()] = true;
               }
               return alt;
@@ -661,11 +657,7 @@ SendTab.prototype.angular = function (module)
       // submitting.
       // XXX ST: The confirmation page should warn you somehow once it becomes
       //         outdated.
-      if ($scope.send.pathfind) {
-        $scope.send.pathfind.close();
-        delete $scope.send.pathfind;
-      }
-
+      $network.remote.closeCurrentPathFind();
       $scope.mode = "confirm";
 
       if (keychain.isUnlocked($id.account)) {
@@ -908,10 +900,7 @@ SendTab.prototype.angular = function (module)
 
     $scope.$on("$destroy", function() {
       // Stop pathfinding if the user leaves the tab
-      if ($scope.send.pathfind) {
-        $scope.send.pathfind.close();
-        delete $scope.send.pathfind;
-      }
+      $network.remote.closeCurrentPathFind();
     });
 
     $scope.reset();

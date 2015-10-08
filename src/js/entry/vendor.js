@@ -6,6 +6,7 @@ window.store = require('store');
 window.Spinner = require('spin');
 window.RippleAPI = require('ripple-lib').RippleAPI;
 window.ripple = require('ripple-lib')._DEPRECATED;
+window.RippleAddressCodec = require('ripple-address-codec');
 window._ = require('lodash');
 window.sjcl = require('sjcl');
 require('../../../deps/sjcl-custom');

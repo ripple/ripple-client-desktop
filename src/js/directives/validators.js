@@ -64,16 +64,10 @@ module.directive('rpDest', ['$timeout', '$parse', function ($timeout, $parse) {
       var timeoutPromise, getter;
       var validator = function(value) {
         var strippedValue = webutil.stripRippleAddress(value);
-        var address = ripple.UInt160.from_json(strippedValue);
-
-        if (typeof strippedValue !== 'string'
-          || (strippedValue.length && strippedValue[0] !== 'r')) {
-            address = ripple.UInt160.from_json();
-        }
 
         ctrl.rpDestType = null;
 
-        if (attr.rpDestAddress && address.is_valid()) {
+        if (attr.rpDestAddress && RippleAddressCodec.isValidAddress(strippedValue)) {
           ctrl.rpDestType = "address";
           ctrl.$setValidity('rpDest', true);
 
@@ -92,7 +86,7 @@ module.directive('rpDest', ['$timeout', '$parse', function ($timeout, $parse) {
 
           if (attr.rpDestModel) {
             getter = $parse(attr.rpDestModel);
-            getter.assign(scope,webutil.getContact(scope.userBlob.data.contacts,strippedValue).address);
+            getter.assign(scope,webutil.getContact(scope.userBlob.data.contacts,strippedValue).strippedValue);
           }
 
           return value;
