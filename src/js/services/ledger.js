@@ -92,7 +92,7 @@ module.factory('rpLedger', ['$q', '$rootScope', 'rpNetwork', 'rpTransactions',
       // Amount class math instead), so it's ok.
       num: +amount.to_human({group_sep: false}),
       currency: amount.currency().to_human(),
-      issuer: amount.issuer().to_json()
+      issuer: amount.issuer()
     };
   }
 
