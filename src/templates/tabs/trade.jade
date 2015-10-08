@@ -400,18 +400,18 @@ section.col-xs-12.content(ng-controller="TradeCtrl")
             .col-sm-4(data-label="Currencies")
               a(href="",ng-click="goto_order_currency()")
                 span {{entry.first | rpcurrency}}
-                span.issuer(ng-show="entry.first.issuer().to_json()") &nbsp;(
+                span.issuer(ng-show="entry.first.issuer()") &nbsp;(
                   span(
-                    rp-pretty-issuer="entry.first.issuer().to_json()"
+                    rp-pretty-issuer="entry.first.issuer()"
                     rp-pretty-issuer-contacts="userBlob.data.contacts"
                   ) ???
                   | )
                 span(ng-show="'buy' == entry.type", l10n)  with
                 span(ng-show="'sell' == entry.type", l10n)  for
                 span  {{entry.second | rpcurrency}}
-                span.issuer(ng-show="entry.second.issuer().to_json()") &nbsp;(
+                span.issuer(ng-show="entry.second.issuer()") &nbsp;(
                   span(
-                    rp-pretty-issuer="entry.second.issuer().to_json()"
+                    rp-pretty-issuer="entry.second.issuer()"
                     rp-pretty-issuer-contacts="userBlob.data.contacts"
                   ) ???
                   | )

@@ -240,9 +240,9 @@ TradeTab.prototype.angular = function(module)
     function getOrderCurrency(entry) {
       if (!entry) return '';
       var first_currency = entry.first.currency().to_json();
-      var first_issuer = entry.first.issuer().to_json();
+      var first_issuer = entry.first.issuer();
       var second_currency = entry.second.currency().to_json();
-      var second_issuer = entry.second.issuer().to_json();
+      var second_issuer = entry.second.issuer();
 
       var first = first_currency === 'XRP'
         ? 'XRP'
@@ -270,9 +270,9 @@ TradeTab.prototype.angular = function(module)
       var order = $scope.order;
       currencyPairChangedByNonUser = true;
       order.first_currency = this.entry.first.currency().to_json();
-      order.first_issuer = this.entry.first.issuer().to_json();
+      order.first_issuer = this.entry.first.issuer();
       order.second_currency = this.entry.second.currency().to_json();
-      order.second_issuer = this.entry.second.issuer().to_json();
+      order.second_issuer = this.entry.second.issuer();
 
       var first = order.first_currency === 'XRP'
         ? 'XRP'
@@ -560,7 +560,7 @@ TradeTab.prototype.angular = function(module)
         if (!order.price_amount.is_native()) {
           var price = order.price_amount.to_human({group_sep: false});
           var currency = order.price_amount.currency().to_json();
-          var issuer = order.price_amount.issuer().to_json();
+          var issuer = order.price_amount.issuer();
 
           // use replace(/,/g,'') until ripple lib fixed
           order.first_amount = Amount.from_json(order.second_amount.to_text_full().replace(/,/g, '')).ratio_human(Amount.from_json(price + '/' + currency + '/' + issuer), {reference_date: new Date()});
