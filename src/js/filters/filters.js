@@ -104,7 +104,7 @@ module.filter('rpissuer', function () {
     if (!input) return "";
 
     var amount = Amount.from_json(input);
-    return amount.issuer().to_json();
+    return amount.issuer();
   };
 });
 
