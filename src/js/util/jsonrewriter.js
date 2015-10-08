@@ -199,6 +199,9 @@ var JsonRewriter = module.exports = {
         if (difference) {  // calculated and non-zero
           var diff = String(difference);
           amtSent = cur ? {value: diff, currency:cur} : diff;
+          if (tx.SendMax) {
+            amtSent.issuer = tx.SendMax.issuer;
+          }
         }
       }
     }
