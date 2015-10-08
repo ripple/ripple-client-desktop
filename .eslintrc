@@ -152,4 +152,12 @@ rules:
   wrap-regex: 0
   yoda: [2, 'never']
 globals:
-  Promise: true
+  _: false
+  $: false
+  ripple: false
+  RippleAPI: false
+  moment: false
+  Spinner: false
+  RippleAddressCodec: false
+  sjcl: false
+  store: false
