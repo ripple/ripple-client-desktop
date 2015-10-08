@@ -341,7 +341,7 @@ section.col-xs-12.content(ng-controller="TradeCtrl")
             group.mode-done(ng-switch-when='done')
               group.pending(ng-show='order[type].tx_result=="pending"')
                 h2.tx-status(l10n) Your order has been submitted.
-              group.result-success(ng-show="'order[type].tx_result==cleared' && executedOnOfferCreate=='none'")
+              group.result-success(ng-show="'order[type].tx_result==cleared' && executedOnOfferCreate=='none'", ng-hide='order[type].tx_result=="claim"')
                 h2.tx-status(l10n) Your order is now active.
               group.result-success(ng-show="'order[type].tx_result==cleared' && executedOnOfferCreate=='all'")
                 h2.tx-status(l10n) Your order has been filled.
