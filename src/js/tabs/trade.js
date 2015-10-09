@@ -379,19 +379,21 @@ TradeTab.prototype.angular = function(module)
 
         var tx = rewriter.processTxn(res, res.metadata, id.account);
 
-        for (var i = 0; i < tx.effects.length; i++) {
-          var messageType = tx.effects[i].type;
+        if (tx.effects) {
+          for (var i = 0; i < tx.effects.length; i++) {
+            var messageType = tx.effects[i].type;
 
-          switch (messageType) {
-            case 'trust_change_balance':
-              $scope.executedOnOfferCreate = 'all';
-              break;
-            case 'offer_partially_funded':
-              $scope.executedOnOfferCreate = 'partial';
-              break;
-            default:
-              $scope.executedOnOfferCreate = 'none';
-              break;
+            switch (messageType) {
+              case 'trust_change_balance':
+                $scope.executedOnOfferCreate = 'all';
+                break;
+              case 'offer_partially_funded':
+                $scope.executedOnOfferCreate = 'partial';
+                break;
+              default:
+                $scope.executedOnOfferCreate = 'none';
+                break;
+            }
           }
         }
 
