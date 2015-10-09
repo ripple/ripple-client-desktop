@@ -40,3 +40,8 @@ section.col-xs-12.content(ng-controller="SecurityCtrl")
                 a(href="", ng-click="saveRegularKey()", l10n) Save Wallet File
               .col-md-1(ng-show="userBlob.data.masterkey")
                 a(href="", ng-click="removeRegularKey()", l10n) Remove
+        //- Offline Sending
+        hr
+        group.mode-status(ng-show='mode=="offlineSending"')
+          signed-transaction(data="{{signedTransaction}}", txJSON="{{txJSON}}", hash="{{hash}}")
+          button.btn.btn-small.btn-primary(ng-click="mode=''") Close
