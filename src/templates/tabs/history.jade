@@ -198,12 +198,14 @@ section.col-xs-12.content(ng-controller="HistoryCtrl")
                   span(ng-show="effect.type == 'balance_change'", data-label="Description", l10n) XRP Balance Change
                   span(ng-show="effect.type == 'trust_change_balance'", data-label="Description", l10n) {{effect.currency}} Balance Change
                   span(ng-show="effect.type == 'fee'", data-label="Description", l10n) Fee
-                span.issuer(
+                span.issuer(ng-hide="effect.amount.is_native()"
                   rp-pretty-issuer="effect.amount.issuer()"
                   rp-pretty-issuer-contacts="userBlob.data.contacts"
                   rp-pretty-issuer-default="-"
                   data-label="Issuer"
                 )
+                //Display blank issuer for XRP
+                span.issuer(ng-show="effect.amount.is_native()")
                 span.amount(data-label="Amount", rp-pretty-amount="effect.amount")
                 span.balance(data-label="Final balance", rp-pretty-amount="effect.balance")
             .links
