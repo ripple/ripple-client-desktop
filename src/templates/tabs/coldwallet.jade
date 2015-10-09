@@ -67,7 +67,8 @@ section.single.ddpage.content(ng-controller="ColdWalletCtrl")
               tr(ng-repeat="line in warningLines")
                 td {{line.specification.counterparty}}
                 td {{line.specification.currency}}
-                td {{line.specification.ripplingDisabled}}
+                td(ng-if="!line.specification.ripplingDisabled") Not set
+                td(ng-if="line.specification.ripplingDisabled") {{line.specification.ripplingDisabled}}
                 td {{line.specification.authorized}}
                 td {{line.warning}}
     hr
