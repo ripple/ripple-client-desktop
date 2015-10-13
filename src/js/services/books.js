@@ -13,12 +13,12 @@ function(net, $q, $scope, $filter, $id) {
 
   var rowCount;
 
-  function loadBook(gets, pays, taker) {
+  function loadBook(gets, pays) {
     return net.remote.book({
       currency_gets: gets.currency,
       issuer_gets: gets.issuer,
       currency_pays: pays.currency,
-      issuer_pays: taker
+      issuer_pays: pays.issuer
     });
   }
 
@@ -117,16 +117,13 @@ function(net, $q, $scope, $filter, $id) {
   }
 
   return {
-    get: function(first, second, taker) {
-      var asks = loadBook(first, second, taker);
-      var bids = loadBook(second, first, taker);
-     
-      asks._shouldSubscribe = true;
-      bids._shouldSubscribe = true;
-      
+    get: function(first, second) {
+      var asks = loadBook(first, second);
+      var bids = loadBook(second, first);
+
       var model = {
-        asks: filterRedundantPrices(asks.offersSync(), 'asks', true),
-        bids: filterRedundantPrices(bids.offersSync(), 'bids', true)
+        asks: filterRedundantPrices(asks.getOffersSync(), 'asks', true),
+        bids: filterRedundantPrices(bids.getOffersSync(), 'bids', true)
       };
 
       function handleAskModel(offers) {
