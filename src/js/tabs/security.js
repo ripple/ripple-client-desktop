@@ -40,6 +40,7 @@ SecurityTab.prototype.angular = function (module) {
     onBlobUpdate();
 
     $scope.security = {};
+    $scope.mode = {};
 
     function saveTransaction(tx) {
       tx.tx_json.Sequence = Number($scope.sequence);
@@ -49,7 +50,7 @@ SecurityTab.prototype.angular = function (module) {
       $scope.signedTransaction = tx.sign().serialize().to_hex();
       $scope.txJSON = JSON.stringify(tx.tx_json);
       $scope.hash = tx.hash('HASH_TX_ID', false, undefined);
-      $scope.mode = "offlineSending";
+      $scope.mode.offlineSending = true;
       if ($scope.userBlob.data.defaultDirectory) {
         var sequenceNumber = (Number(tx.tx_json.Sequence));
         var sequenceLength = sequenceNumber.toString().length;
@@ -200,6 +201,7 @@ SecurityTab.prototype.angular = function (module) {
     };
 
     // Generate a regular key
+    // And save it on the current blob
     $scope.generateRegularKey = function() {
       $scope.regularKey = Base58Utils.encode_base_check(33, sjcl.codec.bytes.fromBits(sjcl.random.randomWords(4)));
       $scope.regularKeyPublic = new RippleAddress($scope.regularKey).getAddress();
@@ -236,6 +238,8 @@ SecurityTab.prototype.angular = function (module) {
       $scope.userBlob.set("/regularKey", $scope.regularKey);
     };
 
+    // Remove regular key from master wallet file
+    // Unset regular key with Ripple transaction, so key is no longer valid
     $scope.removeRegularKey = function() {
       var tx = network.remote.transaction();
 
@@ -267,10 +271,32 @@ SecurityTab.prototype.angular = function (module) {
       $scope.userBlob.unset("/regularKey");
     };
 
+    // Chose file in which to save the regular key wallet
     $scope.saveRegularKey = function() {
       fileDialog.saveAs(function(filename) {
-        $scope.userBlob.persistRegular(filename);
+        $scope.$apply(function() {
+          $scope.regularWallet = filename;
+          $scope.mode.register_regular_key_wallet = true;
+        });
       }, 'wallet-regular.txt');
+    };
+
+    // Encrypt a new blob containing the regular key only
+    // (no master key) with a passwork of the user's choosing
+    // Save this blob to disk
+    $scope.encryptRegularKey = function() {
+      $scope.userBlob.persistRegular($scope.regularWallet,
+        $scope.password1, function(err, data) {
+          $scope.$apply(function() {
+            $scope.mode.register_regular_key_wallet = false;
+            if (err) {
+              console.log('Error saving wallet: ', err);
+              $scope.mode.error_regular_key_wallet = true;
+            } else {
+              $scope.mode.saved_regular_key_wallet = true;
+            }
+          });
+        });
     };
 
     var reset = function() {

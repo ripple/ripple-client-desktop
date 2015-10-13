@@ -6,8 +6,8 @@
 
 // TODO build a blobPrototype.
 // There's currently a code repetition between blobLocal and blobRemote..
-
-var fs = require("fs");
+'use strict';
+var fs = require('fs');
 
 var module = angular.module('blob', []);
 
@@ -127,21 +127,23 @@ module.factory('rpBlob', ['$rootScope', function ($scope)
   };
 
   // Store regular key wallet in a file
-  BlobObj.prototype.persistRegular = function(walletfile)
+  BlobObj.prototype.persistRegular = function(walletfile, password, callback)
   {
-    var blob = $.extend(this, {});
+    var self = this;
+    var regularKeyBlob = new BlobObj(password, walletfile);
 
-    // New wallet file
-    blob.walletfile = walletfile;
+    regularKeyBlob.data = {
+      regularKey: self.data.regularKey,
+      sequence: self.data.sequence,
+      fee: self.data.fee,
+      defaultDirectory: self.data.defaultDirectory,
+      lastSeenTxDate: self.data.lastSeenTxDate,
+      account_id: self.data.account_id,
+      contacts: [],
+      created: (new Date()).toJSON()
+    };
 
-    // Empty contact list
-    blob.set('/contacts', [], function() {
-      // Remove the secret key
-      blob.unset('/masterkey', function() {
-        // Create date
-        blob.set('/created', (new Date()).toJSON());
-      });
-    });
+    regularKeyBlob.persist(callback);
   };
 
   BlobObj.prototype.encrypt = function()
