@@ -1,3 +1,5 @@
+'use strict';
+
 var util = require('util');
 var Tab = require('../client/tab').Tab;
 var fs = require('fs');
@@ -64,13 +66,13 @@ SubmitTab.prototype.angular = function (module)
 
       var i = 0;
       // Listening for child scope transaction submission results
-      $scope.$on('submitted', function(){
+      $scope.$on('submitted', function() {
         i++;
-
+        // Once all txns have been submitted, set loading to false
         if ($scope.txFiles.length <= i) {
           $scope.loading = false;
         }
-      })
+      });
 
       $scope.gotoLogin = function() {
         $location.path('/login');
@@ -82,14 +84,14 @@ SubmitTab.prototype.angular = function (module)
   module.controller('TxRowCtrl', ['$scope', 'rpNetwork',
     function ($scope, network) {
       // Remove the transaction from the list
-      $scope.remove = function(){
-        $scope.txFiles.splice($scope.index,1);
+      $scope.remove = function() {
+        $scope.txFiles.splice($scope.index, 1);
       };
 
       // Parent broadcasts the submit event
       $scope.$on('submit', function() {
-        // Don't submit it more then once
-        if ($scope.state == 'done') {
+        // Transaction is done if it failed, or if it was submitted successfully
+        if ($scope.state === 'done' || $scope.state === 'error') {
           $scope.$emit('submitted');
           return;
         }
@@ -98,9 +100,9 @@ SubmitTab.prototype.angular = function (module)
         $scope.state = 'pending';
 
         // Get the signedTransaction
-        fs.readFile($scope.txFile, 'utf8', function(err, data){
+        fs.readFile($scope.txFile, 'utf8', function(err, data) {
           if (err) {
-            console.log('err',err);
+            console.log('err', err);
             return;
           }
           // Transaction will either be a JSON transaction or the signed
@@ -117,24 +119,23 @@ SubmitTab.prototype.angular = function (module)
           // Submit the transaction to the network
           var request = new ripple.Request(network.remote, 'submit');
           request.message.tx_blob = txBlob;
-          request.callback(function(err, response){
-            $scope.$apply(function(){
-              if (err) {
-                console.log('err', err);
+          request.callback(function(submitErr, response) {
+            $scope.$apply(function() {
+              // broadcast submit event once we get callback from ripple-lib
+              $scope.$emit('submit');
+              if (submitErr) {
+                console.log('err', submitErr);
                 $scope.state = 'error';
                 return;
               }
 
               $scope.state = 'done';
               $scope.result = response.engine_result;
-
-              // Tell the parent about the completion
-              $scope.$emit('submitted');
-            })
+            });
           });
           request.request();
         });
-      })
+      });
     }
   ]);
 };
