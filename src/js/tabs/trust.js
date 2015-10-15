@@ -78,8 +78,8 @@ TrustTab.prototype.angular = function (module) {
         $scope.addform_visible = false;
         $scope.edituser = '';
         $scope.counterparty = '';
-        $scope.counterparty_view = '';
         $scope.counterparty_address = '';
+        $scope.counterparty_name = '';
         $scope.saveAddressName = '';
         $scope.error_account_reserve = false;
       };
