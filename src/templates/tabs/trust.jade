@@ -268,8 +268,8 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                 a(href="", ng-click="toggle_form()", l10n) Back to trust lines
             hr
             .text-success(ng-show='addressSaved', class="actionLink", l10n) Contact saved!
-            .save-address-form(class="actionLink")
-              a(href="", ng-click='show_save_address_form = true', l10n)
+            .save-address-form(ng-hide='contact', class="actionLink")
+              a(href="", ng-click='show_save_address_form = true', ng-hide='addressSaved', l10n)
                 | Add this address to contacts
               form(name="saveAddressForm", ng-class="{ show: show_save_address_form }"
               ng-submit='saveAddress()')

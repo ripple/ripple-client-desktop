@@ -381,14 +381,16 @@ TrustTab.prototype.angular = function (module) {
         };
 
         $scope.userBlob.unshift('/contacts', contact, function(err, data) {
-          $scope.addressSaving = false;
-          if (err) {
-            console.log('Can\'t save the contact. ', err);
-            return;
-          }
-
-          $scope.contact = data;
-          $scope.addressSaved = true;
+          $scope.$apply(function () {
+            $scope.addressSaving = false;
+            if (err) {
+              console.log('Can\'t save the contact. ', err);
+              return;
+            }
+            $scope.contact = data;
+            $scope.addressSaved = true;
+            $scope.show_save_address_form = false;
+          });
         });
       };
     }]);
