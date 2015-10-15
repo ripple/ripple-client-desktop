@@ -62,7 +62,6 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
               li.notification(
                 ng-repeat="entry in notifications"
                 ng-class="{unseen: entry.unseen}"
-                rp-link-tx="entry.hash"
                 ng-show="notifications.length"
                 )
                 .desc(ng-switch="entry.transaction.type")
