@@ -1,3 +1,5 @@
+'use strict';
+
 var util = require('util');
 var Tab = require('../client/tab').Tab;
 var fs = require('fs');
@@ -64,7 +66,7 @@ SubmitTab.prototype.angular = function (module)
 
       var i = 0;
       // Listening for child scope transaction submission results
-      $scope.$on('submitted', function(){
+      $scope.$on('submitted', function() {
         i++;
         // Once all txns have been submitted, set loading to false
         if ($scope.txFiles.length <= i) {
@@ -82,8 +84,8 @@ SubmitTab.prototype.angular = function (module)
   module.controller('TxRowCtrl', ['$scope', 'rpNetwork',
     function ($scope, network) {
       // Remove the transaction from the list
-      $scope.remove = function(){
-        $scope.txFiles.splice($scope.index,1);
+      $scope.remove = function() {
+        $scope.txFiles.splice($scope.index, 1);
       };
 
       // Parent broadcasts the submit event
@@ -98,9 +100,9 @@ SubmitTab.prototype.angular = function (module)
         $scope.state = 'pending';
 
         // Get the signedTransaction
-        fs.readFile($scope.txFile, 'utf8', function(err, data){
+        fs.readFile($scope.txFile, 'utf8', function(err, data) {
           if (err) {
-            console.log('err',err);
+            console.log('err', err);
             return;
           }
           // Transaction will either be a JSON transaction or the signed
@@ -117,12 +119,12 @@ SubmitTab.prototype.angular = function (module)
           // Submit the transaction to the network
           var request = new ripple.Request(network.remote, 'submit');
           request.message.tx_blob = txBlob;
-          request.callback(function(err, response){
-            $scope.$apply(function(){
+          request.callback(function(submitErr, response) {
+            $scope.$apply(function() {
               // broadcast submit event once we get callback from ripple-lib
               $scope.$emit('submit');
-              if (err) {
-                console.log('err', err);
+              if (submitErr) {
+                console.log('err', submitErr);
                 $scope.state = 'error';
                 return;
               }
@@ -133,7 +135,7 @@ SubmitTab.prototype.angular = function (module)
           });
           request.request();
         });
-      })
+      });
     }
   ]);
 };
