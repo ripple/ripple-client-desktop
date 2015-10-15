@@ -66,11 +66,11 @@ SubmitTab.prototype.angular = function (module)
       // Listening for child scope transaction submission results
       $scope.$on('submitted', function(){
         i++;
-
+        // Once all txns have been submitted, set loading to false
         if ($scope.txFiles.length <= i) {
           $scope.loading = false;
         }
-      })
+      });
 
       $scope.gotoLogin = function() {
         $location.path('/login');
@@ -88,8 +88,8 @@ SubmitTab.prototype.angular = function (module)
 
       // Parent broadcasts the submit event
       $scope.$on('submit', function() {
-        // Don't submit it more then once
-        if ($scope.state == 'done') {
+        // Transaction is done if it failed, or if it was submitted successfully
+        if ($scope.state === 'done' || $scope.state === 'error') {
           $scope.$emit('submitted');
           return;
         }
@@ -119,6 +119,8 @@ SubmitTab.prototype.angular = function (module)
           request.message.tx_blob = txBlob;
           request.callback(function(err, response){
             $scope.$apply(function(){
+              // broadcast submit event once we get callback from ripple-lib
+              $scope.$emit('submit');
               if (err) {
                 console.log('err', err);
                 $scope.state = 'error';
@@ -127,10 +129,7 @@ SubmitTab.prototype.angular = function (module)
 
               $scope.state = 'done';
               $scope.result = response.engine_result;
-
-              // Tell the parent about the completion
-              $scope.$emit('submitted');
-            })
+            });
           });
           request.request();
         });
