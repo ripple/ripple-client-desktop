@@ -835,7 +835,7 @@ TradeTab.prototype.angular = function(module)
       }, {
         currency: ($scope.order.second_currency.has_interest() ? $scope.order.second_currency.to_hex() : $scope.order.second_currency.get_iso()),
         issuer: $scope.order.second_issuer
-      }, $scope.address);
+      });
 
       $scope.orderbookState = 'ready';
     }

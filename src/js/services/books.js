@@ -13,34 +13,36 @@ function(net, $q, $scope, $filter, $id) {
 
   var rowCount;
 
-  function loadBook(gets, pays, taker) {
+  function loadBook(gets, pays) {
     return net.remote.book({
       currency_gets: gets.currency,
       issuer_gets: gets.issuer,
       currency_pays: pays.currency,
-      issuer_pays: taker
+      issuer_pays: pays.issuer
     });
   }
 
   function filterRedundantPrices(data, action, combine) {
     var max_rows = Options.orderbook_max_rows || 100;
 
-    var price;
     var lastprice;
     var current;
     var rpamount = $filter('rpamount');
-    var newData = jQuery.extend(true, {}, data);
+    var newData = $.extend(true, {}, data);
 
     rowCount = 0;
     newData = _.values(_.compact(_.map(newData, function(d, i) {
 
       // This check is redundant, but saves the CPU some work
-      if (rowCount > max_rows) return;
+      if (rowCount > max_rows) {
+        return false;
+      }
 
       // rippled has a bug where it shows some unfunded offers
       // We're ignoring them
-      if (d.taker_gets_funded === "0" || d.taker_pays_funded === "0")
-        return;
+      if (d.taker_gets_funded === '0' || d.taker_pays_funded === '0') {
+        return false;
+      }
 
       if (d.TakerGets.value) {
         d.TakerGets.value = d.taker_gets_funded;
@@ -58,24 +60,25 @@ function(net, $q, $scope, $filter, $id) {
       d.TakerPays = Amount.from_json(d.TakerPays);
 
       // You never know
-      if (!d.TakerGets.is_valid() || !d.TakerPays.is_valid())
-        return;
+      if (!d.TakerGets.is_valid() || !d.TakerPays.is_valid()) {
+        return false;
+      }
 
-      if (action === "asks") {
-        d.price = Amount.from_quality(d.BookDirectory,
-                                      d.TakerPays.currency(),
-                                      d.TakerPays.issuer(), {
-          base_currency: d.TakerGets.currency(),
-          reference_date: new Date()
-        });
+      if (action === 'asks') {
+        d.price = Amount.
+          from_quality(d.BookDirectory, d.TakerPays.currency(),
+          d.TakerPays.issuer(), {
+            base_currency: d.TakerGets.currency(),
+            reference_date: new Date()
+          });
       } else {
-        d.price = Amount.from_quality(d.BookDirectory,
-                                      d.TakerGets.currency(),
-                                      d.TakerGets.issuer(), {
-          inverse: true,
-          base_currency: d.TakerPays.currency(),
-          reference_date: new Date()
-        });
+        d.price = Amount.
+          from_quality(d.BookDirectory, d.TakerGets.currency(),
+          d.TakerGets.issuer(), {
+            inverse: true,
+            base_currency: d.TakerPays.currency(),
+            reference_date: new Date()
+          });
       }
 
       var price = rpamount(d.price, {
@@ -84,7 +87,7 @@ function(net, $q, $scope, $filter, $id) {
       });
 
       // Don't combine current user's orders.
-      if (d.Account == $id.account) {
+      if (d.Account === $id.account) {
         d.my = true;
       }
 
@@ -94,39 +97,46 @@ function(net, $q, $scope, $filter, $id) {
           newData[current].TakerGets = Amount.from_json(newData[current].TakerGets).add(d.TakerGets);
         }
         d = false;
-      } else current = i;
+      } else {
+        current = i;
+      }
 
-      if (!d.my)
+      if (!d.my) {
         lastprice = price;
+      }
 
-      if (d) rowCount++;
+      if (d) {
+        rowCount++;
+      }
 
-      if (rowCount > max_rows) return false;
+      if (rowCount > max_rows) {
+        return false;
+      }
 
       return d;
     })));
 
-    var key = action === "asks" ? "TakerGets" : "TakerPays";
+    var key = action === 'asks' ? 'TakerGets' : 'TakerPays';
     var sum;
-    _.forEach(newData, function (order, i) {
-      if (sum) sum = order.sum = sum.add(order[key]);
-      else sum = order.sum = order[key];
+    _.forEach(newData, function (order) {
+      if (sum) {
+        sum = order.sum = sum.add(order[key]);
+      } else {
+        sum = order.sum = order[key];
+      }
     });
 
     return newData;
   }
 
   return {
-    get: function(first, second, taker) {
-      var asks = loadBook(first, second, taker);
-      var bids = loadBook(second, first, taker);
-     
-      asks._shouldSubscribe = true;
-      bids._shouldSubscribe = true;
-      
+    get: function(first, second) {
+      var asks = loadBook(first, second);
+      var bids = loadBook(second, first);
+
       var model = {
-        asks: filterRedundantPrices(asks.offersSync(), 'asks', true),
-        bids: filterRedundantPrices(bids.offersSync(), 'bids', true)
+        asks: filterRedundantPrices(asks.getOffersSync(), 'asks', true),
+        bids: filterRedundantPrices(bids.getOffersSync(), 'bids', true)
       };
 
       function handleAskModel(offers) {
