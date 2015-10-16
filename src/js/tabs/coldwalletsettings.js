@@ -18,8 +18,8 @@ ColdwalletSettingsTab.prototype.generateHtml = function() {
 
 
 ColdwalletSettingsTab.prototype.angular = function(module) {
-  module.controller('ColdwalletSettingsCtrl', ['$scope', 'rpId', 'rpFileDialog',
-  function ($scope, id, fileDialog) {
+  module.controller('ColdwalletSettingsCtrl', ['$scope', '$rootScope', 'rpId', 'rpFileDialog',
+  function ($scope, $rootScope, id, fileDialog) {
 
     if (!id.loginStatus) {
       id.goId();
@@ -40,6 +40,15 @@ ColdwalletSettingsTab.prototype.angular = function(module) {
           });
         });
       });
+    };
+
+    // Update the blob with the new seq. and network fee
+    $scope.saveSeqFee = function() {
+      $rootScope.userBlob.set('/sequence', $scope.sequence);
+      $rootScope.userBlob.set('/fee', $scope.fee);
+      $rootScope.sequence = $rootScope.userBlob.data.sequence;
+      $rootScope.fee = $rootScope.userBlob.data.fee;
+      $scope.saved = true;
     };
   }]);
 };
