@@ -69,7 +69,9 @@ ColdWalletTab.prototype.angular = function (module) {
 
     // If we are online, fetch account info
     if ($scope.onlineMode) {
-      $scope.networkFee = api.getFee() * 1000000;
+
+
+      $scope.networkFee = api.getFee();
 
       // Get account trust flags
       api.getSettings(address)
