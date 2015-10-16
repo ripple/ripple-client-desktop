@@ -1,8 +1,11 @@
 section.single.ddpage.content(ng-controller="ColdWalletCtrl")
+  group.error(ng-show="accountError") Error reading account information. {{accountErrorMessage}}
+    hr
+
   group.disconnected(ng-hide="connected")
     p.literal(l10n) You have to be online to see this screen
 
-  group(ng-if="connected")
+  group(ng-if="connected", ng-hide="accountError")
     h4 You are viewing the cold wallet information for account {{address}}.
       p Always store the secret key for the cold wallet on a machine that is entirely offline.
     hr
