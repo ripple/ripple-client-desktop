@@ -208,8 +208,11 @@ section.col-xs-12.content(ng-controller="HistoryCtrl")
                 span.issuer(ng-show="effect.amount.is_native()")
                 span.amount(data-label="Amount", rp-pretty-amount="effect.amount")
                 span.balance(data-label="Final balance", rp-pretty-amount="effect.balance")
+            span.hash(rp-popover, rp-popover-placement="left", rp-popover-trigger="hover", rp-popover-delay
+              l10n-rp-popover-content="{{copyTooltip}}")
+              p.hash-text(ng-click="copy()") Hash: {{copyFeedback || entry.hash}}
+                input.text-copy-helper(value="{{entry.hash}}")
             .links
-              a.txLink(rp-link-tx="entry.hash", l10n) Transaction details
               a.addLink(href="#/contact?to={{entry.transaction.counterparty}}", rp-no-propagate
                 ng-show="entry.transaction.counterparty && !(entry.transaction.counterparty | rponlycontactname)", l10n)
                 | Add
