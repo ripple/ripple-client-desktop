@@ -152,6 +152,19 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                       | Currency field is required
               .row(ng-show="advanced_feature_switch")
                 .col-xs-4.allow-rippling
+                  label(for="trust_tfSetfAuth")
+                    select#trust_tfSetfAuth(
+                      name='trust_tfSetfAuth',
+                      ng-model='authFlag', ng-disabled='onlineMode && disallowAuth')
+                      option(value='') No change to auth
+                      option(value='tfSetfAuth') Authorize trust line
+                  i.fa.fa-question-circle.help-icon(
+                    rp-popover
+                    rp-popover-placement="bottom"
+                    l10n-rp-popover-title="Set Authorization"
+                    rp-popover-trigger="click"
+                    l10n-data-content="{{setAuthMessage}} <a href=https://ripple.com/build/transactions/#trustset-flags target=_blank>More information</a>")
+                .col-xs-4.allow-rippling
                   label(for="trust_allowrippling")
                     select#trust_allowrippling(
                       name='trust_allowrippling',
@@ -165,19 +178,6 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     l10n-rp-popover-title="Allow Rippling"
                     rp-popover-trigger="click"
                     l10n-data-content="Allow this trust line's balances to be transferred to another issuer you connect to. <a href=https://ripple.com/knowledge_center/understanding-the-noripple-flag target=_blank>More information</a>")
-                .col-xs-4.allow-rippling
-                  label(for="trust_tfSetfAuth")
-                    select#trust_tfSetfAuth(
-                      name='trust_tfSetfAuth',
-                      ng-model='authFlag', ng-disabled='onlineMode && disallowAuth')
-                      option(value='') No change to auth
-                      option(value='tfSetfAuth') Authorize trust line
-                  i.fa.fa-question-circle.help-icon(
-                    rp-popover
-                    rp-popover-placement="bottom"
-                    l10n-rp-popover-title="Set Authorization"
-                    rp-popover-trigger="click"
-                    l10n-data-content="{{setAuthMessage}} <a href=https://ripple.com/build/transactions/#trustset-flags target=_blank>More information</a>")
                 .col-xs-4.allow-rippling
                   label(for="trust_tfSetFreeze")
                     select#trust_tfSetFreeze(
@@ -301,6 +301,9 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
           .col-xs-12.col-sm-4.col-md-3.actions.btn-add-trust
             a.btn.btn-primary.btn-sm.btn-block.sign(ng-click='toggle_form()', ng-show='!addform_visible && ((account.Balance && connected) || !onlineMode)',
             ng-disabled='addform_visible', l10n) Add trust line
+
+        div.disconnected(ng-hide="onlineMode")
+          p.literal(l10n) Trust line information is not displayed in offline mode    
 
         .currencyBox(ng-repeat="entry in accountLines", ng-class="'currency-' + (entry.components[0].currency | lowercase)")
           .row.currencyTitle
