@@ -178,7 +178,7 @@ SendTab.prototype.angular = function (module)
       if (!RippleAddressCodec.isValidAddress(recipient)) return;
 
       if (!$scope.onlineMode) {
-        $scope.send.currency = 'XRP';
+        $scope.send.currency = '';
         $scope.send.path_status  = "none";
         $scope.send.currency_choices = ['XRP'];
         $scope.send.recipient_resolved = true;

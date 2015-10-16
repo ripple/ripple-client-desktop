@@ -92,6 +92,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
       label(for='send_amount', l10n) Recipient will receive
       .row.amount(ng-if="!send.currency_force")
         .col-xs-3.col-sm-2.col-md-2
+          .description Amount
           input.form-control#send_amount(
           name='send_amount', type='text'
           ng-model='send.amount'
@@ -103,6 +104,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
           rp-amount-xrp-limit
           rp-amount-xrp-limit-currency='{{send.currency}}')
         .col-xs-9.col-sm-6.col-md-4(ng-show="onlineMode")
+          .description Currency
           input.form-control.currency#send_amount_currency(
           name='send_amount_currency', type='text'
           rp-combobox="{{send.currency_choices}}", rp-combobox-select
@@ -112,6 +114,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
           rp-autofill-currency-fullname
           rp-restrict-currencies='{{send.restrict_currencies}}')
         .col-xs-9.col-sm-6.col-md-4(ng-show="!onlineMode")  
+          .description Currency
           input.form-control.currency#send_amount_currency(
             name='send_amount_currency', type='text'
             ng-model='send.currency')
