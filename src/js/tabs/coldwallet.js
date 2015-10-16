@@ -20,6 +20,7 @@ ColdWalletTab.prototype.angular = function (module) {
   module.controller('ColdWalletCtrl', ['$rootScope', '$location', 'rpId', 'rpApi',
   function ($scope, $location, id, api) {
     $scope.sequenceNumber = 1;
+    $scope.accountError = false;
 
     // Parse the transaction returned by ripple-lib
     // Return a human-readable message for the UI.
@@ -68,7 +69,9 @@ ColdWalletTab.prototype.angular = function (module) {
 
     // If we are online, fetch account info
     if ($scope.onlineMode) {
-      $scope.networkFee = api.getFee() * 1000000;
+
+
+      $scope.networkFee = api.getFee();
 
       // Get account trust flags
       api.getSettings(address)
@@ -126,6 +129,11 @@ ColdWalletTab.prototype.angular = function (module) {
       })
       .catch(function(err) {
         console.log('Error fetching account informtion: ', JSON.stringify(err));
+        $scope.$apply(function() {
+          $scope.accountError = true;
+          // If we can't get account info, display the reason why
+          $scope.accountErrorMessage = err.message;
+        });
       });
 
       // Fetch the most recent transaction for this account (if exists)
@@ -144,6 +152,9 @@ ColdWalletTab.prototype.angular = function (module) {
       })
       .catch(function(e) {
         console.log('error fetching transactions: ', JSON.stringify(e));
+        $scope.$apply(function() {
+          $scope.accountError = true;
+        });
       });
 
       // Fetch account balances
@@ -155,6 +166,9 @@ ColdWalletTab.prototype.angular = function (module) {
       })
       .catch(function(err) {
         console.log('Error fetching account balance: ', JSON.stringify(err));
+        $scope.$apply(function() {
+          $scope.accountError = true;
+        });
       });
     }
 
