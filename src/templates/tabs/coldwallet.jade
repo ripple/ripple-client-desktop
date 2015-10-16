@@ -9,7 +9,8 @@ section.single.ddpage.content(ng-controller="ColdWalletCtrl")
     h4 You are viewing the cold wallet information for account {{address}}.
       p Always store the secret key for the cold wallet on a machine that is entirely offline.
     hr
-    p {{lastTxn}} The transaction was validated at {{txnTime | date:'yyyy-MM-dd HH:mm:ss Z'}}.
+    p(ng-hide="transactionError") {{lastTxn}} The transaction was validated at {{txnTime | date:'yyyy-MM-dd HH:mm:ss Z'}}.
+    p.error(ng-show="transactionError") {{transactionErrorMessage}}
     hr
     // Account information
     h Account Information
