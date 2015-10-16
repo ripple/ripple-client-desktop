@@ -52,7 +52,7 @@ AdvancedTab.prototype.angular = function(module)
       if (!store.disabled) {
         store.set('ripple_settings', angular.toJson($scope.options));
       }
-    }
+    };
 
     $scope.saveBlob = function() {
 
@@ -87,12 +87,12 @@ AdvancedTab.prototype.angular = function(module)
       $scope.editAcctOptions = false;
     };
 
-    $scope.$on('$blobUpdate', function(){
+    $scope.$on('$blobUpdate', function() {
       $scope.passwordProtection = !$scope.userBlob.data.persistUnlock;
     });
     
     $scope.setPasswordProtection = function () {
-      $keychain.setPasswordProtection(!$scope.passwordProtection, function(err, resp){
+      $keychain.setPasswordProtection(!$scope.passwordProtection, function(err, resp) {
         if (err) {
           $scope.passwordProtection = !$scope.PasswordProtection;
           //TODO: report errors to user
@@ -109,7 +109,7 @@ AdvancedTab.prototype.angular = function(module)
       // Set editing to true
       $scope.editing = true;
       
-    }
+    };
 
   }]);
 
@@ -122,11 +122,14 @@ AdvancedTab.prototype.angular = function(module)
         $scope.options.server.servers.splice($scope.index,1);
 
         $scope.saveSetings();
-      }
+        if (!$scope.server.isEmptyServer) {
+          location.reload();
+        }
+      };
 
       $scope.hasRemove = function () {
         return !$scope.server.isEmptyServer && $scope.options.server.servers.length !== 1;
-      }
+      };
 
       $scope.cancel = function () {
         if ($scope.server.isEmptyServer) {
@@ -137,11 +140,11 @@ AdvancedTab.prototype.angular = function(module)
         $scope.editing = false;
         $scope.server = $.extend({ '$$hashKey' : $scope.server.$$hashKey }, $scope.optionsBackup.server.servers[$scope.index]);
         Options.server.servers[$scope.index] = $.extend({}, $scope.optionsBackup.server.servers[$scope.index]);
-      }
+      };
 
       $scope.noCancel = function () {
         return $scope.server.isEmptyServer && $scope.options.server.servers.length === 1;
-      }
+      };
 
       $scope.save = function () {
         $scope.server.isEmptyServer = false;
