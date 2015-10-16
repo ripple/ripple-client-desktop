@@ -52,6 +52,11 @@ if (store.enabled) {
     });
   }
 
+  // The new ripple-lib API should use the same servers as the deprecated API
+  Options.api.servers = _.map(Options.server.servers, function(server) {
+    return 'wss://' + server.host + ':' + server.port;
+  });
+
   if (settings.advanced_feature_switch) {
     Options.advanced_feature_switch = settings.advanced_feature_switch;
   }

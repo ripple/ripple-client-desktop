@@ -153,6 +153,19 @@ ColdWalletTab.prototype.angular = function (module) {
       .catch(function(e) {
         console.log('error fetching transactions: ', JSON.stringify(e));
         $scope.$apply(function() {
+          $scope.transactionError = true;
+          $scope.transactionErrorMessage = 'No transaction history available';
+        });
+      });
+
+      api.getAccountInfo(address)
+      .then(function(info) {
+        // If we have a sequence number from the network, display to user
+        $scope.sequenceNumber = info.sequence;
+      })
+      .catch(function(err) {
+        console.log('Error fetching account info: ', err);
+        $scope.$apply(function() {
           $scope.accountError = true;
         });
       });
