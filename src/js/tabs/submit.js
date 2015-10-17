@@ -90,11 +90,6 @@ SubmitTab.prototype.angular = function (module)
 
       // Parent broadcasts the submit event
       $scope.$on('submit', function() {
-        // Transaction is done if it failed, or if it was submitted successfully
-        if ($scope.state === 'done' || $scope.state === 'error') {
-          $scope.$emit('submitted');
-          return;
-        }
 
         // Show loading...
         $scope.state = 'pending';
@@ -121,16 +116,14 @@ SubmitTab.prototype.angular = function (module)
           request.message.tx_blob = txBlob;
           request.callback(function(submitErr, response) {
             $scope.$apply(function() {
-              // broadcast submit event once we get callback from ripple-lib
-              $scope.$emit('submit');
               if (submitErr) {
-                console.log('err', submitErr);
+                console.log('Error submitting transaction: ', submitErr);
                 $scope.state = 'error';
-                return;
+              } else {
+                $scope.state = 'done';
+                $scope.result = response.engine_result;
               }
-
-              $scope.state = 'done';
-              $scope.result = response.engine_result;
+              $scope.$emit('submitted');
             });
           });
           request.request();
