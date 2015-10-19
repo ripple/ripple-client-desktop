@@ -1,9 +1,9 @@
 {
-  "name": "RippleClient",
+  "name": "RippleAdminConsole",
   "version": "1.2.1",
   "description": "Desktop client for the Ripple payment network",
   "author": {
-    "name": "Ripple Labs, Inc.",
+    "name": "Ripple, Inc.",
     "email": "info@ripple.com",
     "url": "https://ripple.com/"
   },

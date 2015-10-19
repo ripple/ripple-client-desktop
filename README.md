@@ -12,7 +12,7 @@
 - Run `gulp` in your command line for development
 
 - Run `gulp packages` in your command line for the production ready client
-- Your desktop client is in the `packages/RippleClient` directory
+- Your desktop client is in the `packages/RippleAdminConsole` directory
 
 ### Note
 - There are breaking changes in the c++ API when using node version 4. You should use node version 0.12.

@@ -178,7 +178,7 @@ app.run(['$rootScope', '$route', '$routeParams', 'rpNW',
   function ($rootScope, $route, $routeParams, rpNW)
   {
     // This is the desktop client
-    $rootScope.productName = 'Ripple Client';
+    $rootScope.productName = 'Ripple Admin Console';
 
     // Global reference for debugging only (!)
     if ("object" === typeof rippleclient) {
@@ -244,7 +244,7 @@ var win = gui.Window.get();
 // Edit menu
 if (process.platform === "darwin") {
   var mb = new gui.Menu({type: 'menubar'});
-  mb.createMacBuiltin('Ripple Client', {
+  mb.createMacBuiltin('Ripple Admin Console', {
     hideEdit: false
   });
   gui.Window.get().menu = mb;
