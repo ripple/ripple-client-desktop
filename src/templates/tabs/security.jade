@@ -35,44 +35,55 @@ section.col-xs-12.content(ng-controller="SecurityCtrl")
               .col-md-1
                 a(href="", ng-click="showRegularKey = true", ng-hide="showRegularKey", l10n) Show
                 a(href="", ng-click="showRegularKey = false", ng-show="showRegularKey", l10n) Hide
-              .col-md-3(ng-show="userBlob.data.masterkey")
-                //- TODO some help here, informing that the regular wallet file doesn't contain the master key
-                a(href="", ng-click="saveRegularKey()", l10n) Save Wallet File
+              //- .col-md-3(ng-show="userBlob.data.masterkey")
+              //-   //- TODO some help here, informing that the regular wallet file doesn't contain the master key
+              //-   a(href="", ng-click="saveRegularKey()", l10n) Save Wallet File
+              rp-popup(rp-popup-on-open="saveRegularKey()", ng-show="userBlob.data.masterkey") 
+                .col-md-3
+                  a(href="", rp-popup-link, ng-disabled='trustForm.$invalid || verifying', l10n) Save Wallet File
+                div.connectModal(rp-popup-content, ng-show="mode.register_regular_key_wallet")
+                  .modal-header
+                    .navbar-brand.hidden-sm.modal-logo#logo
+                    .modal-title(l10n) Encrypt
+                  .modal-body
+                    div.modal-prompt(l10n) 
+                      div(l10n-inc) Encrypt your regular key file: 
+                    form(name='encryptForm', ng-submit='encryptRegularKey()')
+                      .form-group(ng-class="{'field-error': 'weak' === strength}")
+                        label(for='register_password1', l10n) Password
+                        input.form-control#register_password1(
+                        name='register_password1', type='password', autocomplete="off"
+                        ng-model="password1"
+                        rp-strong-password, required, rp-same-in-set="passwordSet", rp-focus)
+                        p(ng-show="strength=='weak'")
+                          span(l10n) Your password is weak. It is not a mix of letters, numbers and symbols.
+                      .form-group(ng-class="{'field-error': encryptForm.register_password1.$error.rpSameInSet && encryptForm.register_password2.$dirty}")
+                          label(for='register_password2', l10n) Confirm password
+                          input.form-control#register_password2(
+                          name='register_password2', autocomplete="off"
+                          type='password'
+                          ng-model="password2"
+                          required, rp-same-in-set="passwordSet")
+                          p(ng-show="encryptForm.register_password1.$error.rpSameInSet && encryptForm.register_password2.$dirty")
+                            span(l10n) Passwords do not match
+                        div(ng-show="")    
+                      .form-group
+                        .strength(class="{{strength}}") {{strength}}  
+                    div.modal-buttons
+                      button.modal-btn.btn.btn-default.btn-success.btn-md(data-dismiss="modal", ng-click="encryptRegularKey()",
+                        rp-spinner='{{loading ? 4 : null}}', ng-disabled='encryptForm.$invalid || submitLoading')
+                        span(ng-show="loading", l10n) Loading...
+                        span(ng-hide="loading", l10n) Confirm
+                      button.modal-btn.btn.btn-cancel.btn-md.btn-cancel(data-dismiss="modal",
+                        ng-click='toggle_form()', ng-hide="loading", l10n) cancel    
               .col-md-1(ng-show="userBlob.data.masterkey")
                 a(href="", ng-click="removeRegularKey()", l10n) Remove
+              
         //- Offline Sending
         hr
         group.mode-status(ng-show='mode.offlineSending')
           signed-transaction(data="{{signedTransaction}}", txJSON="{{txJSON}}", hash="{{hash}}")
           button.btn.btn-small.btn-primary(ng-click="mode.offlineSending = false") Close
 
-        p(ng-show="mode.register_regular_key_wallet", l10n) Encrypt your regular key file: {{regularWallet}}
-        form(name='encryptForm', ng-submit='encryptRegularKey()', ng-show="mode.register_regular_key_wallet")
-          label.hide(for='register_password1', l10n) Wallet file
-          .form-group(ng-class="{'field-error': 'weak' === strength}")
-            label(for='register_password1', l10n) Password
-            input.form-control#register_password1(
-            name='register_password1', type='password', autocomplete="off"
-            ng-model="password1"
-            rp-strong-password, required, rp-same-in-set="passwordSet", rp-focus)
-            p(ng-show="strength=='weak'")
-              span(l10n) Your password is weak. It is not a mix of letters, numbers and symbols.
-          .form-group(ng-class="{'field-error': encryptForm.register_password1.$error.rpSameInSet && encryptForm.register_password2.$dirty}")
-              label(for='register_password2', l10n) Confirm password
-              input.form-control#register_password2(
-              name='register_password2', autocomplete="off"
-              type='password'
-              ng-model="password2"
-              required, rp-same-in-set="passwordSet")
-              p(ng-show="encryptForm.register_password1.$error.rpSameInSet && encryptForm.register_password2.$dirty")
-                span(l10n) Passwords do not match
-            div(ng-show="")
-          .form-group
-                .strength(class="{{strength}}") {{strength}}
-          .submit-btn-container
-            button.btn.btn-block.btn-success(type='submit'
-            ng-disabled='encryptForm.$invalid || submitLoading'
-            rp-spinner='{{submitLoading ? 4 : null}}', l10n) Encrypt regular key file
-            button.btn.btn-block.btn-primary(ng-click="mode.register_regular_key_wallet = false") Close
         alert.alert-success(ng-show="mode.saved_regular_key_wallet", l10n) Regular key wallet saved: {{regularWallet}}.
         alert.alert-danger(ng-show="mode.error_regular_key_wallet", l10n) Error saving wallet.  Please try again.
