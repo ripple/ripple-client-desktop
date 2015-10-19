@@ -161,3 +161,4 @@ globals:
   RippleAddressCodec: false
   sjcl: false
   store: false
+  RippleBinaryCode: false
