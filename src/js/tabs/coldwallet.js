@@ -113,7 +113,7 @@ ColdWalletTab.prototype.angular = function (module) {
                 warning += 'Rippling flag on line differs from flag on account root\n';
               }
               if (!!line.specification.authorized !== requireAuth) {
-                warning += 'Authorization differs from authorization on account root';
+                warning += 'Cold wallet requires authorization, but account is not authorized.';
               }
               line.warning = warning;
               // Convert to boolean so undefined displays as false
