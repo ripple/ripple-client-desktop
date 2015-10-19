@@ -42,6 +42,7 @@
     "node-po": "~0.1.2",
     "nw-builder": "^2.0.2",
     "ripple-address-codec": "^2.0.1",
+    "ripple-binary-codec": "0.0.6",
     "ripple-lib": "0.13.0-rc14",
     "setimmediate": "^1.0.2",
     "sjcl": "^1.0.3",
@@ -51,8 +52,7 @@
   },
   "license": "ISC",
   "scripts": {
-    "test": "./node_modules/.bin/karma start test/karma.conf.js",
-    "test-travis": "./node_modules/.bin/karma start test/karma.conf.js --single-run --browsers Firefox"
+    "postinstall": "cd node_modules/sjcl; ./configure --with-all --compress=none; make"
   },
   "repository": {
     "type": "git",
@@ -101,8 +101,5 @@
     "mime": "~1.2.11",
     "nw": "^0.12.3",
     "run-sequence": "^1.1.2"
-  },
-  "scripts": {
-    "postinstall": "cd node_modules/sjcl; ./configure --with-all --compress=none; make"
   }
 }

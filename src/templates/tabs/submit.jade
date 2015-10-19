@@ -16,15 +16,23 @@ section.col-xs-12.content(ng-controller="SubmitCtrl")
           .col-md-4
             .pull-right
               a(ng-hide="state", href="", ng-click="remove()") Remove
-              span(ng-show="state == 'pending'") Pending...
+              div(ng-show="state == 'pending'") Pending...
               //- TODO better error messages
-              span(ng-show="state == 'error'")
+              div.failed(ng-show="state == 'error'")
                 | Something went wrong
                 a(ng-click="remove()")
                   i.fa.fa-times
               //- TODO show better messages
-              span(ng-show="state == 'done'")
-                | {{result}} 
+              div.failed(ng-show="state == 'done'")
+                | {{result}}
+                a(ng-click="remove()")
+                  i.fa.fa-times
+              div.failed(ng-show="state == 'unfunded'")
+                | Fund {{account}} with XRP.
+                a(ng-click="remove()")
+                  i.fa.fa-times
+              div.success(ng-show="state == 'success'")
+                | Success.
                 a(ng-click="remove()")
                   i.fa.fa-times
 

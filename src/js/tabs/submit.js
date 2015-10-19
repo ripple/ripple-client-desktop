@@ -120,7 +120,23 @@ SubmitTab.prototype.angular = function (module)
                 console.log('Error submitting transaction: ', submitErr);
                 $scope.state = 'error';
               } else {
-                $scope.state = 'done';
+                if (response.engine_result_code === -96) {
+                  // Sending account is unfunded
+                  $scope.state = 'unfunded';
+                  // Parse account from tx blob and display to user
+                  var account;
+                  try {
+                    account = RippleBinaryCode.decode(txBlob).Account;
+                  } catch(e) {
+                    account = '';
+                    console.log('Unable to convert tx blob to JSON: ', e);
+                  }
+                  $scope.account = account;
+                } else if (response.engine_result_code === 0) {
+                  $scope.state = 'success';
+                } else {
+                  $scope.state = 'done';
+                }
                 $scope.result = response.engine_result;
               }
               $scope.$emit('submitted');
