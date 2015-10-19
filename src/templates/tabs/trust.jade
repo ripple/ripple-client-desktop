@@ -224,7 +224,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
               .row.delete-trust
                 .col-xs-6.col-sm-6.col-md-8.col-lg-9(ng-show='balance !== "0" && orderbookStatus === "exists" && onlineMode')
                   rp-confirm(
-                    action-text="Are you sure you want to remove this trust line? Ripple Client will attempt to convert the remaining balance of {{ trust.balance }} {{ trust.currency }} into XRP. This action can't be undone."
+                    action-text="Are you sure you want to remove this trust line? Ripple Admin Console will attempt to convert the remaining balance of {{ trust.balance }} {{ trust.currency }} into XRP. This action can't be undone."
                     action-button-text="Convert balance and remove"
                     action-button-css="btn btn-default btn-danger"
                     action-function="delete_line()"
@@ -234,7 +234,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                       button.btn.btn-block.btn-danger.btn-xs.submit(type="button", ng-click="load_orderbook()", l10n) Remove
                 .col-xs-6.col-sm-6.col-md-8.col-lg-9(ng-show='balance !== "0" && orderbookStatus === "not" && onlineMode')
                   rp-confirm(
-                    action-text="Are you sure you want to remove this trust line? Ripple Client will return the balance of {{ trust.balance }} {{ trust.currency }} to the issuer. This action can't be undone."
+                    action-text="Are you sure you want to remove this trust line? Ripple Admin Console will return the balance of {{ trust.balance }} {{ trust.currency }} to the issuer. This action can't be undone."
                     action-button-text="Return balance and remove"
                     action-button-css="btn btn-default btn-danger"
                     action-function="delete_line()"
@@ -363,7 +363,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                         .col-md-7.col-sm-7.col-xs-6
                           span(ng-show='trust.balance !== "0" && orderbookStatus === "exists" && onlineMode')
                             rp-confirm(
-                            action-text="Are you sure you want to remove this trust line? Ripple Client will attempt to convert the remaining balance of {{ trust.balance }} {{ currency }} into XRP. This action can't be undone."
+                            action-text="Are you sure you want to remove this trust line? Ripple Admin Console will attempt to convert the remaining balance of {{ trust.balance }} {{ currency }} into XRP. This action can't be undone."
                             action-button-text="Convert balance and remove"
                             action-button-css="btn btn-default btn-danger custom-btn"
                             action-function="delete_account()"
@@ -373,7 +373,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                               button.btn.btn-block.btn-danger.submit(type="button", ng-click="load_orderbook()", l10n) Remove
                           span(ng-show='trust.balance !== "0" && orderbookStatus === "not" && onlineMode')
                             rp-confirm(
-                            action-text="Are you sure you want to remove this trust line? Ripple Client will return the balance of {{ trust.balance }} {{ currency }} to the issuer. This action can't be undone."
+                            action-text="Are you sure you want to remove this trust line? Ripple Admin Console will return the balance of {{ trust.balance }} {{ currency }} to the issuer. This action can't be undone."
                             action-button-text="Return balance and remove"
                             action-button-css="btn btn-default btn-danger custom-btn"
                             action-function="delete_account()"
@@ -451,7 +451,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                           .row.text-right
                             .col-xs-12(ng-show='trust.balance !== "0" && orderbookStatus === "exists" && onlineMode')
                               rp-confirm(
-                              action-text="Are you sure you want to remove this trust line? Ripple Client will attempt to convert the remaining balance of {{ trust.balance }} {{ currency }} into XRP. This action can't be undone."
+                              action-text="Are you sure you want to remove this trust line? Ripple Admin Console will attempt to convert the remaining balance of {{ trust.balance }} {{ currency }} into XRP. This action can't be undone."
                               action-button-text="Convert balance and remove"
                               action-button-css="btn btn-default btn-danger"
                               action-function="delete_account()"
@@ -461,7 +461,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                                 button.btn.btn-block.btn-danger.btn-xs.submit(type="button", ng-click="load_orderbook()", l10n) Remove
                             .col-xs-12(ng-show='trust.balance !== "0" && orderbookStatus === "not" && onlineMode')
                               rp-confirm(
-                              action-text="Are you sure you want to remove this trust line? Ripple Client will return the balance of {{ trust.balance }} {{ currency }} to the issuer. This action can't be undone."
+                              action-text="Are you sure you want to remove this trust line? Ripple Admin Console will return the balance of {{ trust.balance }} {{ currency }} to the issuer. This action can't be undone."
                               action-button-text="Return balance and remove"
                               action-button-css="btn btn-default btn-danger"
                               action-function="delete_account()"

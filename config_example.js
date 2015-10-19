@@ -1,5 +1,5 @@
 /**
- * Ripple Client Configuration
+ * Ripple Admin Console Configuration
  *
  * Copy this file to config.js and edit to suit your preferences.
  */

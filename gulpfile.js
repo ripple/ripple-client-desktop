@@ -112,7 +112,7 @@ gulp.task('webpack:dist', function() {
         filename: "app.js"
       },
       plugins: [
-        new BannerPlugin('Ripple Client v' + meta.version + '\nCopyright (c) ' + new Date().getFullYear() + ' ' + meta.author.name + '\nLicensed under the ' + meta.license + ' license.'),
+        new BannerPlugin('Ripple Admin Console v' + meta.version + '\nCopyright (c) ' + new Date().getFullYear() + ' ' + meta.author.name + '\nLicensed under the ' + meta.license + ' license.'),
         new UglifyJsPlugin({
           compress: {
             warnings: false
