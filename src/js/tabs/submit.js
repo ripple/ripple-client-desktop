@@ -142,7 +142,9 @@ SubmitTab.prototype.angular = function (module)
               $scope.$emit('submitted');
             });
           });
-          request.request();
+          if (!request.requested) {
+            request.request();
+          }
         });
       });
     }
