@@ -126,7 +126,7 @@ SubmitTab.prototype.angular = function (module)
                   // Parse account from tx blob and display to user
                   var account;
                   try {
-                    account = RippleBinaryCode.decode(txBlob).Account;
+                    account = RippleBinaryCodec.decode(txBlob).Account;
                   } catch(e) {
                     account = '';
                     console.log('Unable to convert tx blob to JSON: ', e);
