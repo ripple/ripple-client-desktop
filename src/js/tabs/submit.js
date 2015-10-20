@@ -132,6 +132,10 @@ SubmitTab.prototype.angular = function (module)
                     console.log('Unable to convert tx blob to JSON: ', e);
                   }
                   $scope.account = account;
+                } else if (response.engine_result_code === -183) {
+                  // This could happen if, for example, the user opens a regular key wallet file 
+                  // and tries to submit a transaction, but the master key has revoked this regular key.
+                  $scope.state = 'bad_auth_master';
                 } else if (response.engine_result_code === 0) {
                   $scope.state = 'success';
                 } else {

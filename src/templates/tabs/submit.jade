@@ -31,6 +31,10 @@ section.col-xs-12.content(ng-controller="SubmitCtrl")
                 | Fund {{account}} with XRP.
                 a(ng-click="remove()")
                   i.fa.fa-times
+              div.failed(ng-show="state == 'bad_auth_master'")
+                | Key used to sign this tx doesn't match the master key, and no regular key exists.
+                a(ng-click="remove()")
+                  i.fa.fa-times      
               div.success(ng-show="state == 'success'")
                 | Success.
                 a(ng-click="remove()")
