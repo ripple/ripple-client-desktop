@@ -58,6 +58,8 @@ ColdWalletTab.prototype.angular = function (module) {
       } else if (txn.type === 'orderCancellation') {
         txnMessage += '. The order sequence was ' +
         txn.specification.orderSequence + '. ';
+      } else if (txn.type === 'settings') {
+        txnMessage += ' transaction.';
       }
       txnMessage += ' The fee was ' + txn.outcome.fee + ' XRP. ' +
       'The ID and sequence number of the transaction are ' + txn.id +
