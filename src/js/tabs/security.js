@@ -28,7 +28,7 @@ SecurityTab.prototype.angular = function (module) {
 
     if(!!store.get('walletfile')) {
       $scope.walletfile = store.get('walletfile');
-      
+
       // Get the name of the wallet from the entire file path
       var walletarray = $scope.walletfile.split("/");
       var length = walletarray.length;
@@ -287,7 +287,7 @@ SecurityTab.prototype.angular = function (module) {
           $scope.regularWallet = filename;
           $scope.mode.register_regular_key_wallet = true;
         });
-      }, $scope.walletname + '-regular.txt');
+      }, $scope.walletname + '-regular');
     };
 
     // Encrypt a new blob containing the regular key only
