@@ -18,6 +18,12 @@ section.col-xs-12.content(ng-controller="AdvancedCtrl")
               input(type="checkbox", bs-switch, ng-model="onlineMode", ng-change="switchOnlineMode()")
         form(name="maxnetworkfeeForm", ng-submit="saveMaxNetworkFee()")
           .descriptor(l10n) Maximum network fee
+            i.fa.fa-question-circle.help-icon(
+              rp-popover
+              rp-popover-placement="bottom"
+              l10n-rp-popover-title="Network Fee"
+              rp-popover-trigger="click"
+              l10n-data-content="The same network fee is used for each transaction in both online and offline mode.")
           .row.advanced-form-row(ng-hide="editMaxNetworkFee")
             .col-xs-9.col-sm-8.col-md-6
                 .description {{max_tx_network_fee_human}} {{xrp.code}}
