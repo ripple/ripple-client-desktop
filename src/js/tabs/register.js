@@ -54,7 +54,7 @@ RegisterTab.prototype.angular = function (module) {
           $scope.walletfile = filename;
           $scope.mode = 'register_empty_wallet';
         });
-      }, 'wallet.txt');
+      }, 'wallet');
     };
 
     $scope.submitSecretKeyForm = function(){

@@ -279,7 +279,7 @@ module.directive('fileUploadButton', function() {
         'margin-bottom': 14
       });
 
-      var fileInput = angular.element('<input type="file" ng-model="walletfile" nwsaveas="wallet.txt" />');
+      var fileInput = angular.element('<input type="file" ng-model="walletfile" nwsaveas="wallet" />');
 
       fileInput.bind('change', function () {
           scope.$apply(attributes.fileUploadButton);
