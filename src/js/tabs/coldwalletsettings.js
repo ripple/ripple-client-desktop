@@ -28,6 +28,9 @@ ColdwalletSettingsTab.prototype.angular = function(module) {
       $scope.defaultDirectory = $scope.userBlob.data.defaultDirectory;
     }
 
+    // Convert max fee to drops for comparison with UI
+    $scope.maxNetworkFee = ripple.Amount.from_json(Options.max_tx_network_fee).to_human() * 1000000;
+
     $scope.fileInputClick = function() {
       fileDialog.openDir(function(evt) {
         $scope.$apply(function() {
