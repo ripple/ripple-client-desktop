@@ -28,9 +28,6 @@ ColdwalletSettingsTab.prototype.angular = function(module) {
       $scope.defaultDirectory = $scope.userBlob.data.defaultDirectory;
     }
 
-    // Convert max fee to drops for comparison with UI
-    $scope.maxNetworkFee = ripple.Amount.from_json(Options.max_tx_network_fee).to_human() * 1000000;
-
     $scope.fileInputClick = function() {
       fileDialog.openDir(function(evt) {
         $scope.$apply(function() {
@@ -45,12 +42,11 @@ ColdwalletSettingsTab.prototype.angular = function(module) {
       });
     };
 
-    // Update the blob with the new seq. and network fee
-    $scope.saveSeqFee = function() {
+    // Update the blob with the new sequence
+    $scope.saveSequence = function() {
       $rootScope.userBlob.set('/sequence', $scope.sequence);
       $rootScope.userBlob.set('/fee', $scope.fee);
       $rootScope.sequence = $rootScope.userBlob.data.sequence;
-      $rootScope.fee = $rootScope.userBlob.data.fee;
       $scope.saved = true;
     };
   }]);

@@ -274,7 +274,8 @@ TrustTab.prototype.angular = function (module) {
           } else {
             tx.tx_json.Sequence = Number($scope.sequence);
             $scope.incrementSequence();
-            tx.tx_json.Fee = Number($scope.fee);
+            // Fee must be converted to drops
+            tx.tx_json.Fee = ripple.Amount.from_json(Options.max_tx_network_fee).to_human() * 1000000;
             tx.complete();
             try {
               $scope.signedTransaction = tx.sign().serialize().to_hex();
@@ -472,7 +473,8 @@ TrustTab.prototype.angular = function (module) {
             } else {
               tx.tx_json.Sequence = Number($scope.sequence);
               $scope.incrementSequence();
-              tx.tx_json.Fee = Number($scope.fee);
+              // Fee must be converted to drops
+              tx.tx_json.Fee = ripple.Amount.from_json(Options.max_tx_network_fee).to_human() * 1000000;
               tx.complete();
               try {
                 $scope.signedTransaction = tx.sign().serialize().to_hex();
@@ -709,7 +711,8 @@ TrustTab.prototype.angular = function (module) {
           } else {
             tx.tx_json.Sequence = Number($scope.sequence);
             $scope.incrementSequence();
-            tx.tx_json.Fee = Number($scope.fee);
+            // Fee must be converted to drops
+            tx.tx_json.Fee = ripple.Amount.from_json(Options.max_tx_network_fee).to_human() * 1000000;
             tx.complete();
             try {
               $scope.signedTransaction = tx.sign().serialize().to_hex();
