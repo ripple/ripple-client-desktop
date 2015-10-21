@@ -29,8 +29,9 @@ section.col-xs-12.content(ng-controller="ColdwalletSettingsCtrl")
                 .descriptor.portNumber(l10n) Network Fee
                 input.form-control#send_fee(
                 name='send_fee', type='number'
-                ng-model='$root.fee', min="1000"
+                ng-model='$root.fee', min="1000", max="{{maxNetworkFee}}"
                 ng-required='!onlineMode', placeholder="fee")
+                span.error(ng-show="feeForm.send_fee.$error.max", l10n) Transaction fee must be less than the max network fee.
               .col-xs-3.col-sm-3.col-md-2
                 .descriptor.portNumber(l10n) Update
                 button.btn.btn-block.btn-success.btn-xs.submit#save(type='submit'

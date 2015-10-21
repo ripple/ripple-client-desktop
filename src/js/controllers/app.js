@@ -603,6 +603,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork', 'rp
     $net.connect();
   } else {
     $net.disconnect();
+    api.disconnect();
   }
 
   $scope.logout = function () {

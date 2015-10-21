@@ -69,11 +69,6 @@ SendTab.prototype.angular = function (module)
         $scope.send.recipient_address = address;
       }
 
-      // Used in offline mode
-      if (!$scope.send.fee) {
-        $scope.send.fee = Options.max_tx_network_fee;
-      }
-
       $scope.update_destination();
     }, true);
 
@@ -828,7 +823,6 @@ SendTab.prototype.angular = function (module)
           fs.writeFile(fileName, txData, function(err) {
             $scope.$apply(function() {
               $scope.fileName = fileName;
-              console.log('saved file');
               if (err) {
                 console.log('Error saving transaction: ', JSON.stringify(err));
                 $scope.error = true;
