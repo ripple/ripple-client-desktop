@@ -131,7 +131,8 @@ SettingsGatewayTab.prototype.angular = function(module)
       tx.accountSet(id.account, Transaction.set_clear_flags.AccountSet['asf' + type.charAt(0).toUpperCase() + type.slice(1, -4)]);
       tx.tx_json.Sequence = Number($scope.sequence);
       $scope.incrementSequence();
-      tx.tx_json.Fee = $scope.fee;
+      // Fee must be converted to drops
+      tx.tx_json.Fee = ripple.Amount.from_json(Options.max_tx_network_fee).to_human() * 1000000;
       keychain.requestSecret(id.account, id.username, function(err, secret) {
         if (err) {
           console.log('Error: ', err);
@@ -160,7 +161,8 @@ SettingsGatewayTab.prototype.angular = function(module)
       tx.accountSet(id.account, undefined, Transaction.set_clear_flags.AccountSet['asf' + type.charAt(0).toUpperCase() + type.slice(1, -4)]);
       tx.tx_json.Sequence = Number($scope.sequence);
       $scope.incrementSequence();
-      tx.tx_json.Fee = $scope.fee;
+      // Fee must be converted to drops
+      tx.tx_json.Fee = ripple.Amount.from_json(Options.max_tx_network_fee).to_human() * 1000000;
       keychain.requestSecret(id.account, id.username, function(err, secret) {
         if (err) {
           console.log('Error: ', err);

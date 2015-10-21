@@ -16,7 +16,7 @@ section.col-xs-12.content(ng-controller="ColdwalletSettingsCtrl")
           hr
           .p(l10n) Current default folder: {{defaultDirectory || 'not specified'}}.
         h4#serverSettings(ng-hide="onlineMode", l10n) Account Sequence and Network Fee
-        form.server-row-form(ng-hide="onlineMode", ng-controller="ColdwalletSettingsCtrl", ng-submit="saveSeqFee()")
+        form.server-row-form(ng-hide="onlineMode", ng-controller="ColdwalletSettingsCtrl", ng-submit="saveSequence()")
           ng-form(name="feeForm")
             .row
               .col-md-3.col-sm-4.col-xs-3
@@ -25,13 +25,6 @@ section.col-xs-12.content(ng-controller="ColdwalletSettingsCtrl")
                   name='send_sequence', type='number'
                   ng-model='$root.sequence'
                   ng-required='!onlineMode', placeholder="sequence")
-              .col-md-3.col-sm-4.col-xs-3
-                .descriptor.portNumber(l10n) Network Fee
-                input.form-control#send_fee(
-                name='send_fee', type='number'
-                ng-model='$root.fee', min="1000", max="{{maxNetworkFee}}"
-                ng-required='!onlineMode', placeholder="fee")
-                span.error(ng-show="feeForm.send_fee.$error.max", l10n) Transaction fee must be less than the max network fee.
               .col-xs-3.col-sm-3.col-md-2
                 .descriptor.portNumber(l10n) Update
                 button.btn.btn-block.btn-success.btn-xs.submit#save(type='submit'

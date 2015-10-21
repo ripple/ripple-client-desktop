@@ -804,7 +804,8 @@ SendTab.prototype.angular = function (module)
       else {
         tx.tx_json.Sequence = Number($scope.sequence);
         $scope.incrementSequence();
-        tx.tx_json.Fee = $scope.fee;
+        // Fee must be converted to drops
+        tx.tx_json.Fee = ripple.Amount.from_json(Options.max_tx_network_fee).to_human() * 1000000;
         tx.complete();
         $scope.signedTransaction = tx.sign().serialize().to_hex();
         $scope.txJSON = JSON.stringify(tx.tx_json);
