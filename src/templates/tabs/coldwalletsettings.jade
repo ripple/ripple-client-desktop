@@ -15,7 +15,7 @@ section.col-xs-12.content(ng-controller="ColdwalletSettingsCtrl")
         .section
           hr
           .p(l10n) Current default folder: {{defaultDirectory || 'not specified'}}.
-        h4#serverSettings(ng-hide="onlineMode", l10n) Account Sequence and Network Fee
+        h4#serverSettings(ng-hide="onlineMode", l10n) Account Sequence
         form.server-row-form(ng-hide="onlineMode", ng-controller="ColdwalletSettingsCtrl", ng-submit="saveSequence()")
           ng-form(name="feeForm")
             .row
