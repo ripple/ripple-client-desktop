@@ -28,6 +28,10 @@ SubmitTab.prototype.angular = function (module)
       $net.connect();
 
       $scope.txFiles = [];
+      var submittedTxns = 0;
+      var preparedTxns = 0;
+      $scope.txInfo = {};
+      $scope.sequenceNumbers = [];
 
       // User drops files on transaction files dropzone
       $scope.initDropzone = function() {
@@ -61,17 +65,36 @@ SubmitTab.prototype.angular = function (module)
       $scope.submit = function() {
         $scope.loading = true;
 
-        // Child scopes listen to this event to individually submit transactions
-        $scope.$broadcast('submit');
+        // Child scopes listen to this event to fetch tx_blobs
+        $scope.$broadcast('prepare');
       };
 
-      var i = 0;
+      // Child scope emits txInfo
+      $scope.$on('prepared', function(preparedEvent, txInfo) {
+        // Map filename to blob/sequence number
+        $scope.txInfo[txInfo.file] = {
+          blob: txInfo.blob,
+          sequence: txInfo.sequence
+        };
+        // Keep track of sequence numbers of all txn files
+        $scope.sequenceNumbers.push(txInfo.sequence);
+        // Once all txns are prepared, sort by sequence and submit
+        if (++preparedTxns === $scope.txFiles.length) {
+          $scope.sequenceNumbers = _.sortBy($scope.sequenceNumbers);
+          $scope.$broadcast('submit');
+        }
+      });
+
       // Listening for child scope transaction submission results
       $scope.$on('submitted', function() {
-        i++;
         // Once all txns have been submitted, set loading to false
-        if ($scope.txFiles.length <= i) {
+        // reset global vars
+        if (++submittedTxns === $scope.txFiles.length) {
           $scope.loading = false;
+          preparedTxns = 0;
+          submittedTxns = 0;
+          $scope.txInfo = {};
+          $scope.sequenceNumbers = [];
         }
       });
 
@@ -115,14 +138,13 @@ SubmitTab.prototype.angular = function (module)
                   // Parse account from tx blob and display to user
                   var account;
                   try {
-                    account = RippleBinaryCodec.decode(txBlob).Account;
+                    account = RippleBinaryCodec.decode(blob).Account;
                   } catch(e) {
-                    account = '';
                     console.log('Unable to convert tx blob to JSON: ', e);
                   }
                   $scope.account = account;
                 } else if (response.engine_result_code === -183) {
-                  // This could happen if, for example, the user opens a regular key wallet file 
+                  // This could happen if, for example, the user opens a regular key wallet file
                   // and tries to submit a transaction, but the master key has revoked this regular key.
                   $scope.state = 'bad_auth_master';
                 } else if (response.engine_result_code === 0) {
