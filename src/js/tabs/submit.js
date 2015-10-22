@@ -3,6 +3,7 @@
 var util = require('util');
 var Tab = require('../client/tab').Tab;
 var fs = require('fs');
+var _ = require('lodash');
 
 var SubmitTab = function ()
 {
@@ -85,40 +86,28 @@ SubmitTab.prototype.angular = function (module)
     function ($scope, network) {
       // Remove the transaction from the list
       $scope.remove = function() {
-        $scope.txFiles.splice($scope.index, 1);
+        _.remove($scope.txFiles, function(filename) {
+          return filename === $scope.txFile;
+        });
       };
 
-      // Parent broadcasts the submit event
-      $scope.$on('submit', function() {
-
-        // Show loading...
-        $scope.state = 'pending';
-
-        // Get the signedTransaction
-        fs.readFile($scope.txFile, 'utf8', function(err, data) {
-          if (err) {
-            console.log('err', err);
-            return;
-          }
-          // Transaction will either be a JSON transaction or the signed
-          // blob only, in which case there will not be a tx_blob value
-          var txBlob;
-          try {
-            var transaction = JSON.parse(data);
-            txBlob = transaction.tx_blob;
-          } catch(e) {
-            txBlob = data;
-          }
-
-          // TODO validate blob
-          // Submit the transaction to the network
+      // If the txn sequence is next in the queue, submit
+      // Else wait 10 ms
+      function checkAndSubmit(blob, sequence) {
+        if (sequence === $scope.sequenceNumbers[0]) {
+          // Remove current sequence from beginning of queue
+          $scope.sequenceNumbers.shift();
           var request = new ripple.Request(network.remote, 'submit');
-          request.message.tx_blob = txBlob;
+          request.message.tx_blob = blob;
           request.callback(function(submitErr, response) {
             $scope.$apply(function() {
               if (submitErr) {
                 console.log('Error submitting transaction: ', submitErr);
                 $scope.state = 'error';
+                // Don't overwrite upstream error messagaes
+                if (!$scope.result) {
+                  $scope.result = 'Malformed transaction';
+                }
               } else {
                 if (response.engine_result_code === -96) {
                   // Sending account is unfunded
@@ -149,7 +138,58 @@ SubmitTab.prototype.angular = function (module)
           if (!request.requested) {
             request.request();
           }
+        } else {
+          setTimeout(function() {
+            checkAndSubmit(blob, sequence);
+          }, 10);
+        }
+      }
+
+      // read tx file and emit tx_blob to parent scope
+      $scope.$on('prepare', function() {
+        // Show loading...
+        $scope.state = 'pending';
+
+        var txBlob;
+        var sequence;
+        fs.readFile($scope.txFile, 'utf8', function(err, data) {
+          if (err) {
+            console.log('error reading file: ', err);
+            $scope.state = 'error';
+            $scope.result = 'Unable to read file';
+          } else {
+            // Transaction will either be a JSON transaction or the signed
+            // blob only, in which case there will not be a tx_blob value
+            try {
+              var transaction = JSON.parse(data);
+              txBlob = transaction.tx_blob;
+            } catch(e) {
+              txBlob = data;
+            }
+            // Test to see if blob is formatted properly
+            try {
+              sequence = RippleBinaryCodec.decode(txBlob).Sequence;
+            } catch(e) {
+              console.log('Corrupted blob: ', e);
+              $scope.state = 'error';
+              $scope.result = 'Malformed transaction';
+            }
+          }
+          $scope.$emit('prepared', {
+            file: $scope.txFile,
+            blob: txBlob,
+            sequence: sequence
+          });
         });
+      });
+
+      // Parent broadcasts the submit event
+      // Child row controller matches row filename with
+      // blob/sequence and submits txn
+      $scope.$on('submit', function() {
+        var blob = $scope.txInfo[$scope.txFile].blob;
+        var sequence = $scope.txInfo[$scope.txFile].sequence;
+        checkAndSubmit(blob, sequence);
       });
     }
   ]);
