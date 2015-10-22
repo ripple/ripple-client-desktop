@@ -86,7 +86,9 @@ SubmitTab.prototype.angular = function (module)
     function ($scope, network) {
       // Remove the transaction from the list
       $scope.remove = function() {
-        $scope.txFiles.splice($scope.index, 1);
+        _.remove($scope.txFiles, function(filename) {
+          return filename === $scope.txFile;
+        });
       };
 
       // If the txn sequence is next in the queue, submit
