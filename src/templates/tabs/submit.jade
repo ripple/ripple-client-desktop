@@ -19,7 +19,7 @@ section.col-xs-12.content(ng-controller="SubmitCtrl")
               div(ng-show="state == 'pending'") Pending...
               //- TODO better error messages
               div.failed(ng-show="state == 'error'")
-                | Something went wrong
+                | {{result}}
                 a(ng-click="remove()")
                   i.fa.fa-times
               //- TODO show better messages
