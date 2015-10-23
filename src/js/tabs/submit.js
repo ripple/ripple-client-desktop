@@ -4,6 +4,7 @@ var util = require('util');
 var Tab = require('../client/tab').Tab;
 var fs = require('fs');
 var _ = require('lodash');
+var PriorityQueue = require('priorityqueuejs');
 
 var SubmitTab = function ()
 {
@@ -28,10 +29,11 @@ SubmitTab.prototype.angular = function (module)
       $net.connect();
 
       $scope.txFiles = [];
-      var submittedTxns = 0;
       var preparedTxns = 0;
-      $scope.txInfo = {};
-      $scope.sequenceNumbers = [];
+      // Priority Queue orders txns by sequence, smallest to largest
+      $scope.queue = new PriorityQueue(function(tx1, tx2) {
+        return tx2.sequence - tx1.sequence;
+      });
 
       // User drops files on transaction files dropzone
       $scope.initDropzone = function() {
@@ -64,23 +66,13 @@ SubmitTab.prototype.angular = function (module)
       // User clicks the submit button
       $scope.submit = function() {
         $scope.loading = true;
-
-        // Child scopes listen to this event to fetch tx_blobs
+        // Child scopes listen to this event to enqueue tx_blobs
         $scope.$broadcast('prepare');
       };
 
-      // Child scope emits txInfo
-      $scope.$on('prepared', function(preparedEvent, txInfo) {
-        // Map filename to blob/sequence number
-        $scope.txInfo[txInfo.file] = {
-          blob: txInfo.blob,
-          sequence: txInfo.sequence
-        };
-        // Keep track of sequence numbers of all txn files
-        $scope.sequenceNumbers.push(txInfo.sequence);
-        // Once all txns are prepared, sort by sequence and submit
+      // Once all child rows emit "prepared" event, we are ready to submit
+      $scope.$on('prepared', function() {
         if (++preparedTxns === $scope.txFiles.length) {
-          $scope.sequenceNumbers = _.sortBy($scope.sequenceNumbers);
           $scope.$broadcast('submit');
         }
       });
@@ -89,12 +81,9 @@ SubmitTab.prototype.angular = function (module)
       $scope.$on('submitted', function() {
         // Once all txns have been submitted, set loading to false
         // reset global vars
-        if (++submittedTxns === $scope.txFiles.length) {
+        if ($scope.queue.isEmpty()) {
           $scope.loading = false;
           preparedTxns = 0;
-          submittedTxns = 0;
-          $scope.txInfo = {};
-          $scope.sequenceNumbers = [];
         }
       });
 
@@ -114,12 +103,16 @@ SubmitTab.prototype.angular = function (module)
         });
       };
 
-      // If the txn sequence is next in the queue, submit
+      // If this row is next in the queue, submit
       // Else wait 10 ms
-      function checkAndSubmit(blob, sequence) {
-        if (sequence === $scope.sequenceNumbers[0]) {
-          // Remove current sequence from beginning of queue
-          $scope.sequenceNumbers.shift();
+      function checkSequenceAndSubmit() {
+        // Nothing in queue, nothing to do
+        if ($scope.queue.isEmpty()) {
+          return;
+        }
+        // This row is next in queue, submit transaction
+        if ($scope.txFile === $scope.queue.peek().file) {
+          var blob = $scope.queue.deq().blob;
           var request = new ripple.Request(network.remote, 'submit');
           request.message.tx_blob = blob;
           request.callback(function(submitErr, response) {
@@ -127,33 +120,31 @@ SubmitTab.prototype.angular = function (module)
               if (submitErr) {
                 console.log('Error submitting transaction: ', submitErr);
                 $scope.state = 'error';
-                // Don't overwrite upstream error messagaes
-                if (!$scope.result) {
-                  $scope.result = 'Malformed transaction';
-                }
-              } else {
-                if (response.engine_result_code === -96) {
-                  // Sending account is unfunded
-                  $scope.state = 'unfunded';
-                  // Parse account from tx blob and display to user
-                  var account;
-                  try {
-                    account = RippleBinaryCodec.decode(blob).Account;
-                  } catch(e) {
-                    console.log('Unable to convert tx blob to JSON: ', e);
-                  }
-                  $scope.account = account;
-                } else if (response.engine_result_code === -183) {
-                  // This could happen if, for example, the user opens a regular key wallet file
-                  // and tries to submit a transaction, but the master key has revoked this regular key.
-                  $scope.state = 'bad_auth_master';
-                } else if (response.engine_result_code === 0) {
-                  $scope.state = 'success';
-                } else {
-                  $scope.state = 'done';
-                }
-                $scope.result = response.engine_result;
+                $scope.result = 'Malformed transaction';
+                $scope.$emit('submitted');
+                return;
               }
+              if (response.engine_result_code === -96) {
+                // Sending account is unfunded
+                $scope.state = 'unfunded';
+                // Parse account from tx blob and display to user
+                var account;
+                try {
+                  account = RippleBinaryCodec.decode(blob).Account;
+                } catch(e) {
+                  console.log('Unable to convert tx blob to JSON: ', e);
+                }
+                $scope.account = account;
+              } else if (response.engine_result_code === -183) {
+                // This could happen if, for example, the user opens a regular key wallet file
+                // and tries to submit a transaction, but the master key has revoked this regular key.
+                $scope.state = 'bad_auth_master';
+              } else if (response.engine_result_code === 0) {
+                $scope.state = 'success';
+              } else {
+                $scope.state = 'done';
+              }
+              $scope.result = response.engine_result;
               $scope.$emit('submitted');
             });
           });
@@ -161,57 +152,59 @@ SubmitTab.prototype.angular = function (module)
             request.request();
           }
         } else {
+          // Wait until it is time for this row to be submitted
           setTimeout(function() {
-            checkAndSubmit(blob, sequence);
+            checkSequenceAndSubmit();
           }, 10);
         }
       }
 
-      // read tx file and emit tx_blob to parent scope
+      // read tx file and add to priority queue
       $scope.$on('prepare', function() {
         // Show loading...
         $scope.state = 'pending';
 
-        var txBlob;
-        var sequence;
         fs.readFile($scope.txFile, 'utf8', function(err, data) {
           if (err) {
             console.log('error reading file: ', err);
             $scope.state = 'error';
             $scope.result = 'Unable to read file';
-          } else {
-            // Transaction will either be a JSON transaction or the signed
-            // blob only, in which case there will not be a tx_blob value
-            try {
-              var transaction = JSON.parse(data);
-              txBlob = transaction.tx_blob;
-            } catch(e) {
-              txBlob = data;
-            }
-            // Test to see if blob is formatted properly
-            try {
-              sequence = RippleBinaryCodec.decode(txBlob).Sequence;
-            } catch(e) {
-              console.log('Corrupted blob: ', e);
-              $scope.state = 'error';
-              $scope.result = 'Malformed transaction';
-            }
+            // Emit event even if err since parent scope must
+            // be notified that txn was attempted
+            $scope.$emit('prepared');
+            return;
           }
-          $scope.$emit('prepared', {
-            file: $scope.txFile,
-            blob: txBlob,
-            sequence: sequence
-          });
+          // Transaction will either be a JSON transaction or the signed
+          // blob only, in which case there will not be a tx_blob value
+          var txBlob;
+          var sequence;
+          try {
+            var transaction = JSON.parse(data);
+            txBlob = transaction.tx_blob;
+          } catch(e) {
+            txBlob = data;
+          }
+          // Test to see if blob is formatted properly
+          try {
+            sequence = RippleBinaryCodec.decode(txBlob).Sequence;
+            // Add txn to PQ to order by sequence number
+            $scope.queue.enq({
+              file: $scope.txFile,
+              blob: txBlob,
+              sequence: sequence
+            });
+          } catch(e) {
+            console.log('Corrupted blob: ', e);
+            $scope.state = 'error';
+            $scope.result = 'Malformed transaction';
+          }
+          $scope.$emit('prepared');
         });
       });
 
       // Parent broadcasts the submit event
-      // Child row controller matches row filename with
-      // blob/sequence and submits txn
       $scope.$on('submit', function() {
-        var blob = $scope.txInfo[$scope.txFile].blob;
-        var sequence = $scope.txInfo[$scope.txFile].sequence;
-        checkAndSubmit(blob, sequence);
+        checkSequenceAndSubmit();
       });
     }
   ]);
