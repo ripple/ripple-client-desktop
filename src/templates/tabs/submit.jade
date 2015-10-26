@@ -17,26 +17,20 @@ section.col-xs-12.content(ng-controller="SubmitCtrl")
             .pull-right
               a(ng-hide="state", href="", ng-click="remove()") Remove
               div(ng-show="state == 'pending'") Pending...
-              //- TODO better error messages
               div.failed(ng-show="state == 'error'")
-                | {{result}}
-                a(ng-click="remove()")
-                  i.fa.fa-times
-              //- TODO show better messages
-              div.failed(ng-show="state == 'done'")
-                | {{result}}
+                | {{message}}
                 a(ng-click="remove()")
                   i.fa.fa-times
               div.failed(ng-show="state == 'unfunded'")
-                | Fund {{account}} with XRP.
+                | {{message}}
                 a(ng-click="remove()")
                   i.fa.fa-times
               div.failed(ng-show="state == 'bad_auth_master'")
-                | Key used to sign this tx doesn't match the master key, and no regular key exists.
+                | {{message}}
                 a(ng-click="remove()")
-                  i.fa.fa-times      
+                  i.fa.fa-times
               div.success(ng-show="state == 'success'")
-                | Success.
+                | {{message}}
                 a(ng-click="remove()")
                   i.fa.fa-times
 

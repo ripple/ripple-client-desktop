@@ -120,11 +120,14 @@ SubmitTab.prototype.angular = function (module)
               if (submitErr) {
                 console.log('Error submitting transaction: ', submitErr);
                 $scope.state = 'error';
-                $scope.result = 'Malformed transaction';
+                $scope.message = 'Malformed transaction';
                 $scope.$emit('submitted');
                 return;
               }
-              if (response.engine_result_code === -96) {
+              if (response.engine_result_code === 0) {
+                $scope.state = 'success';
+                $scope.message = 'Success.';
+              } else if (response.engine_result_code === -96) {
                 // Sending account is unfunded
                 $scope.state = 'unfunded';
                 // Parse account from tx blob and display to user
@@ -134,17 +137,16 @@ SubmitTab.prototype.angular = function (module)
                 } catch(e) {
                   console.log('Unable to convert tx blob to JSON: ', e);
                 }
-                $scope.account = account;
+                $scope.message = 'Fund ' + account + ' with XRP';
               } else if (response.engine_result_code === -183) {
                 // This could happen if, for example, the user opens a regular key wallet file
                 // and tries to submit a transaction, but the master key has revoked this regular key.
                 $scope.state = 'bad_auth_master';
-              } else if (response.engine_result_code === 0) {
-                $scope.state = 'success';
+                $scope.message = 'Key used to sign this tx doesn\'t match the master key, and no regular key exists.';
               } else {
-                $scope.state = 'done';
+                $scope.state = 'error';
+                $scope.message = response.engine_result_message;
               }
-              $scope.result = response.engine_result;
               $scope.$emit('submitted');
             });
           });
@@ -168,7 +170,7 @@ SubmitTab.prototype.angular = function (module)
           if (err) {
             console.log('error reading file: ', err);
             $scope.state = 'error';
-            $scope.result = 'Unable to read file';
+            $scope.message = 'Unable to read file';
             // Emit event even if err since parent scope must
             // be notified that txn was attempted
             $scope.$emit('prepared');
@@ -196,7 +198,7 @@ SubmitTab.prototype.angular = function (module)
           } catch(e) {
             console.log('Corrupted blob: ', e);
             $scope.state = 'error';
-            $scope.result = 'Malformed transaction';
+            $scope.message = 'Malformed transaction';
           }
           $scope.$emit('prepared');
         });
