@@ -12,8 +12,8 @@ section.col-xs-12.content(ng-controller="SubmitCtrl")
         .row
           //- TODO multiple drag and drop
           //- TODO show more info about the transaction
-          .col-md-8.fileName {{txFile}}
-          .col-md-4
+          .col-sm-8.fileName {{txFile}}
+          .col-sm-4
             .pull-right
               a(ng-hide="state", href="", ng-click="remove()") Remove
               div(ng-show="state == 'pending'") Pending...
