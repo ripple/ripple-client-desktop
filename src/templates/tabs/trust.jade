@@ -318,11 +318,11 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
               ng-class="{ 'col-xs-2 col-sm-2': advanced_feature_switch, 'col-xs-4': !advanced_feature_switch }"
               l10n) Balance
             div(ng-show="advanced_feature_switch", ng-class="{ 'col-xs-2': advanced_feature_switch }", l10n) Limit
-            div.col-xs-2.col-sm-1(ng-show="advanced_feature_switch", l10n) Min
+            div.col-xs-2.col-sm-2(ng-show="advanced_feature_switch", l10n) Min
             div.col-xs-1(ng-show="advanced_feature_switch", l10n) Rippling
             div.col-xs-1(ng-show="advanced_feature_switch", l10n) Frozen
             div.col-xs-1(ng-show="advanced_feature_switch", l10n) Auth
-            div(ng-class="{'col-xs-2' : advanced_feature_switch, 'col-xs-4 col-md-3': !advanced_feature_switch }", ng-hide="readOnly"
+            div(ng-class="{'col-xs-1' : advanced_feature_switch, 'col-xs-4 col-md-3': !advanced_feature_switch }", ng-hide="readOnly"
               l10n) Edit
           hr#divider
           .lines
@@ -343,8 +343,8 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                   | {{ component.balance | rpamount:{rel_precision: 2} }}
                 div.col-xs-2(ng-show="advanced_feature_switch", ng-class="{ 'col-xs-2': advanced_feature_switch }")
                   div {{ component.limit | rpamount }}
-                .col-sm-1.col-xs-2(ng-show="advanced_feature_switch && component.limit_peer._offset == '-100'") {{ component.limit_peer | rpamount }}
-                .col-sm-1.col-xs-2(ng-show="advanced_feature_switch && component.limit_peer._offset !== '-100'", ng-hide="component.limit_peer._offset == '-100' || !advanced_feature_switch") -{{ component.limit_peer | rpamount }}
+                .col-sm-2.col-xs-2(ng-show="advanced_feature_switch && component.limit_peer._offset == '-100'") {{ component.limit_peer | rpamount }}
+                .col-sm-2.col-xs-2(ng-show="advanced_feature_switch && component.limit_peer._offset !== '-100'", ng-hide="component.limit_peer._offset == '-100' || !advanced_feature_switch") -{{ component.limit_peer | rpamount }}
                 .col-sm-1.col-xs-1(ng-show="advanced_feature_switch")
                   div(ng-show="component.no_ripple", l10n) Off
                   div(ng-hide="component.no_ripple", l10n) On
@@ -354,7 +354,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                 .col-sm-1.col-xs-1(ng-show="advanced_feature_switch")
                   div(ng-show="component.authorized", l10n) Yes
                   div(ng-hide="component.authorized", l10n) No
-                div(ng-hide="component.freeze_peer", ng-class="{ 'col-xs-2': advanced_feature_switch, 'col-xs-4 col-md-3': !advanced_feature_switch }")
+                div(ng-hide="component.freeze_peer", ng-class="{ 'col-xs-1': advanced_feature_switch, 'col-xs-4 col-md-3': !advanced_feature_switch }")
                   a(href="", ng-hide="editing || readOnly", ng-click="edit_account()"
                     l10n) edit
                   span(ng-show="editing && !advanced_feature_switch")
