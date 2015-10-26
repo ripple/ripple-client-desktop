@@ -52,6 +52,7 @@ RegisterTab.prototype.angular = function (module) {
       filedialog.saveAs(function(filename) {
         $scope.$apply(function() {
           $scope.walletfile = filename;
+          store.set('walletfile', filename);
           $scope.mode = 'register_empty_wallet';
         });
       }, 'wallet');
