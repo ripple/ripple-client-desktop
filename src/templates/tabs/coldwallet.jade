@@ -1,4 +1,4 @@
-section.single.ddpage.content(ng-controller="ColdWalletCtrl")
+container(ng-controller="ColdWalletCtrl")
   group.error(ng-show="accountError") Error reading account information. {{accountErrorMessage}}
     hr
 
@@ -6,27 +6,32 @@ section.single.ddpage.content(ng-controller="ColdWalletCtrl")
     p.literal(l10n) You have to be online to see this screen
 
   group(ng-if="connected", ng-hide="accountError")
-    h4 You are viewing the cold wallet information for account {{address}}.
-      p Always store the secret key for the cold wallet on a machine that is entirely offline.
-    hr
-    p(ng-hide="transactionError") {{lastTxn}} The transaction was validated at {{txnTime | date:'yyyy-MM-dd HH:mm:ss Z'}}.
-    p.error(ng-show="transactionError") {{transactionErrorMessage}}
-    hr
-    // Account information
-    h Account Information
-      col-md-12.data
-        .table-responsive
-          table.table.table-hover
-            thead
-              tr
-                th Current Sequence Number
-                th Current Network Fee
-            tbody
-              tr
-                td {{sequenceNumber}}
-                td {{networkFee}} XRP
-        .table-responsive
-          table.table.table-hover
+    div.row.row-content
+      div.col-xs-12.col-sm-5
+        div.panel.panel-primary
+          div.panel-heading
+            h3.panel-title Account {{address}}
+          div.panel-body
+            dl.dl-horizontal
+              dt Sequence Number
+              dd {{sequenceNumber}}
+              dt Network Fee
+              dd {{networkFee}} XRP
+      div.col-xs-12.col-sm-7
+        div.well
+          p(ng-hide="transactionError") {{lastTxn}} The transaction was validated at {{txnTime | date:'yyyy-MM-dd HH:mm:ss Z'}}.
+          p.error(ng-show="transactionError") {{transactionErrorMessage}}
+    div.row.row-content
+      div.col-xs-12
+        h4 Account Flags 
+          i.fa.fa-question-circle.help-icon(
+            rp-popover
+            rp-popover-placement="right"
+            l10n-rp-popover-title="Setup Information"
+            rp-popover-trigger="click"
+            l10n-data-content="Best practices for these account flags may be found <a href=https://ripple.com/build/gateway-guide/ target=_blank>here</a>.")
+        div.table-responsive
+          table.table.table-striped.table-bordered
             thead
               tr
                 th Setting
@@ -37,13 +42,11 @@ section.single.ddpage.content(ng-controller="ColdWalletCtrl")
                 td {{line.setting}}
                 td {{line.enabled}}
                 td {{line.description}}
-      a(href="https://ripple.com/build/gateway-guide/", target="_blank", l10n) Best practices
-    // Balances and currencies
-    hr
-    h Balances
-      col-md-12.data
-        .table-responsive
-          table.table.table-hover
+    div.row.row-content
+      div.col-xs-12
+        h4 Balances
+        div.table-responsive
+          table.table.table-striped.table-bordered
             thead
               tr
                 th Currency
@@ -54,13 +57,12 @@ section.single.ddpage.content(ng-controller="ColdWalletCtrl")
                 td {{balance.currency}}
                 td {{balance.counterparty}}
                 td {{balance.value}}
-    hr
-    // Trustlines
-    h Trust Lines with warnings
-      col-md-12.data
-        .table-responsive
-          table.table.table-hover
-            thead
+    div.row.row-content(ng-hide="!warningLines.length")
+      div.col-xs-12
+        h4 Trust Lines with warnings
+        div.table-responsive
+          table.table.table-striped.table-bordered
+            thead.danger
               tr
                 th Counterparty
                 th Currency
@@ -75,5 +77,6 @@ section.single.ddpage.content(ng-controller="ColdWalletCtrl")
                 td(ng-if="line.specification.ripplingDisabled") Disabled
                 td {{line.specification.authorized}}
                 td {{line.warning}}
-    hr
-  button.btn.btn-success(ng-click='gotoLogin()') Back to login
+    div.row.row-content
+      div.col-xs-12
+        button.btn.btn-success(ng-click='gotoLogin()') Back to login
