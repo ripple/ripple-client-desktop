@@ -155,9 +155,7 @@ SubmitTab.prototype.angular = function (module)
           }
         } else {
           // Wait until it is time for this row to be submitted
-          setTimeout(function() {
-            checkSequenceAndSubmit();
-          }, 10);
+          setTimeout(checkSequenceAndSubmit, 10);
         }
       }
 
