@@ -17,8 +17,8 @@ ColdWalletTab.prototype.generateHtml = function () {
 };
 
 ColdWalletTab.prototype.angular = function (module) {
-  module.controller('ColdWalletCtrl', ['$rootScope', '$location', 'rpId', 'rpApi',
-  function ($scope, $location, id, api) {
+  module.controller('ColdWalletCtrl', ['$rootScope', '$location', '$route', 'rpId', 'rpApi',
+  function ($scope, $location, $route, id, api) {
     $scope.sequenceNumber = 1;
     $scope.accountError = false;
 
@@ -191,6 +191,10 @@ ColdWalletTab.prototype.angular = function (module) {
     $scope.gotoLogin = function() {
       id.exitColdWallet();
       $location.path('/login');
+    };
+
+    $scope.refresh = function() {
+      $route.reload();
     };
   }]);
 };

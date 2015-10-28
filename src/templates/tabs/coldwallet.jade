@@ -78,5 +78,7 @@ container(ng-controller="ColdWalletCtrl")
                 td {{line.specification.authorized}}
                 td {{line.warning}}
     div.row.row-content
-      div.col-xs-12
+      div.col-xs-12.col-sm-2
+        button.btn.btn-success(ng-click='refresh()') Refresh
+      div.col-xs-12.col-sm-2
         button.btn.btn-success(ng-click='gotoLogin()') Back to login
