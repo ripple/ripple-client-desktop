@@ -23,8 +23,6 @@ AdvancedTab.prototype.angular = function(module)
   module.controller('AdvancedCtrl', ['$scope', '$rootScope', 'rpId', 'rpKeychain',
                                     function ($scope, $rootScope, $id, $keychain)
   {
-    if (!$id.loginStatus) $id.goId();
-
     // XRP currency object.
     // {name: "XRP - Ripples", order: 146, value: "XRP"}
     var xrpCurrency = Currency.from_json("XRP");
@@ -37,7 +35,6 @@ AdvancedTab.prototype.angular = function(module)
 
     $scope.options = Options;
     $scope.optionsBackup = $.extend(true, {}, Options);
-    $scope.passwordProtection = !$scope.userBlob.data.persistUnlock;
     $scope.editBlob = false;
     $scope.editMaxNetworkFee = false;
     $scope.editAcctOptions = false;
@@ -85,19 +82,6 @@ AdvancedTab.prototype.angular = function(module)
 
     $scope.cancelEditAcctOptions = function () {
       $scope.editAcctOptions = false;
-    };
-
-    $scope.$on('$blobUpdate', function() {
-      $scope.passwordProtection = !$scope.userBlob.data.persistUnlock;
-    });
-    
-    $scope.setPasswordProtection = function () {
-      $keychain.setPasswordProtection(!$scope.passwordProtection, function(err, resp) {
-        if (err) {
-          $scope.passwordProtection = !$scope.PasswordProtection;
-          //TODO: report errors to user
-        }
-      });
     };
 
     // Add a new server
