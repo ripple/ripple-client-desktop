@@ -210,7 +210,7 @@ section.col-xs-12.content(ng-controller="HistoryCtrl")
                 span.balance(data-label="Final balance", rp-pretty-amount="effect.balance")
             span.hash(rp-popover, rp-popover-placement="left", rp-popover-trigger="hover", rp-popover-delay
               l10n-rp-popover-content="{{copyTooltip}}")
-              p.hash-text(ng-click="copy()") Hash: {{copyFeedback || entry.hash}}
+              p.hash-text(ng-click="copy(entry.hash)") Hash: {{entry.hash}}
                 input.text-copy-helper(value="{{entry.hash}}")
             .links
               a.addLink(href="#/contact?to={{entry.transaction.counterparty}}", rp-no-propagate
