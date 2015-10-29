@@ -3,7 +3,8 @@ var util = require('util'),
     Tab = require('../client/tab').Tab,
     rewriter = require('../util/jsonrewriter'),
     fs = require('fs'),
-    Amount = ripple.Amount;
+    Amount = ripple.Amount,
+    gui = require('nw.gui');
 
 var HistoryTab = function ()
 {
@@ -36,27 +37,9 @@ HistoryTab.prototype.angular = function (module) {
     $scope.historyCsv = '';
 
     $scope.copyTooltip = 'Click to copy the transaction hash';
-    $scope.copyFeedback = null;
-    $scope.copy = function() {
-      angular.element('.text-copy-helper').select();
-      document.execCommand('copy');
-      $('span.hash').popover('hide');
-      $('p.hash-text').fadeOut(100, function() {
-        $scope.copyFeedback = 'Copied!';
-        if (!$scope.$$phase) {
-          $scope.$apply();
-        }
-      }).fadeIn(300, function() {
-        setTimeout(function() {
-          $('p.hash-text').fadeOut(300, function() {
-            $scope.copyFeedback = null;
-            if (!$scope.$$phase) {
-              $scope.$apply();
-            }
-            $(this).fadeIn(0);
-          });
-        }, 500);
-      });
+    $scope.copy = function(hash) {
+      var clipboard = gui.Clipboard.get();
+      clipboard.set(hash, 'text');
     };
 
     // History states
