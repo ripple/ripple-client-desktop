@@ -6,6 +6,10 @@ section.col-xs-12.content(ng-controller="AdvancedCtrl")
       include settings/_navbar
     .col-sm-9.list
       section.content#servers
+        group.result-pending(ng-show='showBanner')
+            h2.tx-status(l10n) This is the only page available when you are not logged in. If you want to access other functionality, please 
+              a(href='#login', l10n-inc) login
+              | .
         h4#networkSettings(l10n) Network settings
         form(ng-hide="readOnly")
           // TODO: Add tooltip to explain this
