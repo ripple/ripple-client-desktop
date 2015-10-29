@@ -1,4 +1,4 @@
-section.col-xs-12.content(ng-controller="AdvancedCtrl")
+section.col-sm-12.content(ng-controller="AdvancedCtrl")
   div(ng-show="!loadingAccount && !account.Balance && loadState.account && connected && !debug")
     include ../tabs/banner/_unfunded
   .row
@@ -10,11 +10,11 @@ section.col-xs-12.content(ng-controller="AdvancedCtrl")
         form(ng-hide="readOnly")
           // TODO: Add tooltip to explain this
           .descriptor(l10n) Online mode
-          .row.advanced-form-row
-            .col-xs-7
+          .row.row-padding-small.advanced-form-row
+            .col-sm-8
               .description(ng-show="onlineMode", l10n) Uncheck if you want this software application to be offline
               .description(ng-show="!onlineMode", l10n) Check if you want this software application to be online
-            .col-xs-2.onlineCheckbox
+            .col-sm-2.onlineCheckbox
               input(type="checkbox", bs-switch, ng-model="onlineMode", ng-change="switchOnlineMode()")
         form(name="maxnetworkfeeForm", ng-submit="saveMaxNetworkFee()")
           .descriptor(l10n) Maximum network fee
@@ -24,14 +24,13 @@ section.col-xs-12.content(ng-controller="AdvancedCtrl")
               l10n-rp-popover-title="Network Fee"
               rp-popover-trigger="click"
               l10n-data-content="The same network fee is used for each transaction in both online and offline mode.")
-          .row.advanced-form-row(ng-hide="editMaxNetworkFee")
-            .col-xs-9.col-sm-8.col-md-6
-                .description {{max_tx_network_fee_human}} {{xrp.code}}
-            .col-xs-1
-            .col-xs-3.col-sm-3.col-md-2
+          .row.row-padding-small.advanced-form-row(ng-hide="editMaxNetworkFee")
+            .col-sm-10
+              .description {{max_tx_network_fee_human}} {{xrp.code}}
+            .col-sm-2
               a.btn.btn-block.btn-cancel(href="", ng-click="editMaxNetworkFee = true", l10n) edit
           .row.row-padding-small.field-edit-row(ng-show="editMaxNetworkFee")
-            .col-xs-12.col-sm-6.col-md-6.input-group#maxnetworkfeeForm
+            .col-sm-6.col-md-6.input-group#maxnetworkfeeForm
               input.form-control.maxNetworkFee#maxNetworkFee(
               name='maxNetworkFee', type='text'
               ng-model='max_tx_network_fee_human'
@@ -41,52 +40,112 @@ section.col-xs-12.content(ng-controller="AdvancedCtrl")
               rp-amount-xrp-limit
               rp-amount-currency='{{xrp.name}}')
               span.input-group-addon(ng-bind="xrp.name")
-            .col-xs-6.col-sm-3.col-md-3
+            .col-sm-3.col-md-3
               button.btn.btn-block.btn-success.btn-xs.submit#saveMaxNetworkFee(type='submit', ng-disabled='maxnetworkfeeForm.$invalid', l10n) Save
-            .col-xs-3.col-sm-3.col-md-3.text-center#cancel
+            .col-sm-3.col-md-3.text-center#cancel
               a.btn.btn-cancel.btn-block(href="", ng-click="cancelEditMaxNetworkFee()", l10n) cancel
+
+        h4#proxySettings(ng-show="onlineMode", l10n) Proxy settings
+        form.server-row-form(ng-show="onlineMode", ng-submit="save()", ng-controller="ProxyCtrl")
+          ng-form(name="proxyForm")
+            .row.row-padding-small
+              .col-sm-3
+                .descriptor(l10n) Host name
+              .col-sm-2
+                .descriptor(l10n) Port number
+              .col-sm-2
+                .descriptor(l10n) Secure
+              .col-sm-2
+                .descriptor(l10n) Auth
+            .row.row-padding-small(ng-show="editing")
+              .col-sm-3
+                input.form-control.host(name='host', type='text', ng-model='proxy.host', rp-hostname)
+                .errorGroup
+                  div(rp-errors='host')
+                    .error(rp-error-on='rpHostname', l10n) Ip or hostname is invalid.
+                  div(rp-errors='port')
+                    .error(rp-error-on='rpPortNumber', l10n) Port number is invalid.
+              .col-sm-2
+                input.form-control.socketPort(name='port', type='text', ng-model='proxy.port', rp-port-number)
+              .col-sm-2.editable
+                div.helperInput
+                  label
+                    input(type="checkbox", name="secure", ng-model='proxy.secure')
+                    span(l10n) Secure
+              .col-sm-2
+                div.helperInput
+                  label
+                    input(type="checkbox", name="auth", ng-model='proxy.auth')
+                    span(l10n) Auth
+              .col-sm-2
+                button.btn.btn-block.btn-success.btn-xs.submit(type='submit'
+                  ng-disabled='proxyForm.$invalid', l10n) Save
+              .col-sm-1
+                a.btn.btn-block.btn-cancel.btn-xs(href="", ng-click="cancel()", l10n) cancel
+            .row.row-padding-small(ng-show="proxy.auth && editing")
+              .col-sm-3
+                label
+                  .descriptor(l10n) Username
+                  input.form-control(name='username', type='text', ng-model='proxy.username')
+              .col-sm-3
+                label
+                  .descriptor(l10n) Password
+                  input.form-control(name='password', type='text', ng-model='proxy.password')
+            .row.row-padding-small.advanced-form-row(ng-hide="editing")
+              .col-sm-3
+                .description {{proxy.host}}
+              .col-sm-2.port-wrapper
+                .description {{proxy.port}}
+              .col-sm-2
+                .description(ng-show="proxy.secure", l10n) Secure
+                .description(ng-hide="proxy.secure", l10n) Not Secure
+              .col-sm-3
+                .description(ng-show="proxy.auth", l10n) Yes
+                .description(ng-hide="proxy.auth", l10n) No
+              .col-sm-2
+                a.btn.btn-cancel.btn-block(href="", ng-click="editing = true", l10n) edit
 
         h4#serverSettings(ng-show="onlineMode", l10n) Server settings
         form.server-row-form(ng-show="onlineMode", ng-controller="ServerRowCtrl", ng-repeat="(index, server) in options.server.servers", ng-submit="save()")
           ng-form(name="serverForm")
-            .row
-              .col-xs-6.col-sm-5.col-md-3
+            .row.row-padding-small
+              .col-sm-3
                 .descriptor(l10n) WebSocket host name
-              .port.col-xs-4.col-sm-7.col-md-9
-                .descriptor.portNumber(l10n) Port number
+              .col-sm-3
+                .descriptor(l10n) Port number
             .row.row-padding-small(ng-show="editing")
-              .col-xs-6.col-sm-5.col-md-3.hostname-wrapper
+              .col-sm-3.hostname-wrapper
                 input.form-control.host(name='host', type='text', ng-model='server.host', rp-hostname)
                 .errorGroup
                   div(rp-errors='host')
                     .error(rp-error-on='rpHostname', l10n) Socket ip or hostname is invalid.
                   div(rp-errors='port')
                     .error(rp-error-on='rpPortNumber', l10n) Port number is invalid.
-              .col-xs-3.col-sm-2.col-md-2
+              .col-sm-2
                 input.form-control.socketPort(name='port', type='text', ng-model='server.port', rp-port-number)
-              .col-xs-3.col-md-1.col-sm-2.editable#secureSocket
-                div.helperInput
+              .col-sm-2.editable
+                .helperInput
                   label
                     input(type="checkbox", name="secure", ng-model='server.secure')
                     span(l10n) Secure
-              .col-xs-3.col-sm-3.col-md-2
+              .col-sm-2
                 button.btn.btn-block.btn-success.btn-xs.submit#save(type='submit'
                 ng-disabled='serverForm.$invalid', l10n) Save
-              .col-xs-6.col-sm-6.col-md-2(ng-show="hasRemove()")
+              .col-sm-2(ng-show="hasRemove()")
                 button.btn.btn-block.btn-danger.btn-xs.submit#delete(type="button", ng-click="remove()", ng-show="hasRemove()", l10n) Delete
-              .col-xs-6.col-sm-6.col-md-2.text-center#cancel
+              .col-sm-1.text-center#cancel
                 a.btn.btn-cancel.btn-block(href="", ng-click="cancel()", ng-hide="noCancel()", l10n) cancel
-            .row.advanced-form-row(ng-hide="editing")
-              .col-xs-6.col-sm-5.col-md-3
+            .row.row-padding-small.advanced-form-row(ng-hide="editing")
+              .col-sm-3
                 .description {{server.host}}
-              .col-xs-3.col-sm-3.col-md-2.port-wrapper
+              .col-sm-2
                 .description {{server.port}}
-              .col-xs-3.col-sm-2.col-md-2#secureSocket
+              .col-sm-5
                 .description(ng-show="server.secure", l10n) Secure
                 .description(ng-hide="server.secure", l10n) Not Secure
-              .col-xs-3.col-sm-2.col-md-2
+              .col-sm-2
                 a.btn.btn-cancel.btn-block(href="", ng-click="editing = true", l10n) edit
 
         .row
-          .col-xs-12.col-sm-6.col-md-3
+          .col-sm-6.col-md-3
             button.btn.btn-block.btn-primary#newServer(ng-show="onlineMode", type="button", ng-click="addServer()", l10n) Add new server
