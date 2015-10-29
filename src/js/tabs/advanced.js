@@ -144,6 +144,20 @@ AdvancedTab.prototype.angular = function(module)
       };
     }
   ]);
+
+  module.controller('ProxyCtrl', ['$scope', function($scope) {
+    $scope.proxy = {};
+
+    $scope.save = function() {
+      console.log('save');
+
+      $scope.editing = false;
+    };
+
+    $scope.cancel = function() {
+      $scope.editing = false;
+    };
+  }]);
 };
 
 module.exports = AdvancedTab;
