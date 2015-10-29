@@ -277,7 +277,7 @@ gulp.task('default', function() {
   );
 
   // Webpack
-  gulp.watch(['src/js/**/*.js', '!src/js/entry/vendor.js'], ['webpack:dev']);
+  gulp.watch(['src/js/**/*.js', 'config.js', '!src/js/entry/vendor.js'], ['webpack:dev']);
 
   // Webpack for vendor files
   gulp.watch(['src/js/entry/vendor.js'], ['webpack:vendor:dev']);
@@ -293,7 +293,6 @@ gulp.task('default', function() {
   // Reload
   $.watch(TMP_DIR + 'templates/**/*', $.browserSync.reload);
 
-  // TODO Config
   gulp.watch('src/less/**/*', ['less']);
 });
 
