@@ -1,11 +1,11 @@
 container(ng-controller="ColdWalletCtrl")
-  group.error(ng-show="accountError") Error reading account information. {{accountErrorMessage}}
+  group.error(ng-show="accountError")  {{accountError}}
     hr
 
   group.disconnected(ng-hide="connected")
     p.literal(l10n) You have to be online to see this screen
 
-  group(ng-if="connected", ng-hide="accountError")
+  group(ng-if="connected && accountLoaded", ng-hide="accountError")
     div.row.row-content
       div.col-xs-12.col-sm-5
         div.panel.panel-primary
@@ -77,8 +77,8 @@ container(ng-controller="ColdWalletCtrl")
                 td(ng-if="line.no_ripple") Disabled
                 td {{line.authorized}}
                 td {{line.warning}}
-    div.row.row-content
-      div.col-xs-12.col-sm-2
-        button.btn.btn-success(ng-click='refresh()') Refresh
-      div.col-xs-12.col-sm-2
-        a.btn.btn-success(href="/#/") Back to login
+  div.row.row-content
+    div.col-xs-12.col-sm-2
+      button.btn.btn-success(ng-click='refresh()') Refresh
+    div.col-xs-12.col-sm-2
+      a.btn.btn-success(href="/#/") Back to login
