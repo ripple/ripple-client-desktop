@@ -58,7 +58,7 @@ section.col-xs-12.content(ng-controller="ExchangeCtrl")
       .row.row-padding-small.alternatives
         .col-xs-12.col-sm-6.col-md-4(ng-repeat="alt in exchange.alternatives")
           .am
-            span.amnt {{alt.amount | rpamount:{rel_precision: 4, rel_min_precision: 2} }}
+            span.amnt {{alt.amount | rpamount:{precision: 20, min_precision: 6, max_sig_digits: 20} }}
             span(ng-hide="alt.amount.is_native() || alt.amount.issuer() == account.Account")
               span.issuer(
                 rp-pretty-issuer="alt.amount.issuer()"
@@ -66,7 +66,7 @@ section.col-xs-12.content(ng-controller="ExchangeCtrl")
                 rp-pretty-issuer-or-short)
             span.currency  {{alt.amount | rpcurrency }}
             .ex (
-              span.rate {{alt.rate | rpamount:{rel_precision: 4, rel_min_precision: 2} }}
+              span.rate {{alt.rate | rpamount:{precision: 20, min_precision: 6, max_sig_digits: 20} }}
               span.pair {{exchange.currency_code}}/{{alt.amount | rpcurrency}}
               | )
           button.btn.btn-block.btn-success(type="submit", ng-disabled='exchangeForm.$invalid', ng-click="exchange.alt = alt", l10n)
@@ -95,15 +95,15 @@ section.col-xs-12.content(ng-controller="ExchangeCtrl")
     span(l10n)
       p.literal(l10n-inc) You are exchanging
       p.amount_feedback
-        span.value {{exchange.alt.amount | rpamount}}&#32;
+        span.value {{exchange.alt.amount | rpamount:{precision: 20, min_precision: 6, max_sig_digits: 20} }}&#32;
         span.currency {{exchange.alt.amount | rpcurrency}}
       p.literal(l10n-inc) to
       p.amount_feedback
-        span.value {{exchange.amount_feedback | rpamount}}&#32;
+        span.value {{exchange.amount_feedback | rpamount:{precision: 20, min_precision: 6, max_sig_digits: 20} }}&#32;
         span.currency {{exchange.amount_feedback | rpcurrency}}
       p.literal(l10n-inc) You will pay at most
       p.amount_feedback
-        span.value {{exchange.alt.amount | rpamount}}&#32;
+        span.value {{exchange.alt.amount | rpamount:{precision: 20, min_precision: 6, max_sig_digits: 20} }}&#32;
         span.currency {{exchange.alt.amount | rpcurrency}} &#32;
         span &plusmn; 1%
       p.literal(l10n-inc) Are you sure?
