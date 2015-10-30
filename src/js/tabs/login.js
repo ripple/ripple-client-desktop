@@ -154,12 +154,10 @@ LoginTab.prototype.angular = function (module) {
       $id.enterReadOnlyMode($scope.readOnly);
 
       $location.path('/balance');
-    }
+    };
 
     $scope.submitColdWalletForm = function() {
-      $id.enterColdWalletView($scope.coldWallet);
-
-      $location.path('/coldwallet');
+      $location.path('/coldwallet/' + $scope.coldWallet);
     };
 
     $scope.submitTxnForm = function() {

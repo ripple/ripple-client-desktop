@@ -390,16 +390,7 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
       sessionStorage.authReadOnly = address;
     }
   };
-
-  Id.prototype.enterColdWalletView = function (address) {
-    $scope.address = address;
-  };
-
-  Id.prototype.exitColdWallet = function ()
-  {
-    $scope.address = '';
-  };
-
+  
   /**
    * Go to an identity page.
    *

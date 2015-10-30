@@ -4,7 +4,7 @@ window.jQuery = window.$ = require('jquery');
 window.moment = require('moment');
 window.store = require('store');
 window.Spinner = require('spin');
-window.RippleAPI = require('ripple-lib').RippleAPI;
+//window.RippleAPI = require('ripple-lib').RippleAPI;
 window.ripple = require('ripple-lib')._DEPRECATED;
 window.RippleAddressCodec = require('ripple-address-codec');
 window.RippleBinaryCodec = require('ripple-binary-codec');
