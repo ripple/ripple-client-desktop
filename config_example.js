@@ -47,9 +47,15 @@ if (store.enabled) {
   var settings = JSON.parse(store.get('ripple_settings') || '{}');
 
   if (settings.server && settings.server.servers) {
-    Options.server.servers = _.filter(settings.server.servers, function(s) {
+    var servers = _.filter(settings.server.servers, function(s) {
       return !s.isEmptyServer && _.isNumber(s.port) && !_.isNaN(s.port);
     });
+
+    if (!servers.length) {
+      servers = Options.servers;
+    }
+
+    Options.server = settings.server;
   }
 
   // The new ripple-lib API should use the same servers as the deprecated API

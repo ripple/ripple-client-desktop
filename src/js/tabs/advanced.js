@@ -144,6 +144,61 @@ AdvancedTab.prototype.angular = function(module)
       };
     }
   ]);
+
+  module.controller('ProxyCtrl', ['$scope', function($scope) {
+    $scope.init = function() {
+      var proxy = /(https?):\/\/(([^:]*):([^@]*)@)?([^:]*)(:(\d+))?/g.exec(Options.server.proxy);
+
+      $scope.proxy = {};
+
+      if (proxy) {
+        $scope.proxy = {
+          secure: proxy[1] === 'https',
+          host: proxy[5],
+          port: proxy[7],
+          auth: !!(proxy[3] && proxy[4]),
+          username: proxy[3],
+          password: proxy[4]
+        };
+      }
+    };
+
+    $scope.clear = function() {
+      $scope.save(true);
+    };
+
+    $scope.save = function(clear) {
+      if (clear) {
+        delete Options.server.proxy;
+      } else {
+        Options.server.proxy =
+          ($scope.proxy.secure ? 'https' : 'http') + '://'
+            + ($scope.proxy.auth && $scope.proxy.username && $scope.proxy.password
+              ? $scope.proxy.username + ':' + $scope.proxy.password + '@' : '')
+            + $scope.proxy.host
+            + ($scope.proxy.port ? ':' + $scope.proxy.port : '');
+      }
+
+      // Save in local storage
+      if (!store.disabled) {
+        store.set('ripple_settings', angular.toJson(Options));
+      }
+
+      // Reload
+      location.reload();
+    };
+
+    $scope.cancel = function() {
+      $scope.init();
+      $scope.close();
+    };
+
+    $scope.close = function() {
+      $scope.editing = false;
+    };
+
+    $scope.init();
+  }]);
 };
 
 module.exports = AdvancedTab;
