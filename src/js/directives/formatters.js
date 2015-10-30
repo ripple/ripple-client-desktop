@@ -55,7 +55,7 @@ module.directive('rpPrettyAmount', [function () {
     scope: {
       amount: '=rpPrettyAmount'
     },
-    template: '<span class="value">{{amount | rpamount:{reference_date:date} }}</span> ' +
+    template: '<span class="value">{{amount | rpamount:{precision: 20, min_precision: 6, max_sig_digits: 20, reference_date:date} }}</span> ' +
               '<span class="currency" rp-currency="amount"></span>',
     compile: function (element, attr, linker) {
       return function (scope, element, attr) {

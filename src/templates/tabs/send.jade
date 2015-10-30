@@ -195,10 +195,10 @@ section.col-xs-12.content(ng-controller='SendCtrl')
             p.literal(ng-show="send.currency_code == 'XRP' && !path_status=='no-path'", l10n)
               | Or you can send
         .row.row-padding-small.alternatives(ng-show="send.alternatives.length")
-          .col-xs-12.col-sm-6.col-md-4.col-lg-4(ng-repeat="alt in send.alternatives")
+          .col-xs-12.col-sm-6(ng-repeat="alt in send.alternatives")
             .margin
               .am
-                span.amnt {{alt.amount | rpamount:{rel_precision: 4, rel_min_precision: 2} }}
+                span.amnt {{alt.amount | rpamount:{precision: 20, min_precision: 6, max_sig_digits: 20} }}
                 span(ng-hide="alt.amount.is_native() || alt.amount.issuer() == account.Account")
                   span.issuer(
                   rp-pretty-issuer="alt.amount.issuer()"
@@ -206,7 +206,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
                   rp-pretty-issuer-or-short)
                 span.currency  {{alt.amount | rpcurrency }}
                 .ex (
-                  span.rate {{alt.rate | rpamount:{rel_precision: 4, rel_min_precision: 2 } }}
+                  span.rate {{alt.rate | rpamount:{precision: 20, min_precision: 6, max_sig_digits: 20} }}
                   span.pair {{send.currency_code}}/{{alt.amount | rpcurrency}}
                   | )
               button.btn.btn-block.btn-success(type="submit"
@@ -248,7 +248,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
     group(ng-show='send.indirect')
       p.literal(l10n) You will pay at most
       p.sendmax_feedback
-        span.value {{send.alt.amount | rpamount}}&#32;
+        span.value {{send.alt.amount | rpamount:{precision: 20, min_precision: 6, max_sig_digits: 20} }}&#32;
         span.currency {{send.alt.amount | rpcurrency}} &#32;
         span &plusmn; 1%
     form.call-to-action(ng-submit="send_confirmed()")
