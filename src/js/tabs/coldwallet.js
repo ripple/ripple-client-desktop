@@ -82,6 +82,16 @@ ColdWalletTab.prototype.angular = function (module) {
       var account = network.remote.account(address);
 
       account.entry(function(err, entry) {
+        $scope.accountLoaded = true;
+
+        if (err && err.remote && err.remote.error === 'actNotFound') {
+          $scope.$apply(function() {
+            $scope.accountError = 'Account ' + address + ' has not been found';
+          });
+
+          return;
+        }
+
         var defaultRipple = !!(entry.account_data.Flags & ripple.Remote.flags.DefaultRipple);
         var requireAuth = !!(entry.account_data.Flags & ripple.Remote.flags.RequireAuth);
         var globalFreeze = !!(entry.account_data.Flags & ripple.Remote.flags.GlobalFreeze);
