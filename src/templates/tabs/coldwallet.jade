@@ -17,7 +17,7 @@ container(ng-controller="ColdWalletCtrl")
               dd {{sequenceNumber}}
               dt Network Fee
               dd {{networkFee}} XRP
-      div.col-xs-12.col-sm-7
+      //div.col-xs-12.col-sm-7
         div.well
           p(ng-hide="transactionError") {{lastTxn}} The transaction was validated at {{txnTime | date:'yyyy-MM-dd HH:mm:ss Z'}}.
           p.error(ng-show="transactionError") {{transactionErrorMessage}}
@@ -53,10 +53,10 @@ container(ng-controller="ColdWalletCtrl")
                 th Counterparty
                 th Value
             tbody
-              tr(ng-repeat="balance in balances")
+              tr(ng-repeat="balance in lines")
                 td {{balance.currency}}
-                td {{balance.counterparty}}
-                td {{balance.value}}
+                td {{balance.account}}
+                td {{balance.balance}}
     div.row.row-content(ng-hide="!warningLines.length")
       div.col-xs-12
         h4 Trust Lines with warnings
@@ -71,14 +71,14 @@ container(ng-controller="ColdWalletCtrl")
                 th Warning
             tbody
               tr(ng-repeat="line in warningLines")
-                td {{line.specification.counterparty}}
-                td {{line.specification.currency}}
-                td(ng-if="!line.specification.ripplingDisabled") Enabled
-                td(ng-if="line.specification.ripplingDisabled") Disabled
-                td {{line.specification.authorized}}
+                td {{line.account}}
+                td {{line.currency}}
+                td(ng-if="!line.no_ripple") Enabled
+                td(ng-if="line.no_ripple") Disabled
+                td {{line.authorized}}
                 td {{line.warning}}
     div.row.row-content
       div.col-xs-12.col-sm-2
         button.btn.btn-success(ng-click='refresh()') Refresh
       div.col-xs-12.col-sm-2
-        button.btn.btn-success(ng-click='gotoLogin()') Back to login
+        a.btn.btn-success(href="/#/") Back to login

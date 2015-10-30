@@ -21,9 +21,9 @@ TrustTab.prototype.generateHtml = function () {
 
 TrustTab.prototype.angular = function (module) {
   module.controller('TrustCtrl', ['$scope', 'rpBooks', '$timeout',
-    '$routeParams', 'rpId', '$filter', 'rpNetwork', 'rpKeychain', 'rpApi',
+    '$routeParams', 'rpId', '$filter', 'rpNetwork', 'rpKeychain',
     function ($scope, books, $timeout, $routeParams, id, $filter,
-      $network, keychain, api) {
+      $network, keychain) {
 
       if (!id.loginStatus) {
         id.goId();
