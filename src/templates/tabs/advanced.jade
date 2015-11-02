@@ -52,10 +52,10 @@ section.col-sm-12.content(ng-controller="AdvancedCtrl")
         h4#proxySettings(ng-show="onlineMode", l10n) Proxy settings
         form.server-row-form(ng-show="onlineMode", ng-submit="save()", ng-controller="ProxyCtrl")
           ng-form(name="proxyForm")
-            .row(ng-hide="proxy.host || editing")
+            .row(ng-hide="proxy.host || editProxy")
               .col-sm-3
-                a.btn.btn-primary.btn-block(href="", ng-click="editing = true", l10n) Enable proxy
-            .row.row-padding-small(ng-show="proxy.host || editing")
+                a.btn.btn-primary.btn-block(href="", ng-click="editProxy = true", l10n) Enable proxy
+            .row.row-padding-small(ng-show="proxy.host || editProxy")
               .col-sm-3
                 .descriptor(l10n) Host name
               .col-sm-2
@@ -64,7 +64,7 @@ section.col-sm-12.content(ng-controller="AdvancedCtrl")
                 .descriptor(l10n) Secure
               .col-sm-2
                 .descriptor(l10n) Auth
-            .row.row-padding-small(ng-show="editing")
+            .row.row-padding-small(ng-show="editProxy")
               .col-sm-3
                 input.form-control.host(name='host', type='text', ng-model='proxy.host', rp-hostname)
                 .errorGroup
@@ -89,7 +89,7 @@ section.col-sm-12.content(ng-controller="AdvancedCtrl")
                   ng-disabled='proxyForm.$invalid', l10n) Save
               .col-sm-1
                 a.btn.btn-block.btn-cancel.btn-xs(href="", ng-click="cancel()", l10n) cancel
-            .row.row-padding-small(ng-show="proxy.auth && editing")
+            .row.row-padding-small(ng-show="proxy.auth && editProxy")
               .col-sm-3
                 label
                   .descriptor(l10n) Username
@@ -98,7 +98,7 @@ section.col-sm-12.content(ng-controller="AdvancedCtrl")
                 label
                   .descriptor(l10n) Password
                   input.form-control(name='password', type='text', ng-model='proxy.password')
-            .row.row-padding-small.advanced-form-row(ng-hide="editing || !proxy.host")
+            .row.row-padding-small.advanced-form-row(ng-hide="editProxy || !proxy.host")
               .col-sm-3
                 .description {{proxy.host}}
               .col-sm-2
@@ -112,7 +112,7 @@ section.col-sm-12.content(ng-controller="AdvancedCtrl")
               .col-sm-2
                 a.btn.btn-cancel.btn-block(href="", ng-click="clear()", ng-show="proxy.host", l10n) clear
               .col-sm-2
-                a.btn.btn-cancel.btn-block(href="", ng-click="editing = true", l10n) edit
+                a.btn.btn-cancel.btn-block(href="", ng-click="editProxy = true", l10n) edit
 
         h4#serverSettings(ng-show="onlineMode", l10n) Server settings
         form.server-row-form(ng-show="onlineMode", ng-controller="ServerRowCtrl", ng-repeat="(index, server) in options.server.servers", ng-submit="save()")

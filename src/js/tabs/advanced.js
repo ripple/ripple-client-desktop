@@ -194,7 +194,7 @@ AdvancedTab.prototype.angular = function(module)
     };
 
     $scope.close = function() {
-      $scope.editing = false;
+      $scope.editProxy = false;
     };
 
     $scope.init();
