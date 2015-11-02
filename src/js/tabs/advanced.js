@@ -20,8 +20,8 @@ AdvancedTab.prototype.generateHtml = function ()
 
 AdvancedTab.prototype.angular = function(module)
 {
-  module.controller('AdvancedCtrl', ['$scope', '$rootScope', 'rpId', 'rpKeychain',
-                                    function ($scope, $rootScope, $id, $keychain)
+  module.controller('AdvancedCtrl', ['$scope', '$rootScope', '$route', 'rpId',
+                                    function ($scope, $rootScope, $route, $id)
   {
     if (!$id.loginStatus) {
       $scope.showBanner = true;
@@ -62,7 +62,7 @@ AdvancedTab.prototype.angular = function(module)
       $scope.saved = false;
 
       // Reload
-      location.reload();
+      $route.reload();
     };
 
     $scope.saveMaxNetworkFee = function () {
@@ -75,7 +75,7 @@ AdvancedTab.prototype.angular = function(module)
       $scope.editMaxNetworkFee = false;
 
       // Reload
-      location.reload();
+      $route.reload();
     };
 
     $scope.cancelEditMaxNetworkFee = function () {
@@ -100,8 +100,8 @@ AdvancedTab.prototype.angular = function(module)
 
   }]);
 
-  module.controller('ServerRowCtrl', ['$scope',
-    function ($scope) {
+  module.controller('ServerRowCtrl', ['$scope', '$route',
+    function ($scope, $route) {
       $scope.editing = $scope.server.isEmptyServer;
 
         // Delete the server
@@ -110,7 +110,7 @@ AdvancedTab.prototype.angular = function(module)
 
         $scope.saveSetings();
         if (!$scope.server.isEmptyServer) {
-          location.reload();
+          $route.reload();
         }
       };
 
@@ -140,12 +140,12 @@ AdvancedTab.prototype.angular = function(module)
         $scope.saveSetings();
 
           // Reload
-        location.reload();
+        $route.reload();
       };
     }
   ]);
 
-  module.controller('ProxyCtrl', ['$scope', function($scope) {
+  module.controller('ProxyCtrl', ['$scope', '$route', function($scope, $route) {
     $scope.init = function() {
       var proxy = /(https?):\/\/(([^:]*):([^@]*)@)?([^:]*)(:(\d+))?/g.exec(Options.server.proxy);
 
@@ -185,7 +185,7 @@ AdvancedTab.prototype.angular = function(module)
       }
 
       // Reload
-      location.reload();
+      $route.reload();
     };
 
     $scope.cancel = function() {
