@@ -77,8 +77,7 @@ container(ng-controller="ColdWalletCtrl")
                 td(ng-if="line.no_ripple") Disabled
                 td {{line.authorized}}
                 td {{line.warning}}
-  div.row.row-content
-    div.col-xs-12.col-sm-2
-      button.btn.btn-success(ng-click='refresh()') Refresh
-    div.col-xs-12.col-sm-2
-      a.btn.btn-success(href="#/login") Back to login
+    .col-xs-6.col-sm-2
+      button.btn.btn-success.btn-block(ng-click='refresh()') Refresh
+    .col-xs-6.col-sm-2
+      a.btn.btn-success.btn-block(href="#/login") Back to login
