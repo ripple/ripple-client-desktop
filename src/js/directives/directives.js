@@ -190,7 +190,7 @@ module.directive('rpPopup', ['rpPopup', '$parse', function(popup, $parse) {
   return {
     restrict: 'E',
     link: function postLink(scope, element, attrs) {
-      var a = element.find('a[rp-popup-link]');
+      var a = element.find('a[rp-popup-link], button[rp-popup-link]');
       a.click(function(e) {
         e.preventDefault();
 

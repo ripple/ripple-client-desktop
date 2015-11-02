@@ -195,7 +195,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
               .row
                 .col-xs-8.col-sm-7.col-md-6
                   rp-popup(rp-popup-on-open="grant()") 
-                    a.btn.btn-block.btn-primary.submit(href="", rp-popup-link, ng-disabled='trustForm.$invalid || verifying', l10n) Save
+                    button.btn.btn-block.btn-primary.submit(rp-popup-link, ng-disabled='trustForm.$invalid || verifying', l10n) Save
                     div.connectModal(rp-popup-content)
                       .modal-header
                         .navbar-brand.hidden-sm.modal-logo#logo
