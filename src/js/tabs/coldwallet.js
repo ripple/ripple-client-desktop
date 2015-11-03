@@ -72,6 +72,7 @@ ColdWalletTab.prototype.angular = function (module) {
     }*/
 
     var address = $routeParams.address;
+    $scope.address = address;
 
     // If we are online, fetch account info
     var watcher = $scope.$watch('connected', function(){
