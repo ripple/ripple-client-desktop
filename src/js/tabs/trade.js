@@ -114,15 +114,15 @@ TradeTab.prototype.angular = function(module)
 
     $scope.reset = function () {
       $scope.executedOnOfferCreate = 'none';
-      var pair = store.get('ripple_trade_currency_pair') || $scope.pairs_all[0].name;
+      var pair = store.get('ripple_currency_pair') || $scope.pairs_all[0].name;
 
       // Decide which listing to show
       var listing;
       if ($scope.order) {
         listing = $scope.order.listing;
       }
-      else if(store.get('ripple_trade_listing')) {
-        listing = store.get('ripple_trade_listing');
+      else if(store.get('ripple_listing')) {
+        listing = store.get('ripple_listing');
       }
       else {
         listing = 'orderbook';
@@ -191,7 +191,7 @@ TradeTab.prototype.angular = function(module)
       $scope.order.listing = listing;
 
       if (!store.disabled) {
-        store.set('ripple_trade_listing', listing);
+        store.set('ripple_listing', listing);
       }
     };
 
@@ -594,11 +594,11 @@ TradeTab.prototype.angular = function(module)
     function updateSettings() {
       var order = $scope.order;
       var pair = order.currency_pair;
-      
+
       if (!store.disabled) {
-        store.set('ripple_trade_currency_pair', pair);
+        store.set('ripple_currency_pair', pair);
       }
-      
+
       if ("string" !== typeof pair) pair = "";
       pair = pair.split('/');
 
