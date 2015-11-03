@@ -93,9 +93,9 @@ ColdWalletTab.prototype.angular = function (module) {
           return;
         }
 
-        var defaultRipple = !!(entry.account_data.Flags & ripple.Remote.flags.DefaultRipple);
-        var requireAuth = !!(entry.account_data.Flags & ripple.Remote.flags.RequireAuth);
-        var globalFreeze = !!(entry.account_data.Flags & ripple.Remote.flags.GlobalFreeze);
+        var defaultRipple = !!(entry.account_data.Flags & ripple.Remote.flags.account_root.DefaultRipple);
+        var requireAuth = !!(entry.account_data.Flags & ripple.Remote.flags.account_root.RequireAuth);
+        var globalFreeze = !!(entry.account_data.Flags & ripple.Remote.flags.account_root.GlobalFreeze);
 
         // There are three flags the user is concerned with
         var accountInfo = [];
