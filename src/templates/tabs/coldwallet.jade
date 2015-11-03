@@ -7,10 +7,10 @@ container(ng-controller="ColdWalletCtrl")
 
   group(ng-if="connected && accountLoaded", ng-hide="accountError")
     div.row.row-content
-      div.col-xs-12.col-sm-5
+      div.col-xs-12.col-sm-6
         div.panel.panel-primary
           div.panel-heading
-            h3.panel-title Account {{address}}
+            h3.panel-title Account: {{address}}
           div.panel-body
             dl.dl-horizontal
               dt Sequence Number
