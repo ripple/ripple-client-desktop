@@ -76,7 +76,7 @@ container(ng-controller="ColdWalletCtrl")
                 td(ng-if="!line.no_ripple") Enabled
                 td(ng-if="line.no_ripple") Disabled
                 td {{line.authorized}}
-                td {{line.warning}}
+                td {{line.warning1}} <br>{{line.warning2}}
     .col-xs-6.col-sm-2
       button.btn.btn-success.btn-block(ng-click='refresh()') Refresh
     .col-xs-6.col-sm-2
