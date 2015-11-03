@@ -287,7 +287,7 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
 
         if (blob.data.account_id) {
           // Success
-          callback(null);
+          callback(null, blob);
         } else {
           // Invalid blob
           callback(new Error("Blob format unrecognized!"));
@@ -365,17 +365,12 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
     // Callback is optional
     if ("function" !== typeof callback) callback = $.noop;
 
-    //username = Id.normalizeUsernameForDisplay(username);
-    //password = Id.normalizePassword(password);
-
-    $authflow.unlock(username, password, function (err, resp) {
-      if (err) {
-        callback(err);
-        return;
-      }
-    
-      callback(null, resp.secret);
-    });
+    // Secret is stored in plaintext in memory
+    if ($scope.userBlob.password === password) {
+      callback(null, $scope.userBlob.data.masterkey);
+    } else {
+      callback(new Error('Invalid password'));
+    }
   };
 
   Id.prototype.enterReadOnlyMode = function (address) {
