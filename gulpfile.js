@@ -11,8 +11,8 @@ var gulp = require('gulp'),
   NwBuilder = require('nw-builder'),
   runSequence = require('run-sequence'),
 
-  meta = require('./package.json'),
-  languages = require('./l10n/languages.json').active;
+  meta = require('./package.json');
+  //languages = require('./l10n/languages.json').active;
 
 var $ = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'del', 'browser-sync']
@@ -246,25 +246,34 @@ gulp.task('templates:dev', function () {
     .pipe(gulp.dest(TMP_DIR + 'templates/en'))
 });
 
-var languageTasks = [];
+//var languageTasks = [];
 
-languages.forEach(function(language){
-  gulp.task('templates:' + language.code, function(){
+//languages.forEach(function(language){
+//  gulp.task('templates:' + language.code, function(){
+//    return gulp.src('src/templates/**/*.jade')
+//      .pipe($.jade({
+//        jade: jadeL10n,
+//        languageFile: 'l10n/' + language.code + '/messages.po',
+//        pretty: true
+//      }))
+//      .pipe(gulp.dest(BUILD_DIR + 'templates/' + language.code));
+//  });
 
-    return gulp.src('src/templates/**/*.jade')
-      .pipe($.jade({
-        jade: jadeL10n,
-        languageFile: 'l10n/' + language.code + '/messages.po',
-        pretty: true
-      }))
-      .pipe(gulp.dest(BUILD_DIR + 'templates/' + language.code));
-  });
+  //languageTasks.push('templates:' + language.code);
+//});
 
-  languageTasks.push('templates:' + language.code);
-});
+//gulp.task('templates:dist', function(){
+//  runSequence(languageTasks)
+//});
 
-gulp.task('templates:dist', function(){
-  runSequence(languageTasks)
+gulp.task('templates:dist', function() {
+  return gulp.src('src/templates/**/*.jade')
+    .pipe($.jade({
+      jade: jadeL10n,
+      languageFile: 'l10n/en/messages.po',
+      pretty: true
+    }))
+    .pipe(gulp.dest(BUILD_DIR + 'templates/en'));
 });
 
 // Default Task (Dev environment)
