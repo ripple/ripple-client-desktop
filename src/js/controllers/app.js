@@ -11,9 +11,9 @@ var rewriter = require('../util/jsonrewriter'),
 var module = angular.module('app', []);
 
 module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
-                              'rpKeychain', '$location', '$timeout',
+                              'rpKeychain', '$route', '$timeout',
                               function ($scope, $compile, $id, $net,
-                                        keychain, $location, $timeout)
+                                        keychain, $route, $timeout)
 {
   reset();
 
@@ -599,13 +599,13 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
 
   $scope.logout = function () {
     $id.logout();
-    location.reload();
+    $route.reload();
   };
 
   $scope.$on('$idRemoteLogout', handleRemoteLogout);
   function handleRemoteLogout()
   {
-    location.reload();
+    $route.reload();
   }
 
   // Generate an array of source currencies for path finding.

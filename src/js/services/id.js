@@ -348,7 +348,7 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
     this.username = '';
 
     $scope.address = '';
-//    $location.path('/login');
+    $location.path('/login');
 
     // problem?
     // reload will not work, as some pages are also available for guests.
