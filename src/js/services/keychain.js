@@ -81,16 +81,17 @@ module.factory('rpKeychain', ['$rootScope', '$timeout', 'rpPopup', 'rpId',
     popupScope.confirm = function () {
       unlock.isConfirming = true;
 
-      function handleSecret(err, secret) {
+      function handleSecret(err, secretKey) {
         if (err) {
           // XXX More fine-grained error handling would be good. Can we detect
           //     server down?
           unlock.isConfirming = false;
-          unlock.error = "password";
+          unlock.error = 'password';
+          callback(new Error('Invalid password'));
         } else {
           popup.close();
 
-          callback(null, secret);
+          callback(null, secretKey);
         }
       }
 
