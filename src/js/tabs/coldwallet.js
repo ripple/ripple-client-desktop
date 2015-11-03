@@ -128,18 +128,20 @@ ColdWalletTab.prototype.angular = function (module) {
               // Display any trustlines where the flag does not match the
               // corresponding flag on the account root
               $scope.warningLines = _.reduce(lines.lines, function(result, line) {
-                var warning = '';
+                var warning1 = '';
+                var warning2 = '';
                 if (!!line.no_ripple === defaultRipple) {
-                  warning += 'Rippling flag on line differs from flag on account root\n';
+                  warning1 += 'Rippling flag on line differs from flag on account root.';
                 }
                 if (!!line.authorized !== requireAuth) { // TODO line.authorized ?
-                  warning += 'Cold wallet requires authorization, but account is not authorized.';
+                  warning2 += 'Cold wallet requires authorization, but account is not authorized.';
                 }
-                line.warning = warning;
+                line.warning1 = warning1;
+                line.warning2 =warning2;
                 // Convert to boolean so undefined displays as false
                 line.no_ripple = !!line.no_ripple;
                 line.authorized = !!line.authorized;
-                if (warning) {
+                if (warning1 || warning2) {
                   result.push(line);
                 }
                 return result;
