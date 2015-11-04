@@ -2,6 +2,7 @@
 
 var util = require('util');
 var Tab = require('../client/tab').Tab;
+var Amount = ripple.Amount;
 
 function ColdWalletTab() {
   Tab.call(this);
@@ -81,6 +82,7 @@ ColdWalletTab.prototype.angular = function (module) {
       $scope.networkFee = network.remote.createTransaction()._computeFee() / 1000000;
 
       var account = network.remote.account(address);
+      var server = network.remote._getServer();
 
       account.entry(function(err, entry) {
         $scope.accountLoaded = true;
@@ -124,6 +126,12 @@ ColdWalletTab.prototype.angular = function (module) {
             $scope.$apply(function() {
               $scope.regularKeyEnabled = info.account_data.RegularKey ? 'Yes' : 'No';
               $scope.xrpBalance = info.account_data.Balance / 1000000;
+
+              // To calcute the XRP reserve and available balance
+              var ownerCount  = info.account_data.OwnerCount || 0;
+              $scope.reserve = server._reserve(ownerCount);
+              var bal = Amount.from_json(info.account_data.Balance);
+              $scope.max_spend = bal.subtract($scope.reserve);
             });
           }).request();
 

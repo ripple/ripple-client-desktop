@@ -59,6 +59,14 @@ container(ng-controller="ColdWalletCtrl")
                 td XRP
                 td
                 td {{xrpBalance}}
+              tr.available
+                td Available
+                td
+                td {{ max_spend | rpamount:{precision: 6} }}
+              tr.reserve
+                td Reserve
+                td
+                td {{ reserve | rpamount:{precision: 6} }}
               tr(ng-repeat="balance in lines")
                 td {{balance.currency}}
                 td {{balance.account}}
