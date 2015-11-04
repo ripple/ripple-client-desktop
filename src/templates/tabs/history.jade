@@ -92,98 +92,101 @@ section.col-xs-12.content(ng-controller="HistoryCtrl")
             ng-class="{open: details[entry.hash]}"
             rp-pretty-amount-date="entry.dateRaw")
           .info
-            span.type &nbsp;
-            span.i(ng-hide="entry.details")
-              i.fa.fa-arrow-down(ng-show="entry.transaction.type=='received'")
-              i.fa.fa-arrow-up(ng-show="entry.transaction.type=='sent'")
-              i.fa.fa-download.fa-rotate-90(ng-show="entry.transaction.type=='trusted'")
-              i.fa.fa-download.fa-rotate-270(ng-show="entry.transaction.type=='trusting'")
-              i.fa.fa-exchange(ng-show="!entry.transaction.type || entry.transaction.type=='offernew' || entry.transaction.type=='offercancel' || entry.transaction.type=='exchange' || entry.transaction.type=='rippling'")
-              i.fa.fa-cogs(ng-show="entry.transaction.type=='accountset'")
-              i.fa.fa-cogs(ng-show="entry.transaction.type=='setregularkey'")
-              i.fa.fa-exclamation-triangle(ng-show="entry.transaction.type=='failed'")
-            span.i(ng-show="entry.details")
-              i.fa.fa-arrow-down
-            span.dt {{entry.date | date:'EEE, MMM d, h:mm:ss a'}}
-            span.desc(ng-hide="entry.details", ng-switch="entry.transaction.type")
-              span(ng-switch-when="sent")
-                span(l10n, rp-span-spacing) You sent
-                  span.amount(rp-pretty-amount="entry.transaction.amountSent || entry.transaction.amount")
-                  | to
-                  span.address(rp-pretty-identity="entry.transaction.counterparty")
-                include ./history/_effects.jade
-              span(ng-switch-when="received")
-                span(l10n, rp-span-spacing)
-                  span.address(rp-pretty-identity="entry.transaction.counterparty")
-                  | sent you
-                  span.amount(rp-pretty-amount="entry.transaction.amount")
-                include ./history/_effects.jade
-              span(ng-switch-when="exchange")
-                span(l10n, rp-span-spacing) You requested to exchange
-                  span.amount(rp-pretty-amount="entry.transaction.spent")
-                  | to
-                  span.amount(rp-pretty-amount="entry.transaction.amount")
-                include ./history/_effects.jade
-              span(ng-switch-when="trusted")
-                span(l10n, rp-span-spacing)
-                  span.address(title="{{entry.transaction.counterparty}}") {{entry.transaction.counterparty | rpcontactname}}
-                  | now trusts you for
-                  span.amount(rp-pretty-amount="entry.transaction.amount")
-                include ./history/_effects.jade
-              span(ng-switch-when="trusting")
-                span(l10n, rp-span-spacing) You have now connected to the gateway&#32;
-                  span.address(rp-pretty-identity="entry.transaction.counterparty")
-                  span(ng-show="advanced_feature_switch", l10n-inc) &#32;for&#32;
-                  span.amount(ng-show="advanced_feature_switch", rp-pretty-amount="entry.transaction.amount")
-                  | .
-                include ./history/_effects.jade
-              span(ng-switch-when="offernew")
-                span(ng-show="entry.transaction.sell", l10n, rp-span-spacing) You created an order to sell
-                  span.amount(rp-pretty-amount="entry.transaction.gets")
-                  | for
-                  span.amount(rp-pretty-amount="entry.transaction.pays")
-                span(ng-hide="entry.transaction.sell", l10n, rp-span-spacing) You created an order to buy
-                  span.amount(rp-pretty-amount="entry.transaction.pays")
-                  | for
-                  span.amount(rp-pretty-amount="entry.transaction.gets")
-                include ./history/_effects.jade
-              span(ng-switch-when="offercancel")
-                span(l10n, rp-span-spacing) You cancelled an order accepting&#32;
-                  span.amount(rp-pretty-amount="entry.transaction.pays")
-                  | for
-                  span.amount(rp-pretty-amount="entry.transaction.gets")
-                include ./history/_effects.jade
-              span(ng-switch-when="accountset")
-                span(l10n) Account details have been changed
-                include ./history/_effects.jade
-              span(ng-switch-when="setregularkey")
-                span(l10n) Regular Key Changed
-                include ./history/_effects.jade
-              span(ng-switch-when="rippling")
-                span(l10n) Rippling
-                include ./history/_effects.jade
-              span(ng-switch-when="failed", l10n) Failed transaction
-              span(ng-switch-when="error")
-                strong(l10n) Unknown transaction
-                ul.effects(rp-if="details[entry.hash]")
-                  li
-                    span(l10n) The client failed to parse this transaction. The developers have been notified of the issue.
-              span(ng-switch-default)
-                include ./history/_effects.jade
-            span.desc(ng-show="entry.details", ng-switch="entry.details.type")
-              span(ng-switch-when="giveaway")
-                span(l10n, rp-span-spacing)
-                  span {{entry.details.app.name}}
-                  |  sent you
-                  span.amount(rp-pretty-amount="entry.transaction.amount")
-                  |  and activated your account!
-                include ./history/_effects.jade
-              span(ng-switch-when="deposit")
-                span(l10n, rp-span-spacing)
-                  | You deposited
-                  span.amount(rp-pretty-amount="entry.transaction.amount")
-                  |  using {{entry.details.app.name}}
-                include ./history/_effects.jade
+            .row.row-padding-small
+              .col-sm-4
+                span.type &nbsp;
+                span.i(ng-hide="entry.details")
+                  i.fa.fa-arrow-down(ng-show="entry.transaction.type=='received'")
+                  i.fa.fa-arrow-up(ng-show="entry.transaction.type=='sent'")
+                  i.fa.fa-download.fa-rotate-90(ng-show="entry.transaction.type=='trusted'")
+                  i.fa.fa-download.fa-rotate-270(ng-show="entry.transaction.type=='trusting'")
+                  i.fa.fa-exchange(ng-show="!entry.transaction.type || entry.transaction.type=='offernew' || entry.transaction.type=='offercancel' || entry.transaction.type=='exchange' || entry.transaction.type=='rippling'")
+                  i.fa.fa-cogs(ng-show="entry.transaction.type=='accountset'")
+                  i.fa.fa-cogs(ng-show="entry.transaction.type=='setregularkey'")
+                  i.fa.fa-exclamation-triangle(ng-show="entry.transaction.type=='failed'")
+                span.i(ng-show="entry.details")
+                  i.fa.fa-arrow-down
+                span.dt {{entry.date | date:'EEE, MMM d, h:mm:ss a'}}
+              .col-sm-8
+                span.desc(ng-hide="entry.details", ng-switch="entry.transaction.type")
+                  span(ng-switch-when="sent")
+                    span(l10n, rp-span-spacing) You sent
+                      span.amount(rp-pretty-amount="entry.transaction.amountSent || entry.transaction.amount")
+                      | to
+                      span.address(rp-pretty-identity="entry.transaction.counterparty")
+                    include ./history/_effects.jade
+                  span(ng-switch-when="received")
+                    span(l10n, rp-span-spacing)
+                      span.address(rp-pretty-identity="entry.transaction.counterparty")
+                      | sent you
+                      span.amount(rp-pretty-amount="entry.transaction.amount")
+                    include ./history/_effects.jade
+                  span(ng-switch-when="exchange")
+                    span(l10n, rp-span-spacing) You requested to exchange
+                      span.amount(rp-pretty-amount="entry.transaction.spent")
+                      | to
+                      span.amount(rp-pretty-amount="entry.transaction.amount")
+                    include ./history/_effects.jade
+                  span(ng-switch-when="trusted")
+                    span(l10n, rp-span-spacing)
+                      span.address(title="{{entry.transaction.counterparty}}") {{entry.transaction.counterparty | rpcontactname}}
+                      | now trusts you for
+                      span.amount(rp-pretty-amount="entry.transaction.amount")
+                    include ./history/_effects.jade
+                  span(ng-switch-when="trusting")
+                    span(l10n, rp-span-spacing) You have now connected to the gateway&#32;
+                      span.address(rp-pretty-identity="entry.transaction.counterparty")
+                      span(ng-show="advanced_feature_switch", l10n-inc) &#32;for&#32;
+                      span.amount(ng-show="advanced_feature_switch", rp-pretty-amount="entry.transaction.amount")
+                      | .
+                    include ./history/_effects.jade
+                  span(ng-switch-when="offernew")
+                    span(ng-show="entry.transaction.sell", l10n, rp-span-spacing) You created an order to sell
+                      span.amount(rp-pretty-amount="entry.transaction.gets")
+                      | for
+                      span.amount(rp-pretty-amount="entry.transaction.pays")
+                    span(ng-hide="entry.transaction.sell", l10n, rp-span-spacing) You created an order to buy
+                      span.amount(rp-pretty-amount="entry.transaction.pays")
+                      | for
+                      span.amount(rp-pretty-amount="entry.transaction.gets")
+                    include ./history/_effects.jade
+                  span(ng-switch-when="offercancel")
+                    span(l10n, rp-span-spacing) You cancelled an order accepting&#32;
+                      span.amount(rp-pretty-amount="entry.transaction.pays")
+                      | for
+                      span.amount(rp-pretty-amount="entry.transaction.gets")
+                    include ./history/_effects.jade
+                  span(ng-switch-when="accountset")
+                    span(l10n) Account details have been changed
+                    include ./history/_effects.jade
+                  span(ng-switch-when="setregularkey")
+                    span(l10n) Regular Key Changed
+                    include ./history/_effects.jade
+                  span(ng-switch-when="rippling")
+                    span(l10n) Rippling
+                    include ./history/_effects.jade
+                  span(ng-switch-when="failed", l10n) Failed transaction
+                  span(ng-switch-when="error")
+                    strong(l10n) Unknown transaction
+                    ul.effects(rp-if="details[entry.hash]")
+                      li
+                        span(l10n) The client failed to parse this transaction. The developers have been notified of the issue.
+                  span(ng-switch-default)
+                    include ./history/_effects.jade
+                span.desc(ng-show="entry.details", ng-switch="entry.details.type")
+                  span(ng-switch-when="giveaway")
+                    span(l10n, rp-span-spacing)
+                      span {{entry.details.app.name}}
+                      |  sent you
+                      span.amount(rp-pretty-amount="entry.transaction.amount")
+                      |  and activated your account!
+                    include ./history/_effects.jade
+                  span(ng-switch-when="deposit")
+                    span(l10n, rp-span-spacing)
+                      | You deposited
+                      span.amount(rp-pretty-amount="entry.transaction.amount")
+                      |  using {{entry.details.app.name}}
+                    include ./history/_effects.jade
 
           .details(ng-if="details[entry.hash]")
             .effects(ng-show="entry.balanceEffects")
