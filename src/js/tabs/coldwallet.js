@@ -123,6 +123,7 @@ ColdWalletTab.prototype.angular = function (module) {
           .on('success', function(info) {
             $scope.$apply(function() {
               $scope.regularKeyEnabled = info.account_data.RegularKey ? 'Yes' : 'No';
+              $scope.xrpBalance = info.account_data.Balance / 1000000;
             });
           }).request();
 
@@ -131,7 +132,6 @@ ColdWalletTab.prototype.angular = function (module) {
           .on('success', function(lines) {
             $scope.$apply(function() {
               $scope.lines = lines.lines;
-
               // Display any trustlines where the flag does not match the
               // corresponding flag on the account root
               $scope.warningLines = _.reduce(lines.lines, function(result, line) {
