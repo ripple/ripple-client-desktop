@@ -72,6 +72,7 @@ ColdWalletTab.prototype.angular = function (module) {
     }*/
 
     var address = $routeParams.address;
+    $scope.address = address;
 
     // If we are online, fetch account info
     var watcher = $scope.$watch('connected', function(){
@@ -92,9 +93,9 @@ ColdWalletTab.prototype.angular = function (module) {
           return;
         }
 
-        var defaultRipple = !!(entry.account_data.Flags & ripple.Remote.flags.DefaultRipple);
-        var requireAuth = !!(entry.account_data.Flags & ripple.Remote.flags.RequireAuth);
-        var globalFreeze = !!(entry.account_data.Flags & ripple.Remote.flags.GlobalFreeze);
+        var defaultRipple = !!(entry.account_data.Flags & ripple.Remote.flags.account_root.DefaultRipple);
+        var requireAuth = !!(entry.account_data.Flags & ripple.Remote.flags.account_root.RequireAuth);
+        var globalFreeze = !!(entry.account_data.Flags & ripple.Remote.flags.account_root.GlobalFreeze);
 
         // There are three flags the user is concerned with
         var accountInfo = [];
@@ -127,18 +128,20 @@ ColdWalletTab.prototype.angular = function (module) {
               // Display any trustlines where the flag does not match the
               // corresponding flag on the account root
               $scope.warningLines = _.reduce(lines.lines, function(result, line) {
-                var warning = '';
+                var warning1 = '';
+                var warning2 = '';
                 if (!!line.no_ripple === defaultRipple) {
-                  warning += 'Rippling flag on line differs from flag on account root\n';
+                  warning1 += 'Rippling flag on line differs from flag on account root.';
                 }
                 if (!!line.authorized !== requireAuth) { // TODO line.authorized ?
-                  warning += 'Cold wallet requires authorization, but account is not authorized.';
+                  warning2 += 'Cold wallet requires authorization, but account is not authorized.';
                 }
-                line.warning = warning;
+                line.warning1 = warning1;
+                line.warning2 =warning2;
                 // Convert to boolean so undefined displays as false
                 line.no_ripple = !!line.no_ripple;
                 line.authorized = !!line.authorized;
-                if (warning) {
+                if (warning1 || warning2) {
                   result.push(line);
                 }
                 return result;
