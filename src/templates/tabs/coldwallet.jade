@@ -55,6 +55,10 @@ container(ng-controller="ColdWalletCtrl")
                 th Counterparty
                 th Value
             tbody
+              tr
+                td XRP
+                td
+                td {{xrpBalance}}
               tr(ng-repeat="balance in lines")
                 td {{balance.currency}}
                 td {{balance.account}}
