@@ -17,6 +17,8 @@ container(ng-controller="ColdWalletCtrl")
               dd {{sequenceNumber}}
               dt Network Fee
               dd {{networkFee}} XRP
+              dt Regular Key Enabled
+              dd {{regularKeyEnabled}}
       //div.col-xs-12.col-sm-7
         div.well
           p(ng-hide="transactionError") {{lastTxn}} The transaction was validated at {{txnTime | date:'yyyy-MM-dd HH:mm:ss Z'}}.

@@ -142,6 +142,12 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
           a(href="#/exchange", l10n) Simple
         li(ng-class="{active: $route.current.tabName == 'trade'}")
           a(href="#/trade", l10n) Advanced
+  .subnav(ng-hide="validRegularWallet || readOnly")
+    .container
+      .row
+        .col-sm-12.notification-wrapper
+          .alert.alert-default.text-center(l10n)
+            .h4 This regular-key wallet is invalid. You may browse this account but cannot execute transactions.
 
   //- .subnav(ng-show="$route.current.mainMenu == 'fund'")
     .container
