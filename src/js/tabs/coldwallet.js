@@ -74,7 +74,7 @@ ColdWalletTab.prototype.angular = function (module) {
     var address = $routeParams.address;
 
     // If we are online, fetch account info
-    var watcher = $scope.$watch('connected', function(){
+    var watcher = $scope.$watch('connected', function() {
       if (!$scope.connected) return;
 
       $scope.networkFee = network.remote.createTransaction()._computeFee() / 1000000;
@@ -117,6 +117,13 @@ ColdWalletTab.prototype.angular = function (module) {
         $scope.$apply(function() {
           $scope.accountInfo = accountInfo;
         });
+
+        network.remote.requestAccountInfo({account: address})
+          .on('success', function(info) {
+            $scope.$apply(function() {
+              $scope.regularKeyEnabled = info.account_data.RegularKey ? 'Yes' : 'No';
+            });
+          }).request();
 
         // Fetch account trustlines and determine if any should have a warning
         network.remote.requestAccountLines({account: address})

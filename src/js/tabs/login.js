@@ -1,5 +1,6 @@
 var util = require('util');
 var Tab = require('../client/tab').Tab;
+var RippleAddress = require('../util/types').RippleAddress;
 
 var LoginTab = function ()
 {
@@ -20,10 +21,10 @@ LoginTab.prototype.generateHtml = function ()
 LoginTab.prototype.angular = function (module) {
   module.controller('LoginCtrl', ['$scope', '$element', '$routeParams',
                                   '$location', 'rpId', '$rootScope',
-                                  'rpPopup', '$timeout', 'rpFileDialog','rpNW',
+                                  'rpPopup', '$timeout', 'rpFileDialog', 'rpNetwork', 'rpNW',
                                   function ($scope, $element, $routeParams,
                                             $location, $id, $rootScope,
-                                            popup, $timeout, filedialog, rpNW)
+                                            popup, $timeout, filedialog, network, rpNW)
   {
     if ($id.loginStatus) {
       $location.path('/balance');
@@ -94,6 +95,28 @@ LoginTab.prototype.angular = function (module) {
       }
     };
 
+    // If user logs in with regular key wallet
+    // check to see if wallet is still valid
+    function validRegularWallet(cb) {
+      network.remote.requestAccountInfo({
+        account: $scope.userBlob.data.account_id
+      }, function(accountError, accountInfo) {
+        if (accountError) {
+          // Consider wallet valid
+          console.log('Error getting account data: ', accountError);
+          return cb(null, true);
+        } else if ($scope.userBlob.data.regularKey && !$scope.userBlob.data.masterkey) {
+          // If we are using a regular wallet file (no masterkey)
+          // check to see if regular key is valid
+          var regularKeyPublic = new RippleAddress($scope.userBlob.data.regularKey).getAddress();
+          if (regularKeyPublic !== accountInfo.account_data.RegularKey) {
+            return cb(null, false);
+          }
+        }
+        return cb(null, true);
+      });
+    }
+
     // Issues #1024, #1060
     $scope.$watch('username',function(){
       $timeout(function(){
@@ -130,7 +153,7 @@ LoginTab.prototype.angular = function (module) {
           password: $scope.password,
           walletfile: $scope.walletfile
         }, function (err, blob) {
-          $scope.$apply(function(){
+          $scope.$apply(function() {
             $scope.ajax_loading = false;
             $scope.status = '';
 
@@ -138,9 +161,21 @@ LoginTab.prototype.angular = function (module) {
               $scope.error = 'Login failed: Wallet file or password is wrong.';
 
               return;
-            };
+            }
 
-            $location.path('/balance');
+            // If we are online, check if wallet file is valid
+            if ($scope.onlineMode) {
+              validRegularWallet(function(error, valid) {
+                $scope.$apply(function() {
+                  $rootScope.$broadcast('regularKeyValid', valid);
+                  $location.path('/balance');
+                });
+              });
+            } else {
+              // Not online, can't check regular key
+              $rootScope.$broadcast('regularKeyValid', true);
+              $location.path('/balance');
+            }
           });
         });
       });
