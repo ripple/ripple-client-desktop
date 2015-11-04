@@ -43,7 +43,7 @@ html(ng-app='rp', ng-controller='AppCtrl', ng-class='[$route.current.tabClass, $
     script(src='../deps/modernizr.js')
     // endbuild
 
-  body(ng-class='app_loaded')
+  body(ng-class="{loaded: !pageLoading}")
     //- TODO make this work div(ng-include="'templates/' + lang + '/client/layout.html'")
     div(ng-include="'templates/en/client/layout.html'")
 
