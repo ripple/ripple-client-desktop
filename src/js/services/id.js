@@ -348,6 +348,9 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
     this.username = '';
 
     $scope.address = '';
+    if ($scope.readOnly) {
+      delete $scope.readOnly;
+    }
     $location.path('/login');
 
     // problem?
