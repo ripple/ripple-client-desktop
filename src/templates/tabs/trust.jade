@@ -116,9 +116,8 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     .error(rp-error-on='rpDest', l10n) Please enter a valid Ripple address or contact.
               .row
                 .col-xs-12.form-group
-                  label(for='trust_amount', ng-show="advanced_feature_switch", l10n) Amount
-                  label(for='trust_amount', ng-hide="advanced_feature_switch", l10n) Currency
-                  .row(ng-show="advanced_feature_switch")
+                  label(for='trust_amount', l10n) Amount
+                  .row
                     .col-md-3.col-sm-4.col-xs-3
                       input.form-control.value#trust_amount(name='trust_amount'
                         type='number', min='0', step='any', ng-model='amount'
@@ -126,15 +125,6 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                         rp-autofill-amount
                         rp-autofill-on='addform_visible = true')
                     .col-md-6.col-sm-6.col-xs-9
-                      input.form-control.currency-field#trust_amount_currency(name='trust_amount_currency', type='text'
-                        ng-model='currency', rp-combobox="currency_query", rp-combobox-select
-                        rp-autofill='$routeParams.currency || $routeParams.amount'
-                        rp-autofill-currency
-                        rp-autofill-on='addform_visible = true'
-                        rp-not-xrp
-                        required)
-                  .row(ng-hide="advanced_feature_switch")
-                    .col-md-9.col-sm-10.col-xs-12
                       input.form-control.currency-field#trust_amount_currency(name='trust_amount_currency', type='text'
                         ng-model='currency', rp-combobox="currency_query", rp-combobox-select
                         rp-autofill='$routeParams.currency || $routeParams.amount'
@@ -150,7 +140,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                       |  to trust in XRP, please use XRR currency code.
                     .error(rp-error-on='required', l10n)
                       | Currency field is required
-              .row(ng-show="advanced_feature_switch")
+              .row
                 .col-xs-4.allow-rippling
                   label(for="trust_tfSetfAuth")
                     select#trust_tfSetfAuth(
@@ -204,13 +194,9 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                         div.modal-prompt(l10n) 
                           div(l10n-inc) You are adding a trust line, which means
                           div(l10n-inc) {{ counterparty_address }} can:
-                        div.grey-focus(ng-show="advanced_feature_switch", l10n)
+                        div.grey-focus(l10n)
                           span.modal-permissions(l10n-inc) - Hold up to&#32;
                           span(rp-pretty-amount="amount_feedback")
-                          span.modal-permissions(l10n-inc)  on your behalf
-                        div.grey-focus(ng-hide="advanced_feature_switch", l10n)
-                          span.modal-permissions(l10n-inc) - Hold&#32;
-                          span {{ currency }}
                           span.modal-permissions(l10n-inc)  on your behalf
                         div.modal-buttons
                           button.modal-btn.btn.btn-default.btn-success.btn-md(data-dismiss="modal", ng-click="grant_confirmed()",
@@ -311,18 +297,14 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
               i(class="icon fa fa-money", ng-class="'fa-' + (entry.components[0].currency | lowercase)")
               span.currency(rp-currency="entry.components[0].limit", rp-currency-full)
           .row.head
-            div(
-              ng-class="{ 'col-sm-2 col-xs-2': advanced_feature_switch, 'col-sm-4 col-xs-4 col-md-5': !advanced_feature_switch }"
-              l10n) Counterparty
-            div(
-              ng-class="{ 'col-xs-2 col-sm-2': advanced_feature_switch, 'col-xs-4': !advanced_feature_switch }"
-              l10n) Balance
-            div(ng-show="advanced_feature_switch", ng-class="{ 'col-xs-2': advanced_feature_switch }", l10n) Limit
-            div.col-xs-2.col-sm-2(ng-show="advanced_feature_switch", l10n) Min
-            div.col-xs-1(ng-show="advanced_feature_switch", l10n) Rippling
-            div.col-xs-1(ng-show="advanced_feature_switch", l10n) Frozen
-            div.col-xs-1(ng-show="advanced_feature_switch", l10n) Auth
-            div(ng-class="{'col-xs-1' : advanced_feature_switch, 'col-xs-4 col-md-3': !advanced_feature_switch }", ng-hide="readOnly"
+            div.col-sm-2(l10n) Counterparty
+            div.col-sm-2(l10n) Balance
+            div.col-sm-2(l10n) Limit
+            div.col-sm-2(l10n) Min
+            div.col-xs-1(l10n) Rippling
+            div.col-xs-1(l10n) Frozen
+            div.col-xs-1(l10n) Auth
+            div.col-xs-1(ng-hide="readOnly"
               l10n) Edit
           hr#divider
           .lines
@@ -334,75 +316,26 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                   div(class="actionLink")
                     a(href="", ng-click="close_sign_form()", l10n) Close
               .row(ng-class="{ 'frozen-account': component.freeze_peer }")
-                div.gateway(
-                  ng-class="{ 'col-sm-2 col-xs-2': advanced_feature_switch, 'col-md-5 col-sm-4 col-xs-4': !advanced_feature_switch }",
+                div.gateway.col-sm-2(
                   rp-pretty-identity="component.account", rp-pretty-identity-filters="rpcontactnamefull"
                   )
-                div(
-                  ng-class="{ 'col-xs-2 col-sm-2': advanced_feature_switch, 'col-xs-4': !advanced_feature_switch }")
+                div.col-sm-2
                   | {{ component.balance | rpamount:{precision: 20, min_precision: 6, max_sig_digits: 20} }}
-                div.col-xs-2(ng-show="advanced_feature_switch", ng-class="{ 'col-xs-2': advanced_feature_switch }")
+                div.col-xs-2
                   div {{ component.limit | rpamount }}
-                .col-sm-2.col-xs-2(ng-show="advanced_feature_switch && component.limit_peer._offset == '-100'") {{ component.limit_peer | rpamount }}
-                .col-sm-2.col-xs-2(ng-show="advanced_feature_switch && component.limit_peer._offset !== '-100'", ng-hide="component.limit_peer._offset == '-100' || !advanced_feature_switch") -{{ component.limit_peer | rpamount }}
-                .col-sm-1.col-xs-1(ng-show="advanced_feature_switch")
+                .col-sm-2.col-xs-2(ng-show="component.limit_peer._offset == '-100'") {{ component.limit_peer | rpamount }}
+                .col-sm-2.col-xs-2(ng-show="component.limit_peer._offset !== '-100'", ng-hide="component.limit_peer._offset == '-100'") -{{ component.limit_peer | rpamount }}
+                .col-sm-1.col-xs-1
                   div(ng-show="component.no_ripple", l10n) Off
                   div(ng-hide="component.no_ripple", l10n) On
-                .col-sm-1.col-xs-1(ng-show="advanced_feature_switch")
+                .col-sm-1.col-xs-1
                   div(ng-show="component.freeze", l10n) Yes
                   div(ng-hide="component.freeze", l10n) No
-                .col-sm-1.col-xs-1(ng-show="advanced_feature_switch")
+                .col-sm-1.col-xs-1
                   div(ng-show="component.authorized", l10n) Yes
                   div(ng-hide="component.authorized", l10n) No
-                div.trustLineEdit(ng-hide="component.freeze_peer", ng-class="{ 'btn btn-cancel btn-xs col-xs-1': advanced_feature_switch, 'btn btn-cancel btn-xs col-xs-4 col-md-3': !advanced_feature_switch }"
+                div.trustLineEdit.btn.btn-cancel.btn-xs.col-xs-1(ng-hide="component.freeze_peer"
                   ng-click="edit_account()", ng-hide="editing || readOnly", l10n) edit
-                  span(ng-show="editing && !advanced_feature_switch")
-                    span(ng-hide="trust.loading")
-                      div.row.row-padding-small
-                        .col-md-7.col-sm-7.col-xs-6
-                          span(ng-show='trust.balance !== "0" && orderbookStatus === "exists" && onlineMode')
-                            rp-confirm(
-                            action-text="Are you sure you want to remove this trust line? Ripple Admin Console will attempt to convert the remaining balance of {{ trust.balance }} {{ currency }} into XRP. This action can't be undone."
-                            action-button-text="Convert balance and remove"
-                            action-button-css="btn btn-default btn-danger custom-btn"
-                            action-function="delete_account()"
-                            cancel-button-css="btn btn-cancel"
-                            cancel-button-text="cancel"
-                            ng-hide="showPassword==true")
-                              button.btn.btn-block.btn-danger.submit(type="button", ng-click="load_orderbook()", l10n) Remove
-                          span(ng-show='trust.balance !== "0" && orderbookStatus === "not" && onlineMode')
-                            rp-confirm(
-                            action-text="Are you sure you want to remove this trust line? Ripple Admin Console will return the balance of {{ trust.balance }} {{ currency }} to the issuer. This action can't be undone."
-                            action-button-text="Return balance and remove"
-                            action-button-css="btn btn-default btn-danger custom-btn"
-                            action-function="delete_account()"
-                            cancel-button-css="btn btn-cancel"
-                            cancel-button-text="cancel"
-                            ng-hide="showPassword==true")
-                              button.btn.btn-block.btn-danger.submit(type="button", ng-click="load_orderbook()", l10n) Remove
-                          span(ng-show='trust.balance === "0" && onlineMode')
-                            rp-confirm(
-                            action-text="Are you sure you want to remove this trust line? This action can't be undone."
-                            action-button-text="Remove"
-                            action-button-css="btn btn-default btn-danger custom-btn"
-                            action-function="delete_account()"
-                            cancel-button-css="btn btn-cancel"
-                            cancel-button-text="cancel"
-                            ng-hide="showPassword==true")
-                              button.btn.btn-block.btn-danger.submit(type="button", ng-click="load_orderbook()", l10n) Remove
-                          span(ng-show='!onlineMode')
-                            rp-confirm(
-                            action-text="Are you sure you want to remove this trust line? This action can't be undone."
-                            action-button-text="Remove"
-                            action-button-css="btn btn-default btn-danger custom-btn"
-                            action-function="delete_account()"
-                            cancel-button-css="btn btn-cancel"
-                            cancel-button-text="cancel"
-                            ng-hide="showPassword==true")
-                              button.btn.btn-block.btn-danger.submit(type="button", ng-click="load_orderbook()", l10n) Remove
-                        .col-md-5.col-sm-5.col-xs-6
-                          a.btn.btn-block.btn-cancel(href="", ng-click="cancel()"
-                          ng-disabled="trust.loading", l10n) cancel
 
                 //- Account Freeze
                 div.col-xs-2(ng-show="component.freeze_peer")
@@ -412,7 +345,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     rp-popover-title='Account Frozen'
                     rp-popover-trigger="click"
                     data-content='This account has been frozen. Please contact the issuer to unfreeze your account. <a href=https://ripple.com/wiki/Freeze target=_blank>More about freezing</a>')
-              .row.row-padding-small-xs.editBox(ng-show="editing && advanced_feature_switch")
+              .row.row-padding-small-xs.editBox(ng-show="editing")
                 form(ng-class="{ 'frozen-account': component.freeze_peer }"
                   ng-submit="save_account()")
                   ng-form(name="accountForm")

@@ -32,8 +32,6 @@ var Options = {
   // Set max number of rows for orderbook
   orderbook_max_rows: 20,
 
-  advanced_feature_switch: false,
-
   gateway_max_limit: 1000000000,
 
   // Should only be used for development purposes
@@ -62,10 +60,6 @@ if (store.enabled) {
   Options.api.servers = _.map(Options.server.servers, function(server) {
     return 'wss://' + server.host + ':' + server.port;
   });
-
-  if (settings.advanced_feature_switch) {
-    Options.advanced_feature_switch = settings.advanced_feature_switch;
-  }
 
   if (settings.max_tx_network_fee) {
     Options.max_tx_network_fee = settings.max_tx_network_fee;

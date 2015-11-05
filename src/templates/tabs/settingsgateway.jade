@@ -4,7 +4,6 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
   .row
     .col-sm-12.notification-wrapper
       .alert.alert-success(ng-show="success.bridge", l10n) Your bitcoin bridge has been changed successfully.
-      .alert.alert-success(ng-show="success.advanced_feature_switch", l10n) Trustline advanced settings have been changed successfully.
       .alert.alert-info(ng-show="edit.defaultRippleFlagSaving && onlineMode", l10n) Updating DefaultRipple flag...
       .alert.alert-success(ng-show="notif == 'defaultRippleUpdated && onlineMode'", l10n) DefaultRipple flag updated
       .alert.alert-info(ng-show="edit.requireAuthFlagSaving && onlineMode", l10n) Updating RequireAuth flag...
@@ -27,30 +26,6 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
         signed-transaction(data="{{signedTransaction}}", txJSON="{{txJSON}}", hash="{{hash}}")
       section.content#gateways
         h4(l10n) Gateway and trust line settings
-        form.trust-line-form(name="accountsAdvForm", ng-submit='saveSetting("advanced_feature_switch")')
-          .descriptor(l10n) Trust line
-          .row.settingsgateway-form-row(ng-hide="edit.advanced_feature_switch")
-            .col-sm-3
-              .description(l10n) Advanced settings
-            .col-sm-6
-              .description(ng-show="options.advanced_feature_switch", l10n) Show
-              .description(ng-hide="options.advanced_feature_switch", l10n) Hide
-            .col-sm-3
-              a.btn.btn-cancel.btn-block(href="", ng-click="edit.advanced_feature_switch = true", l10n) edit
-          .row.row-padding-small.settingsgateway-form-row(ng-show="edit.advanced_feature_switch")
-            .col-sm-3
-              .description(l10n) Advanced settings
-            .col-sm-4
-              div.helperInput
-                label
-                  input(type="checkbox", name="acct_adv"
-                  ng-model="options.advanced_feature_switch")
-                  span(l10n) Show
-            .col-sm-3
-              button.btn.btn-block.btn-success.btn-xs.submit#save(type='submit'
-              ng-disabled='serverForm.$invalid', l10n) Save
-            .col-sm-2
-              a.btn.btn-cancel.btn-block(href="", ng-click="cancelEdit('advanced_feature_switch')", l10n) cancel
         // UI for online mode      
         form.trust-line-form(name="accountsAdvForm", ng-submit='saveSetting("defaultRippleFlag")', ng-show="onlineMode")
           .descriptor(l10n) Gateways: Enable if you plan to issue balances
