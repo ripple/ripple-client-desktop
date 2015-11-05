@@ -38,21 +38,22 @@ body {
   opacity: 0;
 }
 
-body.loaded #version {
-  display: none;
-}
-
 body.loaded #wrapper {
   display: block;
 }
 
+#version {
+  display: none;
+}
+
 #appLoading, #noWebSockets {
   margin: 200px 40px 0 40px;
+  padding: 10px;
   text-align: center;
   font: 18px 'OpenSansLight';
   color: @darkgray;
 
-  p{
+  p {
     margin: 50px 0 0 0;
   }
 }
@@ -171,7 +172,7 @@ header {
         border-width: 0 6px 4px 6px;
         border-color: transparent transparent @lightgray transparent;
         position: absolute;
-        bottom: 0;
+        bottom: -1px;
         left: 40%;
       }
     }

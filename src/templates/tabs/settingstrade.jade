@@ -4,7 +4,6 @@ section.col-xs-12.content(ng-controller="SettingsTradeCtrl")
   div(ng-show="!loadingAccount && !account.Balance && loadState.account && connected && !debug")
     include banner/_unfunded
   .row(ng-show='!debug')
-    .col-sm-12
     .col-sm-3
       include settings/_navbar
     .col-sm-9.list
