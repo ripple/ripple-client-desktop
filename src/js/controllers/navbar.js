@@ -46,10 +46,6 @@ module.controller('NavbarCtrl', ['$scope', '$element', '$compile', 'rpId',
     }
   }
 
-  $scope.$on('regularKeyValid', function(evt, valid) {
-    $scope.validRegularWallet = valid;
-  });
-
   $scope.copyTooltip = "Click to copy your ripple address";
   $scope.copyFeedback = null;
   $scope.copy = function() {

@@ -142,7 +142,7 @@ nav.navbar(role="navigation", ng-controller="NavbarCtrl")
           a(href="#/exchange", l10n) Simple
         li(ng-class="{active: $route.current.tabName == 'trade'}")
           a(href="#/trade", l10n) Advanced
-  .subnav(ng-hide="validRegularWallet || readOnly")
+  .subnav(ng-hide="validRegularWallet || readOnly || !onlineMode")
     .container
       .row
         .col-sm-12.notification-wrapper
