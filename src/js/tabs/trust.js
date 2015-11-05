@@ -36,7 +36,6 @@ TrustTab.prototype.angular = function (module) {
 
       var RemoteFlagDefaultRipple = 0x00800000;
       var AuthEnabled = 0x00040000;
-      $scope.advanced_feature_switch = Options.advanced_feature_switch;
       $scope.trust = {};
 
       // Trust line sorting
@@ -162,9 +161,9 @@ TrustTab.prototype.angular = function (module) {
               return;
             }
 
-            if ($scope.advanced_feature_switch === false || $scope.amount === '') {
-              // $scope.amount = Number(ripple.Amount.consts.max_value);
-              $scope.amount = Options.gateway_max_limit;
+            if ($scope.amount === '') {   
+              // $scope.amount = Number(ripple.Amount.consts.max_value);   
+              $scope.amount = Options.gateway_max_limit;   
             }
 
             var amount = ripple.Amount.from_human('' + $scope.amount + ' ' + $scope.lineCurrencyObj.to_hex(), {reference_date: new Date(+new Date() + 5 * 60000)});

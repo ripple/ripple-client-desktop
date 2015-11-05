@@ -77,7 +77,6 @@ SettingsGatewayTab.prototype.angular = function(module)
     $scope.options = Options;
     $scope.optionsBackup = $.extend(true, {}, Options);
     $scope.edit = {
-      advanced_feature_switch: false,
       defaultRippleFlag: false,
       defaultRippleFlagSaving: false,
       requireAuthFlag: false,
@@ -184,9 +183,6 @@ SettingsGatewayTab.prototype.angular = function(module)
 
     $scope.saveSetting = function(type) {
       switch (type) {
-        case 'advanced_feature_switch':
-          $scope.saveBlob();
-          break;
         case 'defaultRippleFlag':
           // Need to set flag on account_root only when chosen option is different from current setting
           if ($scope.currentDefaultRipplingFlagSetting !== $scope.isDefaultRippleFlagEnabled) {
