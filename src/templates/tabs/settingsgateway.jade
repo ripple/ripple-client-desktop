@@ -1,17 +1,19 @@
 section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
   div(ng-show="!loadingAccount && !account.Balance && loadState.account && connected && !debug")
     include ../tabs/banner/_unfunded
+
+  .notification-wrapper
+    .alert.alert-success(ng-show="success.bridge", l10n) Your bitcoin bridge has been changed successfully.
+    .alert.alert-info(ng-show="edit.defaultRippleFlagSaving && onlineMode", l10n) Updating DefaultRipple flag...
+    .alert.alert-success(ng-show="notif == 'defaultRippleUpdated && onlineMode'", l10n) DefaultRipple flag updated
+    .alert.alert-info(ng-show="edit.requireAuthFlagSaving && onlineMode", l10n) Updating RequireAuth flag...
+    .alert.alert-success(ng-show="notif == 'requireAuthUpdated && onlineMode'", l10n) RequireAuth flag updated
+    .alert.alert-danger(ng-show="notif == 'requireAuthFailed && onlineMode'", l10n) RequireAuth flag update failed. {{engine_result}}: {{engine_result_message}}
+    .alert.alert-info(ng-show="edit.globalFreezeFlagSaving && onlineMode", l10n) Updating GlobalFreeze flag...
+    .alert.alert-success(ng-show="notif == 'globalFreezeUpdated && onlineMode'", l10n) GlobalFreeze flag updated
+    .alert.alert-danger(ng-show="notif == 'globalFreezeFailed && onlineMode'", l10n) GlobalFreeze flag update failed. {{engine_result}}: {{engine_result_message}}
+
   .row
-    .col-sm-12.notification-wrapper
-      .alert.alert-success(ng-show="success.bridge", l10n) Your bitcoin bridge has been changed successfully.
-      .alert.alert-info(ng-show="edit.defaultRippleFlagSaving && onlineMode", l10n) Updating DefaultRipple flag...
-      .alert.alert-success(ng-show="notif == 'defaultRippleUpdated && onlineMode'", l10n) DefaultRipple flag updated
-      .alert.alert-info(ng-show="edit.requireAuthFlagSaving && onlineMode", l10n) Updating RequireAuth flag...
-      .alert.alert-success(ng-show="notif == 'requireAuthUpdated && onlineMode'", l10n) RequireAuth flag updated
-      .alert.alert-danger(ng-show="notif == 'requireAuthFailed && onlineMode'", l10n) RequireAuth flag update failed. {{engine_result}}: {{engine_result_message}}
-      .alert.alert-info(ng-show="edit.globalFreezeFlagSaving && onlineMode", l10n) Updating GlobalFreeze flag...
-      .alert.alert-success(ng-show="notif == 'globalFreezeUpdated && onlineMode'", l10n) GlobalFreeze flag updated
-      .alert.alert-danger(ng-show="notif == 'globalFreezeFailed && onlineMode'", l10n) GlobalFreeze flag update failed. {{engine_result}}: {{engine_result_message}}    
     .col-sm-3
       include settings/_navbar
     .col-sm-9.list(ng-show="!loadingAccount && !account.Balance && loadState.account && connected")
