@@ -120,22 +120,6 @@
         }
       }
     }
-    .secret-key-container {
-      margin-bottom: 30px;
-      background: @lightyellow;
-      padding: 15px;
-      border: 1px solid @midgray;
-      color: @darkyellow;
-      .rounded(5px);
-
-      .secret-key {
-        padding-top: 15px;
-        margin-bottom: 10px;
-        span {
-          padding: 0 10px;
-        }
-      }
-    }
     .switch-mode-link-container {
       text-align: center;
 
@@ -143,49 +127,6 @@
         text-decoration: none;
       }
     }
-
-    .sign-up-steps-list {
-      margin-bottom: 15px;
-      li {
-        margin-right: 25px;
-        display: inline-block;
-        list-style: none;
-        padding-bottom: 5px;
-        border-bottom: 5px solid transparent;
-        &.active {
-          color: @darkgray;
-          font-weight: bold;
-          border-bottom: 5px solid @darkgray;
-        }
-        &.completed{
-          color: @darkgray;
-          font-weight: bold;
-        }
-
-      }
-    }
-    .see-privacy-text {
-      color: @darkgray;
-      font-size: 13px;
-      margin-bottom: 15px;
-    }
-
-    &.mode-verify {
-      .code {
-        font-family: OpenSansBold;
-        font-size: 15px;
-        margin: 10px 0;
-      }
-      .status {
-        margin: 10px 0;
-        text-align: center;
-      }
-    }
-  }
-
-  .switch-mode-wrapper {
-    text-align: center;
-    font-family: OpenSansRegular;
   }
 
   .strength {
@@ -210,17 +151,6 @@
     margin: -20px 0 0 0;
   }
 
-  .storageinfo strong {
-    color: @black;
-  }
-
-  .storageinfo a {
-    font-size: 0.7em;
-  }
-
-  .storeChange {
-    display: block;
-  }
   .auth-form-wrapper {
     
     .submit-btn-container {
@@ -256,33 +186,8 @@
   text-align: center;
   }
 
-  h3.platform, h4.new {
-  max-width: 700px;
-  margin: auto;
-  }
-
-  h4.new {
-  padding: 25px 0;
-  border-top: 1px solid @midgray;
-  font-weight: 200;
-  font-size: 1.1em;
-  }
-
   span.currency {
   font-weight: 500;
-  }
-
-  .xrp-xau {
-  font-size: 1.2em;
-  }
-}
-
-#t-migrate {
-  .text-status {
-    #error{
-      font-size: 12px;
-      color: @midred;
-    }
   }
 }
 
@@ -312,90 +217,11 @@
       }
     }
   }
-
-  .maskedPhone {
-    font-size:16px;
-    margin:0 5px;
-  }
-
-  .rememberMe {
-    margin: 4px 7px 0 0;
-    float: left;
-  }
   
   .dragover {
     color: #333333;
     background-color: #e6e6e6;
     border-color: #adadad;
-  }
-
-  .action-login {
-    .info {
-      font-family: OpenSansLight;
-      border-right: 1px solid @midgray;
-
-      @media (max-width: @screen-xs-max) {
-        border-right: none;
-      }
-
-      .literal {
-        font-size: 20px;
-      }
-
-      p {
-        padding-left: @grid-gutter-width/2;
-        padding-right: @grid-gutter-width/2;
-
-        @media (max-width: @screen-sm-max) and (min-width: @screen-xs-max) {
-          padding-left: 0;
-          padding-right: 0;
-        }
-
-        word-break: break-all;
-        font-size: 18px;
-        color: @black;
-      }
-
-      .amount,
-      .address {
-        margin-left: -@grid-gutter-width/2;
-        background-color: @lightgray;
-        margin-bottom: 30px;
-
-        padding-left: @grid-gutter-width;
-        padding-right: @grid-gutter-width;
-
-        @media (max-width: @screen-xs-max) {
-          margin-right: -@grid-gutter-width/2;
-        }
-
-        @media (max-width: @screen-sm-max) and (min-width: @screen-xs-max) {
-          padding-left: @grid-gutter-width/2;
-          padding-right: @grid-gutter-width/2;
-        }
-      }
-
-      .amount {
-        padding-top: 30px;
-        padding-bottom: 25px;
-
-        .number {
-          font-weight: bold;
-          font-size: 30px;
-        }
-        .currency {
-          padding: 0 0 0 5px;
-          font-size: 20px;
-        }
-      }
-
-      .address {
-        padding-top: 25px;
-        padding-bottom: 25px;
-        font: 18px 'OpenSansRegular';
-        color: @darkgray;
-      }
-    }
   }
 }
 
@@ -451,141 +277,6 @@
     text-align: right;
     @media (max-width: @screen-xs-max) {
       font-size: 12px;
-    }
-  }
-
-  .currency-overview {
-    border: 1px solid @midgray;
-    background-color: @lightgray;
-    padding: 10px;
-    margin: 0;
-    margin-bottom: 10px;
-    overflow: hidden;
-
-    .flat-select() {
-      padding-right: 20px;
-      border: none;
-      background: transparent url('../img/dropdown_arrow.svg') no-repeat;
-      background-position: center right;
-      appearance: none;
-      -moz-appearance: none;
-      -webkit-appearance: none;
-      &::-ms-expand{ display:none; } // "appearance" in Internet Explorer 10+
-    }
-
-    .balancebox {
-      padding: 5px;
-      @media (max-width: @screen-xs-max) {
-        text-align: center;
-      }
-      .lbl {
-        font-size   : 1.2em;
-        font-family : OpenSansBold;
-
-        .desc {
-          color: @darkgray;
-          font: 12px OpenSansLight;
-        }
-      }
-
-      .amountDecimal {
-        color: @lightgreen;
-        font-size: 85%;
-      }
-      
-      .amount {
-        color: @darkgreen;
-
-        .fraction {
-          font-family: OpenSansLight;
-          color: @lightgreen;
-        }
-
-        .currency {
-          font-family: OpenSansLight;
-          margin-left: 15px;
-        }
-      }
-
-      .total {
-        margin: 10px 0;
-        font-size: 45px;
-
-        .fraction {
-          font-size: 30px;
-        }
-
-        select.currency {
-          font-size: 20px;
-          .flat-select;
-        }
-      }
-
-      .pending {
-        margin: 10px 0;
-
-        .lbl {
-          font-size: 12px;
-          color: @darkgray;
-          font: 12px OpenSansLight;
-        }
-
-        .amount {
-          font-size: 24px;
-
-          .fraction {
-            font-size: 18px;
-          }
-
-          .currency {
-            font-size: 14px
-          }
-        }
-      }
-    }
-
-    .trendbox {
-      padding: 5px;
-
-      .lbl {
-        .balancebox > .lbl;
-      }
-
-      .trend {
-        margin: 10px 0;
-        font-size: 45px;
-
-        .positive { color: @darkgreen; }
-        .equal { color: @darkblue; }
-        .negative { color: @midred; }
-
-        select.trendspan {
-          font-family: OpenSansLight;
-          margin-left: 15px;
-          font-size: 16px;
-
-          .flat-select;
-        }
-      }
-    }
-
-    .funding-options {
-      border-left: 1px solid @midgray;
-      min-height: 220px;
-      padding: 10px 30px;
-
-      .manual {
-        display: block;
-        font: 12px OpenSansLight;
-      }
-    }
-
-    @media (max-width: @screen-xs-max) {
-      .funding-options {
-        border-left: none;
-        border-top: 1px solid @midgray;
-        min-height: 0;
-      }
     }
   }
 
@@ -1021,22 +712,6 @@
 
   .danger {
     line-height: 42px;
-  }
-}
-
-#t-options {
-  form .row {
-    margin-bottom: 10px;
-  }
-  .errorGroup {
-    height: auto;
-  }
-  .tracking {
-    margin: 0 10px 0 0;
-  }
-
-  .btn-block {
-    margin-bottom: 20px;
   }
 }
 
@@ -1872,53 +1547,6 @@
 
   #add_button, #cancel_button {
     float: right;
-  }
-
-  ul.inline {
-    margin: 0;
-    padding: 0;
-
-    .label {
-      color: @darkgray;
-      text-align: left;
-    }
-    .value {
-      font-weight: bold;
-    }
-
-    li {
-      display: inline-block;
-      font-size: 12px;
-
-      .icon {
-        margin: 0 0 0 3px;
-      }
-      .up {
-        color: @darkgreen;
-      }
-      .down {
-        color: @midred;
-      }
-      @media (max-width: @screen-xs-max) {
-        padding-left: 0;
-      }
-       @media (max-width: @screen-sm-max) {
-        padding-left: 0;
-      }
-    }
-
-    &.issuers {
-      .label {
-        width: 120px;
-      }
-      .value {
-        margin-right: 15px;
-        @media (max-width: @screen-xs-max) {
-          margin-right: 0;
-          padding-right: 15px;
-        }
-      }
-    }
   }
 
   .issuerSelector, .message-select-issuer {
