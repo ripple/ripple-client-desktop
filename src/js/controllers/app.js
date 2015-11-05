@@ -6,7 +6,8 @@
 
 var rewriter = require('../util/jsonrewriter'),
   genericUtils = require('../util/generic'),
-  Amount = ripple.Amount;
+  Amount = ripple.Amount,
+  RippleAddress = require('../util/types').RippleAddress;
 
 var module = angular.module('app', []);
 
@@ -104,6 +105,26 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
   function handleAccountLoad(e, data)
   {
     var remote = $net.remote;
+
+    // If user logs in with regular key wallet
+    // check to see if wallet is still valid
+    remote.requestAccountInfo({
+      account: data.account
+    }, function(accountError, accountInfo) {
+      var validRegularWallet = true;
+      if (accountError) {
+        // Consider wallet valid
+        console.log('Error getting account data: ', accountError);
+      } else if ($scope.userBlob.data.regularKey && !$scope.userBlob.data.masterkey) {
+        // If we are using a regular wallet file (no masterkey)
+        // check to see if regular key is valid
+        var regularKeyPublic = new RippleAddress($scope.userBlob.data.regularKey).getAddress();
+        if (regularKeyPublic !== accountInfo.account_data.RegularKey) {
+          validRegularWallet = false;
+        }
+      }
+      $scope.validRegularWallet = validRegularWallet;
+    });
 
     account = data.account;
 
