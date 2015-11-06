@@ -114,9 +114,9 @@ AdvancedTab.prototype.angular = function(module)
         }
       };
 
-      $scope.hasRemove = function () {
+      /*$scope.hasRemove = function () {
         return !$scope.server.isEmptyServer && $scope.options.server.servers.length !== 1;
-      };
+      };*/
 
       $scope.cancel = function () {
         if ($scope.server.isEmptyServer) {

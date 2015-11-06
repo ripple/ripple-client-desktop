@@ -33,7 +33,9 @@ module.factory('rpNetwork', ['$rootScope', function($scope)
 
   Network.prototype.connect = function() {
     try {
-      this.remote.connect();
+      if (Options.server && Options.server.servers && Options.server.servers.length) {
+        this.remote.connect();
+      }
     } catch (e) {
       console.warn(e);
       // fallback to default servers
