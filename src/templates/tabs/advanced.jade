@@ -140,8 +140,9 @@ section.col-sm-12.content(ng-controller="AdvancedCtrl")
               .col-sm-2
                 button.btn.btn-block.btn-success.btn-xs.submit#save(type='submit'
                 ng-disabled='serverForm.$invalid', l10n) Save
-              .col-sm-2(ng-show="hasRemove()")
-                button.btn.btn-block.btn-danger.btn-xs.submit#delete(type="button", ng-click="remove()", ng-show="hasRemove()", l10n) Delete
+              //.col-sm-2(ng-show="hasRemove()")
+              .col-sm-2
+                button.btn.btn-block.btn-danger.btn-xs.submit#delete(type="button", ng-click="remove()", l10n) Delete
               .col-sm-1.text-center#cancel
                 a.btn.btn-cancel.btn-block(href="", ng-click="cancel()", ng-hide="noCancel()", l10n) cancel
             .row.row-padding-small.advanced-form-row(ng-hide="editing")
