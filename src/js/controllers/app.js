@@ -111,7 +111,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
     remote.requestAccountInfo({
       account: data.account
     }, function(accountError, accountInfo) {
-      var validRegularWallet = true;
+      var invalidRegularWallet = false;
       if (accountError) {
         // Consider wallet valid
         console.log('Error getting account data: ', accountError);
@@ -120,10 +120,10 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
         // check to see if regular key is valid
         var regularKeyPublic = new RippleAddress($scope.userBlob.data.regularKey).getAddress();
         if (regularKeyPublic !== accountInfo.account_data.RegularKey) {
-          validRegularWallet = false;
+          invalidRegularWallet = true;
         }
       }
-      $scope.validRegularWallet = validRegularWallet;
+      $scope.invalidRegularWallet = invalidRegularWallet;
     });
 
     account = data.account;
