@@ -140,89 +140,88 @@ TrustTab.prototype.angular = function (module) {
       /**
        * N2. Confirmation page
        */
-      $scope.grant = function () {
+      $scope.grant = function() {
         // set variable to show throbber
         $scope.verifying = true;
         $scope.error_account_reserve = false;
 
-        function confirmGrant() {
-          $scope.$apply(function() {
-            // hide throbber
-            $scope.verifying = false;
+        $scope.$apply(function() {
+          // hide throbber
+          $scope.verifying = false;
 
-            $scope.lineCurrencyObj = Currency.from_human($scope.currency);
-            var matchedCurrency = $scope.lineCurrencyObj.has_interest() ? $scope.lineCurrencyObj.to_hex() : $scope.lineCurrencyObj.get_iso();
-            var match = /^([a-zA-Z0-9]{3}|[A-Fa-f0-9]{40})\b/.exec(matchedCurrency);
+          $scope.lineCurrencyObj = Currency.from_human($scope.currency);
+          var matchedCurrency = $scope.lineCurrencyObj.has_interest() ? $scope.lineCurrencyObj.to_hex() : $scope.lineCurrencyObj.get_iso();
+          var match = /^([a-zA-Z0-9]{3}|[A-Fa-f0-9]{40})\b/.exec(matchedCurrency);
 
-            if (!match) {
-              // Currency code not recognized, should have been caught by
-              // form validator.
-              console.error('Currency code:', match, 'is not recognized');
-              return;
-            }
+          if (!match) {
+            // Currency code not recognized, should have been caught by
+            // form validator.
+            console.error('Currency code:', match, 'is not recognized');
+            return;
+          }
 
-            if ($scope.amount === '') {   
-              // $scope.amount = Number(ripple.Amount.consts.max_value);   
-              $scope.amount = Options.gateway_max_limit;   
-            }
+          if ($scope.amount === '') {
+            // $scope.amount = Number(ripple.Amount.consts.max_value);
+            $scope.amount = Options.gateway_max_limit;
+          }
 
-            var amount = ripple.Amount.from_human('' + $scope.amount + ' ' + $scope.lineCurrencyObj.to_hex(), {reference_date: new Date(+new Date() + 5 * 60000)});
+          var amount = ripple.Amount.from_human('' + $scope.amount + ' ' + $scope.lineCurrencyObj.to_hex(), {reference_date: new Date(+new Date() + 5 * 60000)});
 
-            amount.set_issuer($scope.counterparty_address);
-            if (!amount.is_valid()) {
-              // Invalid amount. Indicates a bug in one of the validators.
-              return;
-            }
+          amount.set_issuer($scope.counterparty_address);
+          if (!amount.is_valid()) {
+            // Invalid amount. Indicates a bug in one of the validators.
+            return;
+          }
 
-            $scope.amount_feedback = amount;
+          $scope.amount_feedback = amount;
 
-            $scope.confirm_wait = true;
-            $timeout(function () {
-              $scope.confirm_wait = false;
-            }, 1000, true);
+          $scope.confirm_wait = true;
+          $timeout(function() {
+            $scope.confirm_wait = false;
+          }, 1000, true);
 
-            $scope.mode = 'confirm';
-          });
-        }
-
-        confirmGrant();
+          $scope.mode = 'confirm';
+        });
       };
 
       /**
        * N3. Waiting for grant result page
        */
-      $scope.grant_confirmed = function () {
+      $scope.grant_confirmed = function() {
         var amount = $scope.amount_feedback.to_json();
         var tx = $network.remote.transaction();
         // Add memo to tx
         tx.addMemo('client', 'rt' + $scope.version);
 
-
         // Set or clear the trust flags
         // The user may wish to leave the settings unchanged,
         // in which case the flag is not set on the transaction
         var flags = [];
+
         // NoRipple flag
         if ($scope.ripplingFlag === 'tfClearNoRipple') {
           flags.push('ClearNoRipple');
         } else if ($scope.ripplingFlag === 'tfSetNoRipple') {
           flags.push('SetNoRipple');
         }
+
         // Auth flag
         if ($scope.authFlag === 'tfSetfAuth') {
           flags.push('SetAuth');
         }
+
         // Freeze flag
         if ($scope.freezeFlag === 'tfSetFreeze') {
           flags.push('SetFreeze');
         } else if ($scope.freezeFlag === 'tfClearFreeze') {
           flags.push('ClearFreeze');
         }
+
         tx
           .rippleLineSet(id.account, amount)
           .setFlags(flags)
-          .on('proposed', function(res) {
-            $scope.$apply(function () {
+          .on('submitted', function(res) {
+            $scope.$apply(function() {
               setEngineStatus(res, false);
               $scope.granted(tx.hash);
 
@@ -249,8 +248,7 @@ TrustTab.prototype.angular = function (module) {
                 $scope.load_notification(notification);
               });
             });
-          })
-        ;
+          });
 
         keychain.requestSecret(id.account, id.username, function(err, secret) {
           // XXX Error handling
@@ -261,7 +259,6 @@ TrustTab.prototype.angular = function (module) {
           $scope.mode = 'granting';
 
           tx.secret(secret);
-
 
           // If online, submit tx to network, else display tx blob so it can be submitted later
           if ($scope.onlineMode) {
@@ -292,7 +289,7 @@ TrustTab.prototype.angular = function (module) {
       /**
        * N5. Granted page
        */
-      $scope.granted = function (hash) {
+      $scope.granted = function(hash) {
         $scope.mode = 'granted';
         $network.remote.on('transaction', handleAccountEvent);
 
