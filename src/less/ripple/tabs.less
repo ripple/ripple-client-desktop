@@ -553,6 +553,10 @@
   #trustForm {
     margin-bottom: 20px;
 
+    .help-icon {
+      margin-left: 5px;
+    }
+
     .verifying {
       margin-top: 20px;
       margin-bottom: 20px;
@@ -564,9 +568,6 @@
     }
 
     .allow-rippling{
-      & > label, & > i {
-        float: left;
-      }
       @media (max-width: @screen-xs-max){
         .checkbox {
           padding-left: 0;
@@ -574,13 +575,6 @@
             margin-right: 10px;
           }
         }     
-      }
-      & > i {
-        float: left;
-        margin: -4px 0 0 5px;
-        @media (max-width: @screen-xs-max) {
-          margin: -6px 0 0 5px;
-        }
       }
     }
   }
