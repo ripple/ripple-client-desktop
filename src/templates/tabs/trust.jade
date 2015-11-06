@@ -36,9 +36,9 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                 | The particular server you sent the transaction to was too busy to forward or process
                 |  your transaction at the fee you included in it.
       .col-sm-12
-        //- N5. Notifications for edit account
         group.mode-granted.wide(ng-show='notif !== "clear"')
           group(ng-switch="notif")
+            //- Notifications for edit account
             group.pending(ng-switch-when="loading")
               h2.tx-status(l10n) Saving changes...
             group.result-success(ng-switch-when="success")
@@ -47,21 +47,16 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
               h2.tx-status(l10n) There was an error while saving your changes.&#32;
               p(l10n) Please try again later.
 
-      .col-sm-12          
-        //- N5. Notifications for removing account
-        group.mode-granted.wide(ng-show='notif !== "clear"')
-          group(ng-switch="notif")          
+            //- Notifications for removing account
             group.pending(ng-switch-when="remove_trustline")
               h2.tx-status(l10n) Removing trust line...
             group.result-success(ng-switch-when="trustline_removed")
               h2.tx-status(l10n) Trust Line removed!
-            group.result-error(ng-switch-when="error")
-              h2.tx-status(l10n) There was an error while saving your changes.&#32;
-              p(l10n) Please try again later.
             group.result-error(ng-switch-when="max_fee")
               h2.tx-status(l10n) Request failed.
               p(l10n) This request failed because the current network fee is higher than your account limit. You can adjust your maximum network fee in Settings &gt; Advanced, or try again later. <br>
                 | Error code: Network fee exceeded [tejMaxFeeExceeded].
+
       .col-sm-12(ng-show='addform_visible && !can_add_trust')
         .alert.alert-warning(l10n) You must have at least
           strong  {{account.reserve_to_add_trust | rpamount:0}} XRP
