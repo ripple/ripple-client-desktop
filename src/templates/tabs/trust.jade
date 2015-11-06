@@ -86,9 +86,9 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                   | Currency field is required
               .row
                 .col-xs-12.col-sm-10.col-md-9.form-group
+                  label(for="trust_counterparty") Counterparty Address
                   input.form-control#trust_counterparty(
                     name='trust_counterparty', type='text', rp-combobox="counterparty_query"
-                    l10n-placeholder="Counterparty address"
                     ng-model='counterparty'
                     rp-dest, rp-dest-address, rp-dest-contact, rp-not-me, rp-dest-email
                     rp-dest-model="counterparty"
@@ -136,47 +136,47 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     .error(rp-error-on='required', l10n)
                       | Currency field is required
               .row
-                .col-xs-4.allow-rippling
-                  label(for="trust_tfSetfAuth")
-                    select#trust_tfSetfAuth(
-                      name='trust_tfSetfAuth',
-                      ng-model='authFlag', ng-disabled='onlineMode && disallowAuth')
-                      option(value='') No change to auth
-                      option(value='tfSetfAuth') Authorize trust line
+                .col-sm-3.allow-rippling.form-group-sm
+                  label(for="tfSetfAuth") Set Authorization
                   i.fa.fa-question-circle.help-icon(
                     rp-popover
                     rp-popover-placement="bottom"
                     l10n-rp-popover-title="Set Authorization"
                     rp-popover-trigger="click"
                     l10n-data-content="{{setAuthMessage}} <a href=https://ripple.com/build/transactions/#trustset-flags target=_blank>More information</a>")
-                .col-xs-4.allow-rippling
-                  label(for="trust_allowrippling")
-                    select#trust_allowrippling(
-                      name='trust_allowrippling',
-                      ng-model='ripplingFlag')
-                      option(value='') No change to Rippling
-                      option(value='tfClearNoRipple') Allow Rippling
-                      option(value='tfSetNoRipple') Disallow Rippling
+                  select.form-control#tfSetfAuth(
+                    name='trust_tfSetfAuth',
+                    ng-model='authFlag', ng-disabled='onlineMode && disallowAuth')
+                    option(value='') Default
+                    option(value='tfSetfAuth') Authorize trust line
+                .col-sm-3.allow-rippling.form-group-sm
+                  label(for="allowrippling") Allow Rippling
                   i.fa.fa-question-circle.help-icon(
                     rp-popover
                     rp-popover-placement="bottom"
                     l10n-rp-popover-title="Allow Rippling"
                     rp-popover-trigger="click"
                     l10n-data-content="Allow this trust line's balances to be transferred to another issuer you connect to. <a href=https://ripple.com/knowledge_center/understanding-the-noripple-flag target=_blank>More information</a>")
-                .col-xs-4.allow-rippling
-                  label(for="trust_tfSetFreeze")
-                    select#trust_tfSetFreeze(
-                      name='trust_tfSetFreeze'
-                      ng-model='freezeFlag')
-                      option(value='') No change to freeze flag
-                      option(value='tfSetFreeze') Freeze trust line
-                      option(value='tfClearFreeze') Unfreeze trust line
+                  select.form-control#allowrippling(
+                    name='trust_allowrippling',
+                    ng-model='ripplingFlag')
+                    option(value='') Default
+                    option(value='tfClearNoRipple') Allow Rippling
+                    option(value='tfSetNoRipple') Disallow Rippling
+                .col-sm-3.allow-rippling.form-group-sm
+                  label(for="setfreeze") Set Freeze
                   i.fa.fa-question-circle.help-icon(
                     rp-popover
                     rp-popover-placement="bottom"
                     l10n-rp-popover-title="Set Freeze"
                     rp-popover-trigger="click"
                     l10n-data-content="Freeze the trust line <a href=https://ripple.com/build/transactions/#trustset-flags target=_blank>More information</a>")
+                  select.form-control#setfreeze(
+                    name='trust_tfSetFreeze'
+                    ng-model='freezeFlag')
+                    option(value='') Default
+                    option(value='tfSetFreeze') Freeze trust line
+                    option(value='tfClearFreeze') Unfreeze trust line
               .row
                 .col-xs-8.col-sm-7.col-md-6
                   rp-popup(rp-popup-on-open="grant()") 
