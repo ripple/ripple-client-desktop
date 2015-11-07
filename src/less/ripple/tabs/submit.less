@@ -1,3 +1,4 @@
+@import "../variables.less";
 #t-submit {
   .txFileInput {
     cursor: pointer;
@@ -21,9 +22,8 @@
     }
   }
   .txFileRow {
-    height: 80px;
     margin-bottom: 10px;
-    padding: 15px;
+    padding: 15px 15px 0px 15px;
     background: @lightgray;
     border: 1px solid @midgray;
     .fa.fa-times {
@@ -31,14 +31,16 @@
         color: @darkgray;
     }
     .failed {
-      border: 1px solid red;
-      padding: 5px;
-      background: @lightred;
+      color: @midred;
+      font-family: 'OpenSansRegular';
     }
     .success {
-      border: 1px solid green;
-      padding: 5px;
-      background: @lightgreen;
+      color: @midgreen;
+      font-family: 'OpenSansRegular';
     }
   }
+}
+
+.panel-default > .panel-heading {
+  background-color: @lightred;
 }
