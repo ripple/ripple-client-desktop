@@ -125,12 +125,10 @@ SubmitTab.prototype.angular = function (module)
       $scope.initDropzone = function() {
         rpNW.dnd('txDropZone', {
           onDrop: function(e) {
-            $scope.$apply(function() {
-              var newFiles = _.map(e.dataTransfer.files, function(file) {
-                return file.path;
-              });
-              addFiles(newFiles);
+            var newFiles = _.map(e.dataTransfer.files, function(file) {
+              return file.path;
             });
+            addFiles(newFiles);
           }
         });
       };
@@ -139,12 +137,10 @@ SubmitTab.prototype.angular = function (module)
       $scope.fileInputClick = function() {
         // Call the nw.js file dialog
         fileDialog.openFile(function(evt) {
-          $scope.$apply(function() {
-            // Update the file list
-            // Unique array, even if user adds same file twice
-            var newFiles = evt.split(';');
-            addFiles(newFiles);
-          });
+          // Update the file list
+          // Unique array, even if user adds same file twice
+          var newFiles = evt.split(';');
+          addFiles(newFiles);
         }, true);
       };
 
