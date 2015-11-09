@@ -57,19 +57,12 @@ TrustTab.prototype.angular = function (module) {
         hash: $scope.hash,
         tx_blob: $scope.signedTransaction
       });
-      var fileName = $scope.userBlob.data.defaultDirectory + '/' + txnName;
-      fs.writeFile(fileName, txData, function(err) {
-        $scope.$apply(function() {
-          $scope.fileName = fileName;
-          console.log('saved file');
-          if (err) {
-            console.log('Error saving transaction: ', JSON.stringify(err));
-            $scope.error = true;
-          } else {
-            $scope.saved = true;
-          }
-        });
-      });
+      if (!$scope.userBlob.data.defaultDirectory) {
+        $scope.fileInputClick(txnName, txData);
+      }
+      else {
+        $scope.saveToDisk(txnName, txData);
+      }
     };
 
       $scope.reset = function () {

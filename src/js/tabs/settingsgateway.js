@@ -106,19 +106,12 @@ SettingsGatewayTab.prototype.angular = function(module)
         hash: $scope.hash,
         tx_blob: $scope.signedTransaction
       });
-      var fileName = $scope.userBlob.data.defaultDirectory + '/' + txnName;
-      fs.writeFile(fileName, txData, function(err) {
-        $scope.$apply(function() {
-          $scope.fileName = fileName;
-          console.log('saved file');
-          if (err) {
-            console.log('Error saving transaction: ', JSON.stringify(err));
-            $scope.error = true;
-          } else {
-            $scope.saved = true;
-          }
-        });
-      });
+      if (!$scope.userBlob.data.defaultDirectory) {
+        $scope.fileInputClick(txnName, txData);
+      }
+      else {
+        $scope.saveToDisk(txnName, txData);
+      }
     };
 
     $scope.addFlag = function(type) {
@@ -145,9 +138,7 @@ SettingsGatewayTab.prototype.angular = function(module)
         $scope.hash = tx.hash('HASH_TX_ID', false, undefined);
         $scope.offlineSettingsChange = true;
         $scope.edit[type] = false;
-        if ($scope.userBlob.data.defaultDirectory) {
-          $scope.saveTransaction(tx);
-        }
+        $scope.saveTransaction(tx);
       });
     };
 
@@ -175,9 +166,7 @@ SettingsGatewayTab.prototype.angular = function(module)
         $scope.hash = tx.hash('HASH_TX_ID', false, undefined);
         $scope.offlineSettingsChange = true;
         $scope.edit[type] = false;
-        if ($scope.userBlob.data.defaultDirectory) {
-          $scope.saveTransaction(tx);
-        }
+        $scope.saveTransaction(tx);
       });
     };
 
