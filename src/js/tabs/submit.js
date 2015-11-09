@@ -5,6 +5,7 @@ var Tab = require('../client/tab').Tab;
 var fs = require('fs');
 var _ = require('lodash');
 var PriorityQueue = require('priorityqueuejs');
+var async = require('async');
 
 var SubmitTab = function ()
 {
@@ -35,6 +36,91 @@ SubmitTab.prototype.angular = function (module)
         return tx2.sequence - tx1.sequence;
       });
 
+      // Update the file list
+      // Takes array of file paths
+      function addFiles(newFiles) {
+        // Unique list, even if user adds same file twice
+        var uniqueFiles = _.difference(newFiles, _.map($scope.txFiles, function(file) {
+          return file.path;
+        }));
+        // For each added file path, read contents of file
+        // Once all files have been read, update scope with new data
+        async.map(uniqueFiles, function(fileName, cb) {
+            fs.readFile(fileName, 'utf8', function(err, data) {
+              if (err) {
+                console.log('Error reading file: ', err);
+                // Don't return as error b/c that will stop processing of all files
+                // Instead handle in callback function
+                cb(null, {
+                  error: err,
+                  path: fileName
+                });
+              } else {
+                // parse data
+                cb(null, {
+                  path: fileName,
+                  data: data
+                });
+              }
+            });
+          }, function(err, results) {
+            if (err) {
+              // Should never happen
+              console.log('Unable to read files: ', err);
+            } else {
+              var newTxns = _.map(results, function(result) {
+                // Error case 1: Can't read file
+                var splitPath = result.path.split('/');
+                var fileName = splitPath[splitPath.length - 1];
+                if (result.error) {
+                  console.log('Unable to read file: ', result);
+                  return {
+                    path: result.path,
+                    fileName: fileName,
+                    error: 'Unable to read file'
+                  };
+                }
+                var txBlob;
+                try {
+                  var transaction = JSON.parse(result.data);
+                  txBlob = transaction.tx_blob;
+                } catch(error) {
+                  txBlob = result;
+                }
+                var txJson;
+                try {
+                  txJson = RippleBinaryCodec.decode(txBlob);
+                } catch (error) {
+                  // Error case 2: can't decode tx blob
+                  return {
+                    path: result.path,
+                    fileName: fileName,
+                    error: 'Corrupt transaction blob'
+                  };
+                }
+                return {
+                  path: result.path,
+                  txJson: txJson,
+                  blob: txBlob
+                };
+              });
+              $scope.$apply(function() {
+                // Transaction were read and parsed without error
+                var validTxns = _.filter(newTxns, function(txn) {
+                  return txn.txJson;
+                });
+                // Error reading file or parsing data
+                $scope.invalidTxns = _.difference(newTxns, validTxns);
+                // Display files sorted by sequence number
+                $scope.txFiles = _.sortBy(_.union($scope.txFiles, validTxns), function(file) {
+                  return file.txJson.Sequence;
+                });
+              });
+            }
+          }
+        );
+      }
+
       // User drops files on transaction files dropzone
       $scope.initDropzone = function() {
         rpNW.dnd('txDropZone', {
@@ -43,8 +129,7 @@ SubmitTab.prototype.angular = function (module)
               var newFiles = _.map(e.dataTransfer.files, function(file) {
                 return file.path;
               });
-              // Unique array, even if user adds same file twice
-              $scope.txFiles = _.union($scope.txFiles, newFiles);
+              addFiles(newFiles);
             });
           }
         });
@@ -56,9 +141,9 @@ SubmitTab.prototype.angular = function (module)
         fileDialog.openFile(function(evt) {
           $scope.$apply(function() {
             // Update the file list
-            // TODO list should be sorted by sequence number ASC
             // Unique array, even if user adds same file twice
-            $scope.txFiles = _.union($scope.txFiles, evt.split(';'));
+            var newFiles = evt.split(';');
+            addFiles(newFiles);
           });
         }, true);
       };
@@ -72,6 +157,7 @@ SubmitTab.prototype.angular = function (module)
 
       // Once all child rows emit "prepared" event, we are ready to submit
       $scope.$on('prepared', function() {
+        // We only prepare valid txns for submission
         if (++preparedTxns === $scope.txFiles.length) {
           $scope.$broadcast('submit');
         }
@@ -90,6 +176,10 @@ SubmitTab.prototype.angular = function (module)
       $scope.gotoLogin = function() {
         $location.path('/login');
       };
+
+      $scope.closeErrorForm = function() {
+        $scope.invalidTxns = {};
+      };
     }
   ]);
 
@@ -98,8 +188,8 @@ SubmitTab.prototype.angular = function (module)
     function ($scope, network) {
       // Remove the transaction from the list
       $scope.remove = function() {
-        _.remove($scope.txFiles, function(filename) {
-          return filename === $scope.txFile;
+        _.remove($scope.txFiles, function(row) {
+          return row.path === $scope.txFile.path;
         });
       };
 
@@ -111,7 +201,7 @@ SubmitTab.prototype.angular = function (module)
           return;
         }
         // This row is next in queue, submit transaction
-        if ($scope.txFile === $scope.queue.peek().file) {
+        if ($scope.txFile.path === $scope.queue.peek().file) {
           var blob = $scope.queue.deq().blob;
           var request = new ripple.Request(network.remote, 'submit');
           request.message.tx_blob = blob;
@@ -130,13 +220,7 @@ SubmitTab.prototype.angular = function (module)
               } else if (response.engine_result_code === -96) {
                 // Sending account is unfunded
                 $scope.state = 'unfunded';
-                // Parse account from tx blob and display to user
-                var account;
-                try {
-                  account = RippleBinaryCodec.decode(blob).Account;
-                } catch(e) {
-                  console.log('Unable to convert tx blob to JSON: ', e);
-                }
+                var account = $scope.txFile.txJson.Account;
                 $scope.message = 'Fund ' + account + ' with XRP';
               } else if (response.engine_result_code === -183) {
                 // This could happen if, for example, the user opens a regular key wallet file
@@ -164,42 +248,13 @@ SubmitTab.prototype.angular = function (module)
         // Show loading...
         $scope.state = 'pending';
 
-        fs.readFile($scope.txFile, 'utf8', function(err, data) {
-          if (err) {
-            console.log('error reading file: ', err);
-            $scope.state = 'error';
-            $scope.message = 'Unable to read file';
-            // Emit event even if err since parent scope must
-            // be notified that txn was attempted
-            $scope.$emit('prepared');
-            return;
-          }
-          // Transaction will either be a JSON transaction or the signed
-          // blob only, in which case there will not be a tx_blob value
-          var txBlob;
-          var sequence;
-          try {
-            var transaction = JSON.parse(data);
-            txBlob = transaction.tx_blob;
-          } catch(e) {
-            txBlob = data;
-          }
-          // Test to see if blob is formatted properly
-          try {
-            sequence = RippleBinaryCodec.decode(txBlob).Sequence;
-            // Add txn to PQ to order by sequence number
-            $scope.queue.enq({
-              file: $scope.txFile,
-              blob: txBlob,
-              sequence: sequence
-            });
-          } catch(e) {
-            console.log('Corrupted blob: ', e);
-            $scope.state = 'error';
-            $scope.message = 'Malformed transaction';
-          }
-          $scope.$emit('prepared');
+        // Add txns to PQ to order by sequence
+        $scope.queue.enq({
+          file: $scope.txFile.path,
+          blob: $scope.txFile.blob,
+          sequence: $scope.txFile.txJson.Sequence
         });
+        $scope.$emit('prepared');
       });
 
       // Parent broadcasts the submit event

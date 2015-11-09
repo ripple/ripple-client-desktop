@@ -5,15 +5,38 @@ section.col-xs-12.content(ng-controller="SubmitCtrl")
     p.literal(l10n) You have to be online to see this screen
 
   group(ng-if="connected")
-    //- TODO add transaction by copy/pasting the signedtransaction into a textarea
+    div.panel.panel-default(ng-show="invalidTxns.length")
+      div.panel-heading
+        button.close(type="button", class="close", data-dismiss="alert", aria-label="Close", ng-click="invalidTxns = {}")
+          span(aria-hidden="true")
+            i.fa.fa-times
+        strong The following file(s) were not added
+      div.panel-body
+        div.table-responsive
+          table.table.table-striped.table-bordered
+            thead
+              tr
+                th File
+                th Error
+            tbody
+              tr(ng-repeat="invalidTxn in invalidTxns")
+                td {{invalidTxn.path}}
+                td {{invalidTxn.error}}
     form(name="submitForm", ng-submit='submit()')
-      //- TODO order transactions by sequence number
       .txFileRow(ng-controller="TxRowCtrl", ng-repeat="txFile in txFiles")
         .row
-          //- TODO multiple drag and drop
-          //- TODO show more info about the transaction
-          .col-sm-8.fileName {{txFile}}
-          .col-sm-4
+          .col-sm-10
+            div.fileName
+              dl.dl-horizontal
+                dt Transaction file
+                dd {{txFile.path}}
+                dt Account address
+                dd {{txFile.txJson.Account}}
+                dt Sequence number
+                dd {{txFile.txJson.Sequence}}
+                dt Transaction type
+                dd {{txFile.txJson.TransactionType}}
+          .col-sm-2
             .pull-right
               a(ng-hide="state", href="", ng-click="remove()") Remove
               div(ng-show="state == 'pending'") Pending...
@@ -37,7 +60,6 @@ section.col-xs-12.content(ng-controller="SubmitCtrl")
         .form-group.hide
           input.form-control(type="file", name="tx[{{$index}}]", ng-model="txFile")
       .form-group
-        //- TODO check to not add the same file again (throws an exception)
         a.txFileInput#txDropZone(ng-click='fileInputClick()', ng-init="initDropzone()" l10n)
           | + Add or drop transaction file(s) here
       .form-group(ng-show="txFiles.length")
