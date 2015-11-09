@@ -7,14 +7,15 @@
 var rewriter = require('../util/jsonrewriter'),
   genericUtils = require('../util/generic'),
   Amount = ripple.Amount,
-  RippleAddress = require('../util/types').RippleAddress;
+  RippleAddress = require('../util/types').RippleAddress,
+  fs = require('fs');
 
 var module = angular.module('app', []);
 
 module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
-                              'rpKeychain', '$route', '$timeout',
+                              'rpKeychain', '$route', '$timeout', 'rpFileDialog',
                               function ($scope, $compile, $id, $net,
-                                        keychain, $route, $timeout)
+                                        keychain, $route, $timeout, fileDialog)
 {
   reset();
 
@@ -29,8 +30,12 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
       if (!$scope.userBlob.data.fee) {
         $scope.userBlob.set('/fee', 200000);
       }
+      if (!$scope.userBlob.data.defaultDirectory) {
+        $scope.userBlob.set('/defaultDirectory', '');
+      }
       $scope.sequence = $scope.userBlob.data.sequence;
       $scope.fee = $scope.userBlob.data.fee;
+      $scope.defaultDirectory = $scope.userBlob.data.defaultDirectory;
     }
   });
 
@@ -59,6 +64,39 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
     $scope.showAnnouncement = store.get('announcement');
   }
 
+  // Set default directory if it has not already been set
+  $scope.fileInputClick = function(txnName, txData) {
+    fileDialog.openDir(function(evt) {
+      $scope.$apply(function() {
+        $scope.defaultDirectory = evt;
+        $scope.$watch('userBlob', function() {
+          if ($scope.userBlob.data && $scope.userCredentials.username) {
+            $scope.userBlob.set('/defaultDirectory', evt);
+            if ($scope.defaultDirectory) {
+              $scope.saveToDisk(txnName, txData);
+            }
+          }
+        });
+      });
+    });
+  };
+
+  $scope.saveToDisk = function(txnName, txData) {
+    var fileName = $scope.userBlob.data.defaultDirectory + '/' + txnName;
+    fs.writeFile(fileName, txData, function(err) {
+      $scope.$apply(function() {
+        $scope.fileName = fileName;
+        console.log('saved file');
+        if (err) {
+          console.log('Error saving transaction: ', JSON.stringify(err));
+          $scope.error = true;
+        } else {
+          $scope.saved = true;
+        }
+      });
+    });
+  };
+
   // Global reference for debugging only (!)
   if ("object" === typeof rippleclient) {
     rippleclient.id = $id;
@@ -68,6 +106,7 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
 
   function reset()
   {
+    $scope.defaultDirectory = '';
     $scope.account = {};
     $scope.lines = {};
     $scope.offers = {};

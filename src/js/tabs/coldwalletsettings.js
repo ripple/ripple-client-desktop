@@ -24,23 +24,6 @@ ColdwalletSettingsTab.prototype.angular = function(module) {
     if (!id.loginStatus) {
       id.goId();
     }
-    if ($scope.userBlob.data.defaultDirectory) {
-      $scope.defaultDirectory = $scope.userBlob.data.defaultDirectory;
-    }
-
-    $scope.fileInputClick = function() {
-      fileDialog.openDir(function(evt) {
-        $scope.$apply(function() {
-          $scope.defaultDirectory = evt;
-          $scope.$watch('userBlob', function() {
-            if ($scope.userBlob.data && $scope.userCredentials.username) {
-              $scope.userBlob.set('/defaultDirectory', evt);
-              $scope.defaultDirectory = $scope.userBlob.data.defaultDirectory;
-            }
-          });
-        });
-      });
-    };
 
     // Update the blob with the new sequence
     $scope.saveSequence = function() {
