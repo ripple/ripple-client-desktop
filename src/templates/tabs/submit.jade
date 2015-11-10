@@ -25,7 +25,7 @@ section.col-xs-12.content(ng-controller="SubmitCtrl")
     form(name="submitForm", ng-submit='submit()')
       .txFileRow(ng-controller="TxRowCtrl", ng-repeat="txFile in txFiles")
         .row
-          .col-sm-10
+          .col-sm-8
             div.fileName
               dl.dl-horizontal
                 dt Transaction file
@@ -37,25 +37,21 @@ section.col-xs-12.content(ng-controller="SubmitCtrl")
                 dt Transaction type
                 dd {{txFile.txJson.TransactionType}}
           .col-sm-2
+          .col-sm-2
             .pull-right
               a(ng-hide="state", href="", ng-click="remove()") Remove
               div(ng-show="state == 'pending'") Pending...
+              a.pull-right(ng-show="state == 'error' || state == 'unfunded' || state == 'bad_auth_master' || state == 'success'", ng-click="remove()")
+                i.fa.fa-times
               div.failed(ng-show="state == 'error'")
                 | {{message}}
-                a(ng-click="remove()")
-                  i.fa.fa-times
               div.failed(ng-show="state == 'unfunded'")
                 | {{message}}
-                a(ng-click="remove()")
-                  i.fa.fa-times
               div.failed(ng-show="state == 'bad_auth_master'")
                 | {{message}}
-                a(ng-click="remove()")
-                  i.fa.fa-times
               div.success(ng-show="state == 'success'")
                 | {{message}}
-                a(ng-click="remove()")
-                  i.fa.fa-times
+
 
         .form-group.hide
           input.form-control(type="file", name="tx[{{$index}}]", ng-model="txFile")
