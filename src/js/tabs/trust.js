@@ -74,6 +74,7 @@ TrustTab.prototype.angular = function (module) {
         $scope.counterparty_name = '';
         $scope.saveAddressName = '';
         $scope.error_account_reserve = false;
+        $scope.addressSaved = false;
       };
 
       $scope.toggle_form = function () {
@@ -256,7 +257,6 @@ TrustTab.prototype.angular = function (module) {
           // If online, submit tx to network, else display tx blob so it can be submitted later
           if ($scope.onlineMode) {
             tx.submit();
-            $scope.toggle_form();
           } else {
             tx.tx_json.Sequence = Number($scope.sequence);
             $scope.incrementSequence();
@@ -294,10 +294,6 @@ TrustTab.prototype.angular = function (module) {
             }
           });
         }
-
-        $timeout(function() {
-          $scope.mode = 'main';
-        }, 10000);
       };
 
       function setEngineStatus(res, accepted) {

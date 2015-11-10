@@ -244,33 +244,33 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
           //- Offline Sending
           group.mode-status(ng-show='mode=="offlineSending"')
             signed-transaction(data="{{signedTransaction}}", txJSON="{{txJSON}}", hash="{{hash}}")
-            group.actions
+
+          div.row.row-content(ng-show="mode==='offlineSending' || (onlineMode && mode === 'granted')")
+            .col-xs-12
+              .text-success(ng-show='addressSaved', class="actionLink", l10n) Contact saved!
+              .save-address-form(ng-show="!contact", class="actionLink")
+                a(href="", ng-click='show_save_address_form = true', ng-hide='addressSaved', l10n)
+                  | Add this address to contacts
+                form(name="saveAddressForm", ng-class="{ show: show_save_address_form }"
+                ng-submit='saveAddress()')
+                  .address {{counterparty_address}}
+                  label(for='save_address_name', l10n) Name this user
+                  input.form-control#contact_name(
+                  name='save_address_name', type="text"
+                  ng-model='saveAddressName', unique, ng-required='true'
+                  rp-autofill='$routeParams.name')
+                  .error(ng-show='saveAddressForm.save_address_name.$error.unique', l10n)
+                    | You already have a contact with the same name.
+                  div.row.add-contact-btns-wrapper
+                    div.col-md-3.col-sm-4.col-xs-8
+                      button.btn.btn-success.btn-block(type='submit'
+                        ng-disabled='addressSaving || saveAddressForm.$invalid')
+                        span(ng-show='addressSaving', l10n) Saving...
+                        span(ng-hide='addressSaving', l10n) Save
+                    div.col-md-1.col-sm-2.col-xs-4
+                      a.btn.btn-block(href="", ng-click='show_save_address_form = false', l10n) cancel
               div(class="actionLink")
-                a(href="", ng-click="toggle_form()", l10n) Back to trust lines
-            hr
-            .text-success(ng-show='addressSaved', class="actionLink", l10n) Contact saved!
-            .save-address-form(ng-hide='contact', class="actionLink")
-              a(href="", ng-click='show_save_address_form = true', ng-hide='addressSaved', l10n)
-                | Add this address to contacts
-              form(name="saveAddressForm", ng-class="{ show: show_save_address_form }"
-              ng-submit='saveAddress()')
-                .address {{counterparty_address}}
-                label(for='save_address_name', l10n) Name this user
-                input.form-control#contact_name(
-                name='save_address_name', type="text"
-                ng-model='saveAddressName', unique, required
-                rp-autofill='$routeParams.name')
-                .error(ng-show='saveAddressForm.save_address_name.$error.unique', l10n)
-                  | You already have a contact with the same name.
-                div.row.add-contact-btns-wrapper
-                  div.col-md-3.col-sm-4.col-xs-8
-                    button.btn.btn-success.btn-block(type='submit'
-                      ng-disabled='addressSaving || saveAddressForm.$invalid')
-                      span(ng-show='addressSaving', l10n) Saving...
-                      span(ng-hide='addressSaving', l10n) Save
-                  div.col-md-1.col-sm-2.col-xs-4
-                    a.btn.btn-block(href="", ng-click='show_save_address_form = false', l10n) cancel
-                hr
+                a(href="", ng-click="toggle_form()", l10n) Back to trustlines
 
 
         .row
@@ -280,7 +280,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
         //- Account is funded
         .row(ng-hide="readOnly")
           .col-xs-12.col-sm-4.col-md-3.actions.btn-add-trust
-            a.btn.btn-primary.btn-sm.btn-block.sign(ng-click='toggle_form()', ng-show='!addform_visible && ((account.Balance && connected) || !onlineMode)',
+            a.btn.btn-primary.btn-sm.btn-block.sign(ng-click='toggle_form()', ng-show="mode === 'main' && (!addform_visible && ((account.Balance && connected) || !onlineMode))",
             ng-disabled='addform_visible', l10n) Add trust line
 
         div.disconnected(ng-hide="onlineMode")
