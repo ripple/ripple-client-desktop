@@ -173,7 +173,7 @@ exports.queryFromContacts = function (contacts)
     _.map(contacts, function (entry) {
       return {
         name: entry.name,
-        additional: entry.view || entry.address
+        additional: entry.address
       }
     })
   );
