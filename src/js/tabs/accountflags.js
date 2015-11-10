@@ -3,23 +3,23 @@ var util = require('util'),
     Tab = require('../client/tab').Tab,
     fs = require('fs');
 
-var SettingsGatewayTab = function() {
+var AccountFlagsTab = function() {
   Tab.call(this);
 };
 
-util.inherits(SettingsGatewayTab, Tab);
+util.inherits(AccountFlagsTab, Tab);
 
-SettingsGatewayTab.prototype.tabName = 'settingsgateway';
-SettingsGatewayTab.prototype.mainMenu = 'settingsgateway';
+AccountFlagsTab.prototype.tabName = 'accountflags';
+AccountFlagsTab.prototype.mainMenu = 'accountflags';
 
-SettingsGatewayTab.prototype.generateHtml = function() {
-  return require('../../templates/tabs/settingsgateway.jade')();
+AccountFlagsTab.prototype.generateHtml = function() {
+  return require('../../templates/tabs/accountflags.jade')();
 };
 
 
-SettingsGatewayTab.prototype.angular = function(module)
+AccountFlagsTab.prototype.angular = function(module)
 {
-  module.controller('SettingsGatewayCtrl', ['$scope', 'rpId', 'rpKeychain', 'rpNetwork',
+  module.controller('AccountFlagsCtrl', ['$scope', 'rpId', 'rpKeychain', 'rpNetwork',
                                     function ($scope, id, keychain, network)
   {
     if (!id.loginStatus) id.goId();
@@ -304,4 +304,4 @@ SettingsGatewayTab.prototype.angular = function(module)
   }]);
 };
 
-module.exports = SettingsGatewayTab;
+module.exports = AccountFlagsTab;

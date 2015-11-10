@@ -74,7 +74,7 @@ var tabdefs = [
   require('../tabs/security'),
   require('../tabs/tx'),
   require('../tabs/eula'),
-  require('../tabs/settingsgateway'),
+  require('../tabs/accountflags'),
   require('../tabs/settingstrade'),
   require('../tabs/coldwallet'),
   require('../tabs/submit'),

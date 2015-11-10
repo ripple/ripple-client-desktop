@@ -1,4 +1,4 @@
-section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
+section.col-xs-12.content(ng-controller="AccountFlagsCtrl")
   div(ng-show="!loadingAccount && !account.Balance && loadState.account && connected && !debug")
     include ../tabs/banner/_unfunded
 
@@ -27,11 +27,11 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
       div(ng-show='offlineSettingsChange')
         signed-transaction(data="{{signedTransaction}}", txJSON="{{txJSON}}", hash="{{hash}}")
       section.content#gateways
-        h4(l10n) Gateway and trust line settings
+        h4(l10n) Account Flags
         // UI for online mode      
         form.trust-line-form(name="accountsAdvForm", ng-submit='saveSetting("defaultRippleFlag")', ng-show="onlineMode")
-          .descriptor(l10n) Gateways: Enable if you plan to issue balances
-          .row.settingsgateway-form-row(ng-hide="edit.defaultRippleFlag")
+          .descriptor(l10n) Enable if you plan to issue balances
+          .row.accountflags-form-row(ng-hide="edit.defaultRippleFlag")
             .col-sm-3
               .description(l10n) DefaultRipple flag
             .col-sm-6
@@ -41,7 +41,7 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
                 img(src="img/button-s.png", class="loader")
             .col-sm-3
               a.btn.btn-cancel.btn-block(href="", ng-click="edit.defaultRippleFlag = true", ng-hide="edit.defaultRippleFlagSaving", l10n) edit
-          .row.row-padding-small.settingsgateway-form-row(ng-show="edit.defaultRippleFlag")
+          .row.row-padding-small.accountflags-form-row(ng-show="edit.defaultRippleFlag")
             .col-sm-3
               .description(l10n) DefaultRipple flag
             .col-sm-4
@@ -57,14 +57,14 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
               a.btn.btn-cancel.btn-block(href="", ng-click='edit.defaultRippleFlag = false', l10n) cancel
         // UI for offline mode
         form.trust-line-form(name="accountsAdvForm", ng-show="!onlineMode")
-          .descriptor(l10n) Gateways: Add if you plan to issue balances
-          .row.settingsgateway-form-row(ng-hide="edit.defaultRippleFlag")
+          .descriptor(l10n) Add if you plan to issue balances
+          .row.accountflags-form-row(ng-hide="edit.defaultRippleFlag")
             .col-sm-3
               .description(l10n) DefaultRipple flag
             .col-sm-6
             .col-sm-3
               a.btn.btn-cancel.btn-block(href="", ng-click="edit.defaultRippleFlag = true", l10n) edit
-          .row.settingsgateway-form-row(ng-show="edit.defaultRippleFlag")      
+          .row.accountflags-form-row(ng-show="edit.defaultRippleFlag")
             .col-sm-3
               .description(l10n) DefaultRipple flag
             .col-sm-3
@@ -75,8 +75,8 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
               a.btn.btn-cancel.btn-block(href="", ng-click='edit.defaultRippleFlag = false', l10n) cancel
         // UI for online mode      
         form.trust-line-form(name="accountsAdvForm", ng-submit='saveSetting("requireAuthFlag")', ng-show="onlineMode")
-          .descriptor(l10n) Gateways: Enable if you require authorization for other users to extend a trust line to you
-          .row.settingsgateway-form-row(ng-hide="edit.requireAuthFlag")
+          .descriptor(l10n) Enable if you require authorization for other users to extend a trust line to you
+          .row.accountflags-form-row(ng-hide="edit.requireAuthFlag")
             .col-sm-3
               .description(l10n) RequireAuth flag
             .col-sm-6
@@ -86,7 +86,7 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
                 img(src="img/button-s.png", class="loader")
             .col-sm-3
               a.btn.btn-cancel.btn-block(href="", ng-click="edit.requireAuthFlag = true", ng-hide="edit.requireAuthFlagSaving", l10n) edit
-          .row.row-padding-small.settingsgateway-form-row(ng-show="edit.requireAuthFlag")
+          .row.row-padding-small.accountflags-form-row(ng-show="edit.requireAuthFlag")
             .col-sm-3
               .description(l10n) RequireAuth flag
             .col-sm-4
@@ -102,14 +102,14 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
               a.btn.btn-cancel.btn-block(href="", ng-click='edit.requireAuthFlag = false', l10n) cancel
         // UI for offline mode
         form.trust-line-form(name="accountsAdvForm", ng-show="!onlineMode")
-          .descriptor(l10n) Gateways: Add if you require authorization for users to hold balances by this account
-          .row.settingsgateway-form-row(ng-hide="edit.requireAuthFlag")
+          .descriptor(l10n) Add if you require authorization for users to hold balances by this account
+          .row.accountflags-form-row(ng-hide="edit.requireAuthFlag")
             .col-sm-3
               .description(l10n) RequireAuth flag
             .col-sm-6
             .col-sm-3
               a.btn.btn-cancel.btn-block(href="", ng-click="edit.requireAuthFlag = true", l10n) edit
-          .row.settingsgateway-form-row(ng-show="edit.requireAuthFlag")      
+          .row.accountflags-form-row(ng-show="edit.requireAuthFlag")
             .col-sm-3
               .description(l10n) RequireAuth flag
             .col-sm-3
@@ -120,8 +120,8 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
               a.btn.btn-cancel.btn-block(href="", ng-click='edit.requireAuthFlag = false', l10n) cancel
         // UI for online mode       
         form.trust-line-form(name="accountsAdvForm", ng-submit='saveSetting("globalFreezeFlag")', ng-show="onlineMode")
-          .descriptor(l10n) Gateways: Enable if you want to freeze all assets issued by this account
-          .row.settingsgateway-form-row(ng-hide="edit.globalFreezeFlag")
+          .descriptor(l10n) Enable if you want to freeze all assets issued by this account
+          .row.accountflags-form-row(ng-hide="edit.globalFreezeFlag")
             .col-sm-3
               .description(l10n) GlobalFreeze flag
             .col-sm-6
@@ -131,7 +131,7 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
                 img(src="img/button-s.png", class="loader")
             .col-sm-3
               a.btn.btn-cancel.btn-block(href="", ng-click="edit.globalFreezeFlag = true", ng-hide="edit.globalFreezeFlagSaving", l10n) edit
-          .row.row-padding-small.settingsgateway-form-row(ng-show="edit.globalFreezeFlag")
+          .row.row-padding-small.accountflags-form-row(ng-show="edit.globalFreezeFlag")
             .col-sm-3
               .description(l10n) GlobalFreeze flag
             .col-sm-4
@@ -147,14 +147,14 @@ section.col-xs-12.content(ng-controller="SettingsGatewayCtrl")
               a.btn.btn-cancel.btn-block(href="", ng-click='edit.globalFreezeFlag = false', l10n) cancel
         // UI for offline mode
         form.trust-line-form(name="accountsAdvForm", ng-show="!onlineMode")
-          .descriptor(l10n) Gateways: Add if you want to freeze all assets issued by this account
-          .row.settingsgateway-form-row(ng-hide="edit.globalFreezeFlag")
+          .descriptor(l10n) Add if you want to freeze all assets issued by this account
+          .row.accountflags-form-row(ng-hide="edit.globalFreezeFlag")
             .col-sm-3
               .description(l10n) GlobalFreeze flag
             .col-sm-6
             .col-sm-3
               a.btn.btn-cancel.btn-block(href="", ng-click="edit.globalFreezeFlag = true", l10n) edit
-          .row.settingsgateway-form-row(ng-show="edit.globalFreezeFlag")
+          .row.accountflags-form-row(ng-show="edit.globalFreezeFlag")
             .col-sm-3
               .description(l10n) GlobalFreeze flag
             .col-sm-3
