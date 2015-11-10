@@ -139,9 +139,9 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
     this.keys = keys;
   };
 
-  Id.prototype.isReturning = function ()
+  Id.prototype.acceptedTou = function ()
   {
-    return !!store.get('ripple_known');
+    return !!store.get('accepted_tou');
   };
 
   Id.prototype.isLoggedIn = function ()
@@ -208,7 +208,6 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
       self.loginStatus = true;
       $scope.$broadcast('$blobUpdate');
 
-      store.set('ripple_known', true);
       callback(null, masterkey);
     });
   };
@@ -283,7 +282,6 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
         store.set('device_id', blob.device_id);
         self.loginStatus = true;
         $scope.$broadcast('$blobUpdate');
-        store.set('ripple_known', true);
 
         if (blob.data.account_id) {
           // Success
@@ -326,7 +324,6 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
       store.set('device_id', options.blob.device_id);
       self.loginStatus = true;
       $scope.$broadcast('$blobUpdate');
-      store.set('ripple_known', true);  
       callback();          
     });
   };
@@ -428,10 +425,11 @@ module.factory('rpId', ['$rootScope', '$location', '$route', '$routeParams', '$t
         return;
       }
 
-      if (this.isReturning()) {
+      if (this.acceptedTou()) {
+        // Should always go to login because that is the home page with the menu items
         $location.path('/login');
       } else {
-        $location.path('/register');
+        $location.path('/tou');
       }
     }
   };
