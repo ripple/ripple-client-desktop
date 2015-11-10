@@ -288,6 +288,12 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
   function handleAccountEntry(data)
   {
     var remote = $net.remote;
+
+    // Only overwrite account data if the new data has a bigger sequence number (is a newer information)
+    if ($scope.account && $scope.account.Sequence && $scope.account.Sequence >= data.Sequence) {
+      return;
+    }
+
     $scope.account = data;
 
     // XXX Shouldn't be using private methods
