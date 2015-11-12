@@ -210,44 +210,28 @@ module.directive('rpIssuer', function () {
  * For example you could use this as a password repeat validator.
  *
  * @example
- *   <input name=password type=password rp-same-in-set="passwordSet">
- *   <input name=password2 type=password rp-same-in-set="passwordSet">
+ *   <input name=password1 type=password ng-model="password1" rp-same-in-set="password2">
+ *   <input name=password2 type=password ng-model="password2" rp-same-in-set="password1">
  */
 module.directive('rpSameInSet', [function() {
   return {
     require: 'ngModel',
-    link: function(scope, elm, attrs, ctrl) {
-      var set = scope.$eval(attrs.rpSameInSet);
+    link: function(scope, elem, attrs, control) {
+      function checker() {
+        //get the value of the first password
+        var e1 = scope.$eval(attrs.ngModel);
 
-      function validator(value) {
-        var oldValue = value !== ctrl.$modelValue
-            ? ctrl.$modelValue
-            : (value !== ctrl.$viewValue ? ctrl.$viewValue : value);
-        if (value !== oldValue) {
-          set[oldValue] = (set[oldValue] || 1) - 1;
-          if (set[oldValue] === 0) {
-            delete set[oldValue];
-          }
-          if (value) {
-            set[value] = (set[value] || 0) + 1;
-          }
-        }
-        return value;
+        //get the value of the other password
+        var e2 = scope.$eval(attrs.rpSameInSet);
+        return e1 === e2;
       }
-
-      ctrl.$formatters.push(validator);
-      ctrl.$parsers.push(validator);
-
-      scope.$watch(
-          function() {
-            return _.size(set) === 1;
-          },
-          function(value){
-            ctrl.$setValidity('rpSameInSet', value);
-          }
-      );
+      scope.$watch(checker, function(n) {
+        //set the form control to valid if both
+        //passwords are the same, else invalid
+        control.$setValidity('rpSameInSet', n);
+      });
     }
-  }
+  };
 }]);
 
 /**
