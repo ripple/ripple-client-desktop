@@ -2,8 +2,12 @@ section.col-xs-12.content(ng-controller="HistoryCtrl")
 
   //- Disconnected
 
-  group.disconnected(ng-hide="connected")
+  group.disconnected(ng-hide="connected || !onlineMode")
     p.literal(l10n) You have to be online to see this screen
+
+  group.disconnected(ng-hide="onlineMode")
+    p.literal(l10n) Transaction history is not available on the offline machine.
+    span(l10n) Please type in address {{address}} into the cold wallet page on your online machine.
 
   group.disconnected(ng-hide="!connected || loadState.transactions")
     p.literal(l10n) Loading history...
