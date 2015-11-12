@@ -110,7 +110,10 @@ SubmitTab.prototype.angular = function (module)
                   return txn.txJson;
                 });
                 // Error reading file or parsing data
-                $scope.invalidTxns = _.difference(newTxns, validTxns);
+                var newInvalidTxns = _.difference(newTxns, validTxns);
+                $scope.invalidTxns = _.unique(_.union($scope.invalidTxns, newInvalidTxns), function(txn) {
+                  return txn.path;
+                });
                 // Display files sorted by sequence number
                 $scope.txFiles = _.sortBy(_.union($scope.txFiles, validTxns), function(file) {
                   return file.txJson.Sequence;
