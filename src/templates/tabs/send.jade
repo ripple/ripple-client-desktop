@@ -237,7 +237,8 @@ section.col-xs-12.content(ng-controller='SendCtrl')
 
   group.mode-confirm(ng-show='mode=="confirm" && ((account.Balance && connected) || !onlineMode)')
     p.literal(l10n) You are sending
-      span  {{ (send.alt.amount || send.currency) | rpcurrency}}
+      span(ng-show="onlineMode")  {{ (send.alt.amount || send.currency) | rpcurrency}}
+      span(ng-show="!onlineMode")  {{ send.currency }}
       |  to
     .dest_feedback
       .recipient(ng-show='send.recipient_name') {{send.recipient_name}}
