@@ -168,8 +168,8 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                   label(for="trust_allowrippling")
                     select#trust_allowrippling(
                       name='trust_allowrippling',
-                      ng-model='ripplingFlag')
-                      option(value='') No change to Rippling
+                      ng-model='ripplingFlag', required)
+                      option(value='') Choose rippling
                       option(value='tfClearNoRipple') Allow Rippling
                       option(value='tfSetNoRipple') Disallow Rippling
                   i.fa.fa-question-circle.help-icon(
@@ -423,8 +423,8 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                         ng-disabled='trust.loading', required)
                     .col-sm-2.col-md-2.inputPadding
                       label(for='edit_rippling', l10n)
-                        select(name='edit_rippling', ng-model='trust.ripplingFlag')
-                          option(value='') No change to Rippling
+                        select(name='edit_rippling', ng-model='trust.ripplingFlag', required)
+                          option(value='') Choose rippling
                           option(value='tfClearNoRipple') Allow Rippling
                           option(value='tfSetNoRipple') Disallow Rippling
                     .col-sm-2.col-md-2.inputPadding
