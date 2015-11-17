@@ -25,6 +25,7 @@ AdvancedTab.prototype.angular = function(module)
   {
     if (!$id.loginStatus) {
       $scope.showBanner = true;
+      $scope.userCredentials.account = "";
     }
     // XRP currency object.
     // {name: "XRP - Ripples", order: 146, value: "XRP"}
