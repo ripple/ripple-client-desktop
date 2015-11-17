@@ -61,7 +61,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
         .alert.alert-warning(l10n) You must have at least
           strong  {{account.reserve_to_add_trust | rpamount:0}} XRP
           |  to add a new trust line.&#32;
-          a(href="https://ripple.com/wiki/Reserves", target="_blank") More information
+          a(href="https://ripple.com/build/reserves/", target="_blank") More information
     .row
 
       .col-sm-12.trust-menu
@@ -234,11 +234,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
               .row
                 .col-xs-12
                   p.literal.throbber.verifying(ng-show="verifying", l10n) Verifying address
-          .col-xs-12(ng-show='addform_visible && !can_add_trust')
-            .alert.alert-warning(l10n) You must have at least
-              strong  {{account.reserve_to_add_trust | rpamount:0}} XRP
-              |  to add a new trust line.&#32;
-              a(href="https://ripple.com/wiki/Reserves", target="_blank") More information
+
           //- Offline Sending
           group.mode-status(ng-show='mode=="offlineSending"')
             signed-transaction(data="{{signedTransaction}}", txJSON="{{txJSON}}", hash="{{hash}}")
