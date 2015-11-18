@@ -63,6 +63,7 @@ LoginTab.prototype.angular = function (module) {
     $scope.password = '';
     $scope.loginForm && $scope.loginForm.$setPristine(true);
     $scope.backendMessages = [];
+    $rootScope.address = '';
 
     // Autofill fix
     $timeout(function(){

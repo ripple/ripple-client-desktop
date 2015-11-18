@@ -154,15 +154,15 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     rp-popover-placement="bottom"
                     l10n-rp-popover-title="Allow Rippling"
                     rp-popover-trigger="click"
-                    l10n-data-content="Allow this trust line's balances to be transferred to another issuer you connect to. <a href=https://ripple.com/knowledge_center/understanding-the-noripple-flag target=_blank>More information</a>")
-                  select.form-control#allowrippling(
-                    name='trust_allowrippling',
-                    ng-model='ripplingFlag')
-                    option(value='') Default
-                    option(value='tfClearNoRipple') Allow Rippling
-                    option(value='tfSetNoRipple') Disallow Rippling
-                .col-sm-3.allow-rippling.form-group-sm
-                  label(for="setfreeze") Set Freeze
+                    l10n-data-content="{{setAuthMessage}} <a href=https://ripple.com/build/transactions/#trustset-flags target=_blank>More information</a>")
+                .col-xs-4.allow-rippling
+                  label(for="trust_allowrippling")
+                    select#trust_allowrippling(
+                      name='trust_allowrippling',
+                      ng-model='ripplingFlag', required)
+                      option(value='') Choose rippling
+                      option(value='tfClearNoRipple') Allow Rippling
+                      option(value='tfSetNoRipple') Disallow Rippling
                   i.fa.fa-question-circle.help-icon(
                     rp-popover
                     rp-popover-placement="bottom"
@@ -337,16 +337,15 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                 form(ng-class="{ 'frozen-account': component.freeze_peer }"
                   ng-submit="save_account()")
                   ng-form(name="accountForm")
-                    .row.row-padding-small
-                      .col-sm-offset-4.col-sm-2
-                        label(for='limit', l10n) Limit
-                        input.form-control#limit(name='limit', type='number'
-                          ng-model='trust.limit', ng-pattern='validation_pattern'
-                          ng-disabled='trust.loading', required)
-                      .col-sm-offset-2.col-sm-1.form-group-sm
-                        label(for='edit_rippling', l10n) Rippling
-                        select.form-control#edit_rippling(name='edit_rippling', ng-model='trust.ripplingFlag')
-                          option(value='') No change
+                    .col-sm-1.col-md-1.inputPadding(l10n) Limit
+                    .col-sm-2.col-md-3
+                      input.form-control(name='limit', type='number'
+                        ng-model='trust.limit', ng-pattern='validation_pattern'
+                        ng-disabled='trust.loading', required)
+                    .col-sm-2.col-md-2.inputPadding
+                      label(for='edit_rippling', l10n)
+                        select(name='edit_rippling', ng-model='trust.ripplingFlag', required)
+                          option(value='') Choose rippling
                           option(value='tfClearNoRipple') Allow Rippling
                           option(value='tfSetNoRipple') Disallow Rippling
                       .col-sm-1.form-group-sm

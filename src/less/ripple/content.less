@@ -385,6 +385,86 @@ a.danger {
   display: none;
 }
 .modal [rp-popup-content] {
+  .strength {
+    margin: 38px 0 0 0;
+
+    &.match {
+      color: @midred;
+    }
+    &.weak {
+      color: @midred;
+    }
+    &.medium {
+      color: #ff8200;
+    }
+    &.strong {
+      color: @darkgreen;
+    }
+  }
+  .form-group {
+    p.error-text {
+      display: none;
+    }
+
+    .form-control {
+      margin-bottom: 0;
+    }
+
+    &.field-ok {
+      p > span {
+        padding-top: 3px;
+        line-height: 15px;
+        font-size: 12px;
+        color: @midgreen;
+      }
+
+      .input-group:after {
+        content: "";
+        position: absolute;
+        left: 100%;
+        bottom: 0;
+        margin-left: 4px;
+        width: 5px;
+        height: 100%;
+        background: @midgreen;
+      }
+    }
+
+    &.field-error {
+      margin-bottom: 15px;
+
+      p > span {
+        padding-top: 3px;
+        line-height: 15px;
+        font-size: 12px;
+        color: @midred;
+      }
+
+      .input-group:after {
+        content: "";
+        position: absolute;
+        left: 100%;
+        bottom: 0;
+        margin-left: 4px;
+        width: 5px;
+        height: 100%;
+        background: @midred;
+      }
+    }
+
+    &.field-warning {
+      .input-group:after {
+        content: "";
+        position: absolute;
+        left: 100%;
+        bottom: 0;
+        margin-left: 4px;
+        width: 5px;
+        height: 100%;
+        background: @lightyellow;
+      }
+    }
+  }
   display: block;
 }
 

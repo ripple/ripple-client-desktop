@@ -30,17 +30,17 @@ section.col-xs-12.content(ng-controller="RegisterCtrl")
           input.form-control#register_password(
           name='register_password1', type='password', autocomplete="off"
           ng-model="password1"
-          rp-strong-password, required, rp-same-in-set="passwordSet", rp-focus)
+          rp-strong-password, required, rp-same-in-set="password2", rp-focus)
           p(ng-show="strength=='weak'")
             span(l10n) Your password is weak. It is not a mix of letters, numbers and symbols.
-        .form-group(ng-class="{'field-error': registerForm.register_password1.$error.rpSameInSet && registerForm.register_password2.$dirty}")
+        .form-group(ng-class="{'field-error': registerForm.register_password2.$error.rpSameInSet && registerForm.register_password2.$dirty}")
             label(for='register_password2', l10n) Confirm password
             input.form-control#register_password2(
             name='register_password2', autocomplete="off"
             type='password'
             ng-model="password2"
-            required, rp-same-in-set="passwordSet")
-            p(ng-show="registerForm.register_password1.$error.rpSameInSet && registerForm.register_password2.$dirty")
+            required, rp-same-in-set="password1")
+            p(ng-show="(registerForm.register_password2.$error.rpSameInSet && registerForm.register_password2.$dirty) && !registerForm.register_password1.$error.rpStrongPassword")
               span(l10n) Passwords do not match
           div(ng-show="")
         .form-group

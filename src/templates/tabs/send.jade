@@ -16,7 +16,7 @@ section.col-xs-12.content(ng-controller='SendCtrl')
         name='send_destination', type='text'
         rp-combobox="recipient_query"
         placeholder='Enter a Ripple address or contact'
-        ng-model='send.recipient', rp-dest, rp-dest-address, rp-dest-contact
+        ng-model='send.recipient', rp-not-me, rp-dest, rp-dest-address, rp-dest-contact
         rp-dest-email, rp-dest-loading="recipient_loading"
         required
         rp-autofill='$routeParams.to'
@@ -28,6 +28,8 @@ section.col-xs-12.content(ng-controller='SendCtrl')
             | Please enter a recipient.
           .error(rp-error-on='rpDest', l10n)
             | Recipient should be a contact or Ripple address.
+          .error(rp-error-on='rpNotMe', l10n)
+            | Recipient cannot be this wallet address.
     ul.tagsLinks
       li
         a(href="", ng-click="send.show_dt_field = true"
@@ -235,7 +237,8 @@ section.col-xs-12.content(ng-controller='SendCtrl')
 
   group.mode-confirm(ng-show='mode=="confirm" && ((account.Balance && connected) || !onlineMode)')
     p.literal(l10n) You are sending
-      span  {{ (send.alt.amount || send.currency) | rpcurrency}}
+      span(ng-show="onlineMode")  {{ (send.alt.amount || send.currency) | rpcurrency}}
+      span(ng-show="!onlineMode")  {{ send.currency }}
       |  to
     .dest_feedback
       .recipient(ng-show='send.recipient_name') {{send.recipient_name}}
