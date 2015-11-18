@@ -86,14 +86,18 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
     fs.writeFile(fileName, txData, function(err) {
       $scope.$apply(function() {
         $scope.fileName = fileName;
-        console.log('saved file');
         if (err) {
           console.log('Error saving transaction: ', JSON.stringify(err));
           $scope.error = true;
         } else {
+          console.log('saved file');
           $scope.saved = true;
         }
       });
+      // Reset root scope vars so messages do not persist accross controllers
+      setTimeout(function() {
+        $scope.error = $scope.saved = undefined;
+      }, 1000);
     });
   };
 
