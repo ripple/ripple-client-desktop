@@ -44,65 +44,27 @@ module.factory('rpKeychain', ['$rootScope', '$timeout', 'rpPopup', 'rpId',
   };
 
   /**
-   * Getting a secret for an account with default UI.
+   * Get a secret for an account
    *
-   * This function will immediatly callback if the wallet is already unlocked.
-   * Otherwise, it will automatically handle the unlock process using a modal
-   * popover.
-   *
-   * If the user cancels the operation, the method will call the callback with
-   * an error.
    */
   Keychain.prototype.requestSecret = function (account, username, purpose, callback) {
-    var _this = this;
-
-    if ("function" === typeof purpose) {
+    // Allow method to return synchronously, if no callback supplied
+    if (Array.prototype.slice.call(arguments).length < 3) {
+      return $scope.userBlob.data.masterkey || $scope.userBlob.data.regularKey;
+    }
+    if (typeof purpose === 'function') {
       callback = purpose;
       purpose = null;
     }
 
-    // Handle already unlocked accounts
-    if (this.secrets[account]) {
-      // Keep the secret in a closure in case it happens to get locked
-      // between now and when $timeout calls back.
-      var secret = this.secrets[account].masterkey;
-      $timeout(function () {
-        callback(null, secret);
-      });
-      return;
+    if ($scope.userBlob.data.masterkey) {
+      console.log('Callback with masterkey');
+      callback(null, $scope.userBlob.data.masterkey);
+    } else if ($scope.userBlob.data.regularKey) {
+      callback(null, $scope.userBlob.data.regularKey);
+    } else {
+      callback(new Error('Unable to unlock secret'));
     }
-
-    var popupScope = $scope.$new();
-    var unlock = popupScope.unlock = {
-      isConfirming: false,
-      password: '',
-      purpose: purpose
-    };
-    popupScope.confirm = function () {
-      unlock.isConfirming = true;
-
-      function handleSecret(err, secretKey) {
-        if (err) {
-          // XXX More fine-grained error handling would be good. Can we detect
-          //     server down?
-          unlock.isConfirming = false;
-          unlock.error = 'password';
-          callback(new Error('Invalid password'));
-        } else {
-          popup.close();
-
-          callback(null, secretKey);
-        }
-      }
-
-      _this.getSecret(account, username, popupScope.unlock.password,
-                      handleSecret);
-    };
-    popupScope.cancel = function () {
-      callback("canceled"); //need this for setting password protection
-      popup.close();
-    };
-    popup.blank(require('../../templates/popup/unlock.jade')(), popupScope);
   };
 
   /**
@@ -141,21 +103,6 @@ module.factory('rpKeychain', ['$rootScope', '$timeout', 'rpPopup', 'rpId',
       callback(null, secret);
     });
   };
-
-  /**
-   * Synchronous way to acquire secret.
-   *
-   * This function will only work if the account is already unlocked. Throws an
-   * error otherwise.
-   */
-  Keychain.prototype.getUnlockedSecret = function (account) {
-    if (!this.isUnlocked) {
-      throw new Error("Keychain: Tried to get secret for locked account synchronously.");
-    }
-
-    return this.secrets[account].masterkey;
-  };
-
 
  /**
   * setPasswordProtection

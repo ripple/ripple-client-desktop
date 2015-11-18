@@ -658,9 +658,7 @@ SendTab.prototype.angular = function (module)
       $network.remote.closeCurrentPathFind();
       $scope.mode = "confirm";
 
-      if (keychain.isUnlocked($id.account)) {
-        $scope.send.secret = keychain.getUnlockedSecret($id.account);
-      }
+      $scope.send.secret = keychain.requestSecret($id.account);
     };
 
     /**
