@@ -142,7 +142,7 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     l10n-rp-popover-title="Set Authorization"
                     rp-popover-trigger="click"
                     l10n-data-content="{{setAuthMessage}} <a href=https://ripple.com/build/transactions/#trustset-flags target=_blank>More information</a>")
-                  select.form-control#tfSetfAuth(
+                  select.form-control(
                     name='trust_tfSetfAuth',
                     ng-model='authFlag', ng-disabled='onlineMode && disallowAuth')
                     option(value='') Default
@@ -155,21 +155,21 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     l10n-rp-popover-title="Allow Rippling"
                     rp-popover-trigger="click"
                     l10n-data-content="{{setAuthMessage}} <a href=https://ripple.com/build/transactions/#trustset-flags target=_blank>More information</a>")
-                .col-xs-4.allow-rippling
-                  label(for="trust_allowrippling")
-                    select#trust_allowrippling(
-                      name='trust_allowrippling',
-                      ng-model='ripplingFlag', required)
-                      option(value='') Choose rippling
-                      option(value='tfClearNoRipple') Allow Rippling
-                      option(value='tfSetNoRipple') Disallow Rippling
+                  select.form-control(
+                    name='trust_allowrippling',
+                    ng-model='ripplingFlag', required)
+                    option(value='') Choose rippling
+                    option(value='tfClearNoRipple') Allow Rippling
+                    option(value='tfSetNoRipple') Disallow Rippling
+                .col-sm-3.allow-rippling.form-group-sm
+                  label(for="trust_allowrippling") Set Freeze
                   i.fa.fa-question-circle.help-icon(
                     rp-popover
                     rp-popover-placement="bottom"
                     l10n-rp-popover-title="Set Freeze"
                     rp-popover-trigger="click"
                     l10n-data-content="Freeze the trust line <a href=https://ripple.com/build/transactions/#trustset-flags target=_blank>More information</a>")
-                  select.form-control#setfreeze(
+                  select.form-control(
                     name='trust_tfSetFreeze'
                     ng-model='freezeFlag')
                     option(value='') Default
@@ -335,17 +335,18 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                     data-content='This account has been frozen. Please contact the issuer to unfreeze your account. <a href=https://ripple.com/wiki/Freeze target=_blank>More about freezing</a>')
               .editBox(ng-show="editing")
                 form(ng-class="{ 'frozen-account': component.freeze_peer }"
-                  ng-submit="save_account()")
+                ng-submit="save_account()")
                   ng-form(name="accountForm")
-                    .col-sm-1.col-md-1.inputPadding(l10n) Limit
-                    .col-sm-2.col-md-3
-                      input.form-control(name='limit', type='number'
+                    .row.row-padding-small
+                      .col-sm-offset-4.col-sm-2
+                        label(for='limit', l10n) Limit
+                        input.form-control#limit(name='limit', type='number'
                         ng-model='trust.limit', ng-pattern='validation_pattern'
                         ng-disabled='trust.loading', required)
-                    .col-sm-2.col-md-2.inputPadding
-                      label(for='edit_rippling', l10n)
-                        select(name='edit_rippling', ng-model='trust.ripplingFlag', required)
-                          option(value='') Choose rippling
+                      .col-sm-offset-2.col-sm-1.form-group-sm
+                        label(for='edit_rippling', l10n) Rippling
+                        select.form-control#edit_rippling(name='edit_rippling', ng-model='trust.ripplingFlag')
+                          option(value='') No change
                           option(value='tfClearNoRipple') Allow Rippling
                           option(value='tfSetNoRipple') Disallow Rippling
                       .col-sm-1.form-group-sm
@@ -357,13 +358,13 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                       .col-sm-1.form-group-sm
                         label(for='edit_auth', l10n) Authorize
                         select.form-control#edit_auth(name='edit_auth', ng-model='trust.authFlag'
-                          ng-disabled='(onlineMode && disallowAuth)')
+                        ng-disabled='(onlineMode && disallowAuth)')
                           option(value='') No change
                           option(value='tfSetfAuth') Authorize trust line
                     .row.row-padding-small
                       .col-sm-offset-4.col-sm-4
                         button.btn.btn-block.btn-primary#save(type='submit'
-                          ng-disabled='accountForm.$invalid || trust.loading')
+                        ng-disabled='accountForm.$invalid || trust.loading')
                           span(ng-hide="trust.loading", l10n) Save
                           span(ng-show="trust.loading", l10n) Saving...
                       .col-sm-2(ng-hide="trust.loading")
@@ -410,4 +411,4 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                               button.btn.btn-block.btn-danger.btn-xs.submit(type="button", ng-click="load_orderbook()", ng-disabled='accountForm.$invalid || trust.loading', l10n) Remove
                       .col-sm-1
                         a.btn.btn-block.btn-cancel(href="", ng-click="cancel()"
-                          ng-disabled="trust.loading", l10n) cancel
+                        ng-disabled="trust.loading", l10n) cancel
