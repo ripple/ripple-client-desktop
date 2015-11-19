@@ -7,7 +7,6 @@ section.col-xs-12.content(ng-controller="ExchangeCtrl")
 
   group.disconnected(ng-hide="!connected || loadState.account")
     div(id="section_loader")
-      img(src="img/sections.png", class="loader")
       div(class="loading_sections", l10n) Loading... 
 
   div(ng-show="!loadingAccount && !account.Balance && loadState.account && connected")

@@ -33,39 +33,44 @@ section.col-xs-12.content(ng-controller="TradeCtrl")
         .col-md-2.col-lg-2.col-xs-6(ng-hide="adding_pair")
           button.btn.btn-cancel.btn-block(ng-click="gotoSettings()", l10n)
             | edit pairs
-      form.row#gateway_change_form(name="gateway_change_form", ng-show="adding_pair", ng-submit="add_pair()")
-        .col-sm-4.col-lg-2.col-xs-12
-          .description(l10n) Base Currency
-          input.form-control(
-            name="first_currency", type="text"
-            rp-combobox="currencies", rp-combobox-select
-            ng-model="first_currency_selected")
-        .col-sm-6.col-lg-3.col-xs-11
-          .description(l10n) Base Gateway
-          input.form-control(
-            name="first_iss", type="text", ng-disabled="disable_first_issuer"
-            rp-combobox="first_iss", rp-combobox-select
-            rp-dest, rp-dest-address, rp-dest-contact
-            ng-model="first_issuer_selected")
-        .col-xs-1
-          .description.slash /
-        .col-sm-4.col-lg-2.col-xs-12
-          .description(l10n) Counter&nbsp;Currency
-          input.form-control(
-            name="second_currency", type="text"
-            rp-combobox="currencies", rp-combobox-select
-            ng-model="second_currency_selected")
-        .col-sm-6.col-lg-3.col-xs-12
-          .description(l10n) Counter Gateway
-          input.form-control(
-            name="second_iss", type="text", ng-disabled="disable_second_issuer"
-            rp-combobox="second_iss", rp-combobox-select
-            rp-dest, rp-dest-address, rp-dest-contact
-            ng-model="second_issuer_selected")
-        .col-sm-4.col-lg-2.col-xs-6#cancel_button
-          button.btn.btn-cancel.btn-block(type="button", ng-click="adding_pair = false", l10n) cancel
-        .col-sm-4.col-lg-2.col-xs-6#add_button
-          button.btn.btn-success.btn-block.submit(type="submit", ng-disabled="gateway_change_form.$invalid || gateway_change_form.$pending", l10n) Add
+      form#gateway_change_form(name="gateway_change_form", ng-show="adding_pair", ng-submit="add_pair()")
+        .row
+          .col-sm-3
+            .description(l10n) Base Currency
+            input.form-control(
+              name="first_currency", type="text"
+              rp-combobox="currencies", rp-combobox-select
+              ng-model="first_currency_selected")
+          .col-sm-6
+            .description(l10n) Base Gateway
+            input.form-control(
+              name="first_iss", type="text"
+              ng-model="first_issuer_selected"
+              rp-combobox="first_iss", rp-combobox-select
+              rp-dest, rp-dest-address, rp-dest-contact
+              ng-disabled="disable_first_issuer")
+          .col-sm-1
+            .description.slash /
+        .row
+          .col-sm-3
+            .description(l10n) Counter Currency
+            input.form-control(
+              name="second_currency", type="text"
+              rp-combobox="currencies", rp-combobox-select
+              ng-model="second_currency_selected")
+          .col-sm-6
+            .description(l10n) Counter Gateway
+            input.form-control(
+              name="second_iss", type="text",
+              ng-model="second_issuer_selected"
+              rp-combobox="second_iss", rp-combobox-select
+              rp-dest, rp-dest-address, rp-dest-contact
+              ng-disabled="disable_second_issuer")
+        .row
+          .col-sm-4.col-sm-offset-3#add_button
+            button.btn.btn-success.btn-block.submit(type="submit", ng-disabled="gateway_change_form.$invalid || gateway_change_form.$pending", l10n) Add
+          .col-sm-2#cancel_button
+            button.btn.btn-cancel.btn-block(type="button", ng-click="adding_pair = false", l10n) cancel
 
     form.issuerSelector.first-issuer(name='first_issuer_form', ng-show='show_issuer_form == "first"')
       label(for='first_issuer', l10n) Base currency issuer ({{order.first_currency | rpcurrency}})
