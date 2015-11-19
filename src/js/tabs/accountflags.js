@@ -87,6 +87,10 @@ AccountFlagsTab.prototype.angular = function(module) {
       } else {
         $scope.saveToDisk(txnName, txData);
       }
+      $scope.signedTransaction = blob;
+      $scope.hash = hash;
+      $scope.txJSON = tx.tx_json;
+      $scope.offlineSettingsChange = true;
     };
 
     $scope.$watch('account', function() {
@@ -194,7 +198,6 @@ AccountFlagsTab.prototype.angular = function(module) {
           $scope.signedTransaction = tx.sign().serialize().to_hex();
           $scope.txJSON = JSON.stringify(tx.tx_json);
           $scope.hash = tx.hash('HASH_TX_ID', false, undefined);
-          $scope.offlineSettingsChange = true;
           $scope.opts.edit = false;
           $scope.saveTransaction(tx, $scope.hash, $scope.signedTransaction);
         });
