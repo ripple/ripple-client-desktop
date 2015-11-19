@@ -2,7 +2,10 @@ section.col-xs-12.content(ng-controller="BalanceCtrl")
   //- Disconnected
 
   group.disconnected(ng-hide="connected")
-    p.literal(l10n) You have to be online to see this screen
+    p.literal(l10n) You have to be online to see this screen.
+      span(ng-show="onlineMode")  Please make sure you are connected to the Internet and you have configured the correct 
+        a(href='#advanced', l10n-inc) servers
+        | .
 
   group.disconnected(ng-hide="!connected || loadState.account")
     p.literal(l10n) Loading...
