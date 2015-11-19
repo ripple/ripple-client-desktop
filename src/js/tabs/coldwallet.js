@@ -89,7 +89,7 @@ ColdWalletTab.prototype.angular = function (module) {
 
         if (err && err.remote && err.remote.error === 'actNotFound') {
           $scope.$apply(function() {
-            $scope.accountError = 'Account ' + address + ' has not been found';
+            $scope.accountError = 'Account ' + address + ' has not been funded';
           });
 
           return;
