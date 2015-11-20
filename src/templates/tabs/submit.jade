@@ -40,7 +40,6 @@ section.col-xs-12.content(ng-controller="SubmitCtrl")
           .col-sm-2
             .pull-right
               a(ng-hide="state", href="", ng-click="remove()") Remove
-              div(ng-show="state == 'pending'") Pending...
               a.pull-right(ng-show="state == 'error' || state == 'unfunded' || state == 'bad_auth_master' || state == 'success'", ng-click="remove()")
                 i.fa.fa-times
               div.failed(ng-show="state == 'error'")
@@ -50,6 +49,8 @@ section.col-xs-12.content(ng-controller="SubmitCtrl")
               div.failed(ng-show="state == 'bad_auth_master'")
                 | {{message}}
               div.success(ng-show="state == 'success'")
+                | {{message}}
+              div.pending(ng-show="state == 'pending'")
                 | {{message}}
 
 
