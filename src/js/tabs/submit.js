@@ -192,6 +192,32 @@ SubmitTab.prototype.angular = function (module)
         });
       };
 
+      // Check to see if txn is validated
+      function pollStatus(txnHash) {
+        network.remote.requestTransaction({hash: txnHash}, function(err, transaction) {
+          if (err) {
+            console.log('Error fetching transaction: ', err);
+            $scope.$apply(function() {
+              $scope.state = 'error';
+            });
+          } else if (typeof transaction.validated === 'undefined') {
+            setTimeout(function() {
+              pollStatus(txnHash);
+            }, 1000);
+          } else if (transaction.validated) {
+            $scope.$apply(function() {
+              $scope.state = 'success';
+              $scope.message = 'Success.';
+            });
+          } else {
+            $scope.$apply(function() {
+              $scope.state = 'error';
+              $scope.message = 'Network could not validate transaction';
+            });
+          }
+        });
+      }
+
       // If this row is next in the queue, submit
       // Else wait 10 ms
       function checkSequenceAndSubmit() {
@@ -214,8 +240,7 @@ SubmitTab.prototype.angular = function (module)
                 return;
               }
               if (response.engine_result_code === 0) {
-                $scope.state = 'success';
-                $scope.message = 'Success.';
+                pollStatus(response.tx_json.hash);
               } else if (response.engine_result_code === -96) {
                 // Sending account is unfunded
                 $scope.state = 'unfunded';
@@ -246,7 +271,7 @@ SubmitTab.prototype.angular = function (module)
       $scope.$on('prepare', function() {
         // Show loading...
         $scope.state = 'pending';
-
+        $scope.message = 'Pending ...';
         // Add txns to PQ to order by sequence
         $scope.queue.enq({
           file: $scope.txFile.path,
