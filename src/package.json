@@ -1,7 +1,7 @@
 {
   "main": "index.html",
   "name": "RippleAdminConsole",
-  "version": "1.2.1",
+  "version": "1.4.0",
   "description": "Ripple Admin Console",
   "single-instance": false,
   "window": {
