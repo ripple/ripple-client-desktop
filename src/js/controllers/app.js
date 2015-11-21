@@ -667,6 +667,23 @@ module.controller('AppCtrl', ['$rootScope', '$compile', 'rpId', 'rpNetwork',
 
   $scope.onlineMode ? $net.connect() : $net.disconnect();
 
+  // Reconnect on server setting changes
+  var netConnectedListener = function(){};
+  $scope.$on('serverChange', function(event, serverSettings) {
+    var address = $scope.address;
+
+    $net.disconnect();
+    $net.connect(serverSettings);
+
+    // Remove listener
+    netConnectedListener();
+    netConnectedListener = $scope.$on('$netConnected', function() {
+      console.log('$scope.address', address);
+
+      $id.setAccount(address);
+    });
+  });
+
   $scope.logout = function () {
     $id.logout();
     $route.reload();
