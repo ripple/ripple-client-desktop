@@ -140,6 +140,8 @@ AdvancedTab.prototype.angular = function(module)
 
         $scope.saveSetings();
 
+        $scope.$emit('serverChange', $scope.options.server);
+
           // Reload
         $route.reload();
       };

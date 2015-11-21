@@ -21,28 +21,21 @@ module.factory('rpNetwork', ['$rootScope', function($scope)
    * layer on top of an abstraction layer.
    */
   var Network = function() {
-    this.remote = new ripple.Remote(Options.server, true);
+    this.connected = false;
+  };
+
+  Network.prototype.connect = function(serverSettings) {
+    serverSettings = serverSettings ? serverSettings : Options.server;
+
+    this.remote = new ripple.Remote(serverSettings, true);
     this.remote.on('connected', this.handleConnect.bind(this));
     this.remote.on('disconnected', this.handleDisconnect.bind(this));
 
     // Set network max transaction fee from Options, or default to 12 drops of XRP
     this.remote.max_fee = Options.max_tx_network_fee || 12;
 
-    this.connected = false;
-  };
-
-  Network.prototype.connect = function() {
-    try {
-      if (Options.server && Options.server.servers && Options.server.servers.length) {
-        this.remote.connect();
-      }
-    } catch (e) {
-      console.warn(e);
-      // fallback to default servers
-      Options.server.servers = Options.defaultServers;
-      this.remote = new ripple.Remote(Options.server, true);
-      this.remote.on('connected', this.handleConnect.bind(this));
-      this.remote.on('disconnected', this.handleDisconnect.bind(this));
+    if (serverSettings && serverSettings.servers && serverSettings.servers.length) {
+      this.remote.connect();
     }
   };
 
