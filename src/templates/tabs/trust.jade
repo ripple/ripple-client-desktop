@@ -345,7 +345,8 @@ section.col-xs-12.content(ng-controller="TrustCtrl")
                         ng-disabled='trust.loading', required)
                       .col-sm-offset-2.col-sm-1.form-group-sm
                         label(for='edit_rippling', l10n) Rippling
-                        select.form-control#edit_rippling(name='edit_rippling', ng-model='trust.ripplingFlag')
+                        select.form-control#edit_rippling(name='edit_rippling', ng-model='trust.ripplingFlag'
+                        ng-disabled="component.balance !== '0' && isIncomingOnly() && ripplingEnabled()")
                           option(value='') No change
                           option(value='tfClearNoRipple') Allow Rippling
                           option(value='tfSetNoRipple') Disallow Rippling
