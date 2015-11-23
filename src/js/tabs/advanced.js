@@ -76,6 +76,7 @@ AdvancedTab.prototype.angular = function(module)
       $scope.editMaxNetworkFee = false;
 
       // Reload
+      $scope.$emit('serverChange', $scope.options.server);
       $route.reload();
     };
 
