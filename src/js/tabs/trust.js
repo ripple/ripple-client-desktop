@@ -706,6 +706,14 @@ TrustTab.prototype.angular = function (module) {
         });
       };
 
+      $scope.isIncomingOnly = function () {
+        return ($scope.component.limit.is_zero() && !$scope.component.limit_peer.is_zero());
+      };
+
+      $scope.ripplingEnabled = function() {
+        return !$scope.component.no_ripple;
+      };
+
       $scope.close_sign_form = function () {
         $scope.mode = 'main';
       };
