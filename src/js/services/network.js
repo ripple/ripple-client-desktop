@@ -22,6 +22,7 @@ module.factory('rpNetwork', ['$rootScope', function($scope)
    */
   var Network = function() {
     this.connected = false;
+    this.remote = new ripple.Remote(Options.server, true);
   };
 
   Network.prototype.connect = function(serverSettings) {
@@ -40,7 +41,9 @@ module.factory('rpNetwork', ['$rootScope', function($scope)
   };
 
   Network.prototype.disconnect = function() {
-    this.remote.disconnect();
+    if (this.remote) {
+      this.remote.disconnect();
+    }
   };
 
   /**
