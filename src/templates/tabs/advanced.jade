@@ -115,7 +115,7 @@ section.col-sm-12.content(ng-controller="AdvancedCtrl")
                 a.btn.btn-cancel.btn-block(href="", ng-click="editProxy = true", l10n) edit
 
         h4#serverSettings(ng-show="onlineMode", l10n) Server settings
-        form.server-row-form(ng-show="onlineMode", ng-controller="ServerRowCtrl", ng-repeat="(index, server) in options.server.servers", ng-submit="save()")
+        form.server-row-form(ng-show="onlineMode", ng-controller="ServerRowCtrl", ng-repeat="(index, server) in options.connection.servers", ng-submit="save()")
           ng-form(name="serverForm")
             .row.row-padding-small
               .col-sm-3

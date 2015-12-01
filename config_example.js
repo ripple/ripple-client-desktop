@@ -5,7 +5,7 @@
  */
 var Options = {
   // Rippled to connect
-  server: {
+  connection: {
     trace: false,
     trusted: true,
     local_signing: true,
@@ -14,10 +14,6 @@ var Options = {
       { host: 's-west.ripple.com', port: 443, secure: true },
       { host: 's-east.ripple.com', port: 443, secure: true }
     ]
-  },
-
-  api: {
-    servers: ['wss://s-west.ripple.com:443', 'wss://s-east.ripple.com:443']
   },
 
   // Number of transactions each page has in balance tab notifications
@@ -38,28 +34,22 @@ var Options = {
   persistent_auth: false
 };
 
-Options.defaultServers = Options.server.servers;
-
 // Load client-side overrides
 if (store.enabled) {
   var settings = JSON.parse(store.get('ripple_settings') || '{}');
 
-  if (settings.server && settings.server.servers) {
-    var servers = _.filter(settings.server.servers, function(s) {
+  if (settings.connection && settings.connection.servers) {
+    var servers = _.filter(settings.connection.servers, function(s) {
       return !s.isEmptyServer && _.isNumber(s.port) && !_.isNaN(s.port);
     });
 
     if (!servers.length) {
-      servers = Options.servers;
+      servers = Options.connection.servers;
     }
+    settings.connection.servers = servers;
 
-    Options.server = settings.server;
+    Options.connection = settings.connection;
   }
-
-  // The new ripple-lib API should use the same servers as the deprecated API
-  Options.api.servers = _.map(Options.server.servers, function(server) {
-    return 'wss://' + server.host + ':' + server.port;
-  });
 
   if (settings.max_tx_network_fee) {
     Options.max_tx_network_fee = settings.max_tx_network_fee;
