@@ -46,7 +46,7 @@ AdvancedTab.prototype.angular = function(module)
 
     $scope.saveSetings = function() {
       // force serve ports to be number
-      _.forEach($scope.options.server.servers, function(s) {
+      _.forEach($scope.options.connection.servers, function(s) {
         s.port = +s.port;
       });
       // Save in local storage
@@ -76,7 +76,7 @@ AdvancedTab.prototype.angular = function(module)
       $scope.editMaxNetworkFee = false;
 
       // Reload
-      $scope.$emit('serverChange', $scope.options.server);
+      $scope.$emit('serverChange', $scope.options.connection);
       $route.reload();
     };
 
@@ -92,8 +92,8 @@ AdvancedTab.prototype.angular = function(module)
     // Add a new server
     $scope.addServer = function () {
       // Create a new server line
-      if(!$scope.options.server.servers.isEmptyServer)
-        $scope.options.server.servers.push({isEmptyServer: true, secure: false});
+      if(!$scope.options.connection.servers.isEmptyServer)
+        $scope.options.connection.servers.push({isEmptyServer: true, secure: false});
 
       // Set editing to true
       $scope.editing = true;
@@ -108,17 +108,13 @@ AdvancedTab.prototype.angular = function(module)
 
         // Delete the server
       $scope.remove = function () {
-        $scope.options.server.servers.splice($scope.index,1);
+        $scope.options.connection.servers.splice($scope.index,1);
 
         $scope.saveSetings();
         if (!$scope.server.isEmptyServer) {
           $route.reload();
         }
       };
-
-      /*$scope.hasRemove = function () {
-        return !$scope.server.isEmptyServer && $scope.options.server.servers.length !== 1;
-      };*/
 
       $scope.cancel = function () {
         if ($scope.server.isEmptyServer) {
@@ -128,11 +124,11 @@ AdvancedTab.prototype.angular = function(module)
 
         $scope.editing = false;
         $scope.server = $.extend({ '$$hashKey' : $scope.server.$$hashKey }, $scope.optionsBackup.server.servers[$scope.index]);
-        Options.server.servers[$scope.index] = $.extend({}, $scope.optionsBackup.server.servers[$scope.index]);
+        Options.connection.servers[$scope.index] = $.extend({}, $scope.optionsBackup.server.servers[$scope.index]);
       };
 
       $scope.noCancel = function () {
-        return $scope.server.isEmptyServer && $scope.options.server.servers.length === 1;
+        return $scope.server.isEmptyServer && $scope.options.connection.servers.length === 1;
       };
 
       $scope.save = function () {
@@ -141,7 +137,7 @@ AdvancedTab.prototype.angular = function(module)
 
         $scope.saveSetings();
 
-        $scope.$emit('serverChange', $scope.options.server);
+        $scope.$emit('serverChange', $scope.options.connection);
 
           // Reload
         $route.reload();
@@ -151,7 +147,7 @@ AdvancedTab.prototype.angular = function(module)
 
   module.controller('ProxyCtrl', ['$scope', '$route', function($scope, $route) {
     $scope.init = function() {
-      var proxy = /(https?):\/\/(([^:]*):([^@]*)@)?([^:]*)(:(\d+))?/g.exec(Options.server.proxy);
+      var proxy = /(https?):\/\/(([^:]*):([^@]*)@)?([^:]*)(:(\d+))?/g.exec(Options.connection.proxy);
 
       $scope.proxy = {};
 
@@ -173,9 +169,9 @@ AdvancedTab.prototype.angular = function(module)
 
     $scope.save = function(clear) {
       if (clear) {
-        delete Options.server.proxy;
+        delete Options.connection.proxy;
       } else {
-        Options.server.proxy =
+        Options.connection.proxy =
           ($scope.proxy.secure ? 'https' : 'http') + '://'
             + ($scope.proxy.auth && $scope.proxy.username && $scope.proxy.password
               ? $scope.proxy.username + ':' + $scope.proxy.password + '@' : '')
