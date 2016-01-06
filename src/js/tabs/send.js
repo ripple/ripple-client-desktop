@@ -27,9 +27,9 @@ SendTab.prototype.generateHtml = function ()
 SendTab.prototype.angular = function (module)
 {
   module.controller('SendCtrl', ['$scope', '$timeout', '$routeParams', 'rpId',
-                                 'rpNetwork', 'rpKeychain', 
+                                 'rpNetwork', 'rpKeychain', 'rpTravelRule',
                                  function ($scope, $timeout, $routeParams, $id,
-                                           $network, keychain)
+                                           $network, keychain, travelrule)
   {
     if (!$id.loginStatus) $id.goId();
 
@@ -165,8 +165,22 @@ SendTab.prototype.angular = function (module)
       $scope.check_destination();
     };
 
+    // Check if the recipient is a known gateway that
+    // needs to receive the sender information
+    $scope.check_travel_rule = function (recipient) {
+      if (_.contains(Options.travel_rule, recipient)) {
+        travelrule.getTravelRule(recipient)
+          .then(function(result) {
+            $scope.send.travelRuleData = result.sender_info;
+          })
+          .catch(function(err) {
+            console.log('error: ', err);
+          });
+      }
+    };
+
     // Check destination for XRP sufficiency and flags
-    $scope.check_destination = function () {
+    $scope.check_destination = function() {
       var send = $scope.send;
       var recipient = send.recipient_actual || send.recipient_address;
 
@@ -181,6 +195,8 @@ SendTab.prototype.angular = function (module)
       }
 
       var account = $network.remote.account(recipient);
+
+      $scope.check_travel_rule(recipient);
 
       send.path_status = 'checking';
       send.recipient_info = null;
@@ -732,6 +748,15 @@ SendTab.prototype.angular = function (module)
 
       // Add memo to tx
       tx.addMemo('client', 'rt' + $scope.version);
+
+      // Travel rule data
+      if (send.travelRuleData) {
+        tx.addMemo({
+          memoType: 'travelrule',
+          memoFormat: 'text/plain',
+          memoData: send.travelRuleData
+        });
+      }
 
       if (send.secret) {
         tx.secret(send.secret);

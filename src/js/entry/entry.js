@@ -31,6 +31,7 @@ require('../services/ledger');
 require('../services/popup');
 require('../services/nwhelpers');
 require('../services/filedialog');
+require('../services/travelrule');
 
 // Angular module dependencies
 var appDependencies = [
@@ -43,6 +44,7 @@ var appDependencies = [
   'id',
   'filedialog',
   'nwhelpers',
+  'travelrule',
   // Directives
   'charts',
   'effects',
