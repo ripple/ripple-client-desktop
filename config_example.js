@@ -35,19 +35,16 @@ var Options = {
 
   // User parameters to send with travel rule memos
   user_info: {
-    name: {
-      first: "John",
-      middle: "Gullible",
-      last: "Smith"
-    },
+    name: "XRP II LLC",
     address: {
-      line1: "799 E Dragram Suite 5A",
+      line1: "1703 Laurel Street",
       line2: "",
-      city: "Charlestown",
-      subdivision: "IN",
-      postcode: "47111",
+      city: "Columbia",
+      subdivision: "SC",
+      postcode: "29201",
       country: "USA"
-    }
+    },
+    financial_institution: "Silicon Valley Bank"
   },
 
   // Gateways that need to receive the sender information on withdrawals

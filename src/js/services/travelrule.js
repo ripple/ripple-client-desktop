@@ -135,18 +135,18 @@ module.factory('rpTravelRule', ['$rootScope', '$q', 'rpNetwork',
             return reject(err1);
           }
 
-          var user = Options.user_info;
+          var user_info = Options.user_info;
 
-          var data = '' + (user.name.first ? user.name.first : '') +
-            (user.name.middle ? ' ' + user.name.middle : '') +
-            (user.name.last ? ' ' + user.name.last : '') +
+          var data = '' + (user_info.name ? user_info.name : '') +
             "\n" +
-            (user.address.line1 ? user.address.line1 : '') +
-            (user.address.line2 ? ', ' + user.address.line2 : '') +
-            (user.address.city ? ', ' + user.address.city : '') +
-            (user.address.subdivision ? ', ' + user.address.subdivision : '') +
-            (user.address.postcode ? ', ' + user.address.postcode : '') +
-            (user.address.country ? ', ' + user.address.country : '');
+            (user_info.financial_institution ? user_info.financial_institution : '') +
+            "\n" +
+            (user_info.address.line1 ? user_info.address.line1 : '') +
+            (user_info.address.line2 ? ', ' + user_info.address.line2 : '') +
+            (user_info.address.city ? ', ' + user_info.address.city : '') +
+            (user_info.address.subdivision ? ', ' + user_info.address.subdivision : '') +
+            (user_info.address.postcode ? ', ' + user_info.address.postcode : '') +
+            (user_info.address.country ? ', ' + user_info.address.country : '');
 
           //var ec = new elliptic.ec('secp256k1');
           //var publicKey = ec.keyFromPublic(info.account_data.MessageKey, 'hex').getPublic(false, 'hex');
