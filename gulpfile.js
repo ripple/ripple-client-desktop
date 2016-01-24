@@ -4,8 +4,8 @@ var gulp = require('gulp'),
   shell = require('gulp-shell'),
   merge = require('merge-stream'),
   modRewrite = require('connect-modrewrite'),
-  BannerPlugin = require('gulp-webpack/node_modules/webpack/lib/BannerPlugin'),
-  UglifyJsPlugin = require('gulp-webpack/node_modules/webpack/lib/optimize/UglifyJsPlugin'),
+  BannerPlugin = require('webpack/lib/BannerPlugin'),
+  UglifyJsPlugin = require('webpack/lib/optimize/UglifyJsPlugin'),
   jade = require('jade'),
   jadeL10n = require('jade-l10n'),
   NwBuilder = require('nw-builder'),
@@ -51,7 +51,7 @@ gulp.task('webpack:vendor:dev', function() {
           {test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader?optional=runtime'}
         ]
       },
-      target: 'node-webkit',
+      target: 'node',
       cache: true,
       debug: true
     }))
