@@ -28,9 +28,13 @@ module.factory('rpTravelRule', ['$rootScope', 'rpNetwork',
             return reject(err);
           }
 
-          if (gatewayPublicKey != null) {
-            info.account_data.MessageKey = gatewayPublicKey;
-          } else if (!info.account_data.MessageKey) {
+          var messageKey = '';
+
+          if (info.account_data.MessageKey) {
+            messageKey = info.account_data.MessageKey;
+          } else if (gatewayPublicKey !== undefined) {
+            messageKey = gatewayPublicKey;
+          } else {
             var err1 = 'Gateway account has no Message Key';
             console.log('info: ', info);
             return reject(err1);
@@ -49,7 +53,7 @@ module.factory('rpTravelRule', ['$rootScope', 'rpNetwork',
             (user_info.address.postcode ? ', ' + user_info.address.postcode : '') +
             (user_info.address.country ? ', ' + user_info.address.country : '');
 
-          var publicKey = ecies.publicKeyConvert(new Buffer(info.account_data.MessageKey, 'hex'), false);
+          var publicKey = ecies.publicKeyConvert(new Buffer(messageKey, 'hex'), false);
 
           ecies.encrypt(new Buffer(publicKey, 'hex'), new Buffer(data))
             .then(function (encrypted) {
