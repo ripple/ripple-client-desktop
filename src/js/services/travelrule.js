@@ -1,7 +1,6 @@
 'use strict';
 
 var Promise = require('bluebird');
-var ecies = require('simple-ecies');
 
 /**
  * TRAVEL RULE
@@ -18,7 +17,7 @@ module.factory('rpTravelRule', ['$rootScope', 'rpNetwork',
 
   var travelRuleService = {};
 
-  travelRuleService.getTravelRule = function(gatewayAddress) {
+  travelRuleService.getTravelRule = function(gatewayAddress, gatewayPublicKey) {
     return new Promise(function(resolve, reject) {
       net.remote.request(
         'account_info',
@@ -29,7 +28,9 @@ module.factory('rpTravelRule', ['$rootScope', 'rpNetwork',
             return reject(err);
           }
 
-          if (!info.account_data.MessageKey) {
+          if (gatewayPublicKey != null) {
+            info.account_data.MessageKey = gatewayPublicKey;
+          } else if (!info.account_data.MessageKey) {
             var err1 = 'Gateway account has no Message Key';
             console.log('info: ', info);
             return reject(err1);
@@ -52,7 +53,6 @@ module.factory('rpTravelRule', ['$rootScope', 'rpNetwork',
 
           ecies.encrypt(new Buffer(publicKey, 'hex'), new Buffer(data))
             .then(function (encrypted) {
-
               var toSend =
                 encrypted.iv.toString('base64') + ',' +
                 encrypted.ephemPublicKey.toString('base64') + ',' +

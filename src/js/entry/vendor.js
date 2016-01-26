@@ -10,6 +10,7 @@ window.RippleAddressCodec = require('ripple-address-codec');
 window.RippleBinaryCodec = require('ripple-binary-codec');
 window._ = require('lodash');
 window.sjcl = require('sjcl');
+window.ecies = require('simple-ecies');
 require('../../../deps/sjcl-custom');
 
 require('angular');

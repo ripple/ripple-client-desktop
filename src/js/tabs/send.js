@@ -169,7 +169,7 @@ SendTab.prototype.angular = function (module)
     // needs to receive the sender information
     $scope.check_travel_rule = function (recipient) {
       if (_.contains(Options.travel_rule, recipient)) {
-        travelrule.getTravelRule(recipient)
+        travelrule.getTravelRule(recipient, Options.travel_rule_keys[recipient])
           .then(function(result) {
             $scope.send.travelRuleData = result.sender_info;
           })

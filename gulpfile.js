@@ -51,7 +51,7 @@ gulp.task('webpack:vendor:dev', function() {
           {test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader?optional=runtime'}
         ]
       },
-      target: 'node',
+      target: 'node-webkit',
       cache: true,
       debug: true
     }))
