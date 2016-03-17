@@ -548,7 +548,9 @@ SendTab.prototype.angular = function (module)
               alt.rate = alt.amount.ratio_human(amount, {reference_date: slightlyInFuture});
 
               // Send max is 1.01 * amount
-              var scaleAmount = alt.amount.to_json();
+              // var scaleAmount = alt.amount.to_json();
+              var scaleAmount = { issuer: alt.amount._issuer };
+
               scaleAmount.value = 1.01;
               alt.send_max = alt.amount.scale(scaleAmount);
 
