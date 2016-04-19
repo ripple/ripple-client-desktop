@@ -199,7 +199,7 @@ ExchangeTab.prototype.angular = function (module)
 
                   // Scale amount by 1.01 to get a send max
                   // 1% greater than sending amount
-                  var scaleAmount = alt.amount.to_json();
+                  var scaleAmount = { issuer: alt.amount._issuer };
                   scaleAmount.value = 1.01;
                   alt.send_max = alt.amount.scale(scaleAmount);
                   alt.paths = raw.paths_computed
