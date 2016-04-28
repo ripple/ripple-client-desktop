@@ -95,7 +95,7 @@
         "name": "RippleLatAm",
         "accounts": [{
             "address": "rP5ShE8dGBH6hHtNvRESdMceen36XFBQmh",
-            "currencies": ["BRL", "UYU", "PEN", "MXN", "BTC", "LTC", "USD", "CLP", "ARS"],
+            "currencies": ["UYU", "PEN", "MXN", "BTC", "LTC", "USD", "CLP", "ARS"],
             "hotwallets": ["raoFdQah8c8owTj4TPMr8o1WntnXybXCgB"],
             "domain": "ripplelatam.com"
             }]
