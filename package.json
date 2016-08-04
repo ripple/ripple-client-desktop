@@ -1,6 +1,6 @@
 {
   "name": "RippleAdminConsole",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Desktop client for the Ripple payment network",
   "author": {
     "name": "Ripple, Inc.",
@@ -101,7 +101,7 @@
     "karma-sinon-chai": "~0.1.6",
     "merge-stream": "^1.0.0",
     "mime": "~1.2.11",
-    "nw": "^0.15.4",
+    "nw": "^0.12.3",
     "run-sequence": "^1.1.2"
   }
 }
