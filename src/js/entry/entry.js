@@ -86,7 +86,7 @@ var tabdefs = [
 
 // Language
 window.lang = (function(){
-  var languages = _.pluck(require('../../../l10n/languages.json').active, 'code');
+  /*var languages = _.pluck(require('../../../l10n/languages.json').active, 'code');
   var resolveLanguage = function(lang) {
     if (!lang) return null;
     if (languages.indexOf(lang) != -1) return lang;
@@ -98,7 +98,9 @@ window.lang = (function(){
   };
   return resolveLanguage(store.get('ripple_language')) ||
     resolveLanguage(window.navigator.userLanguage || window.navigator.language) ||
-    'en';
+    'en';*/
+
+  return 'en'
 })();
 
 // Prepare tab modules
